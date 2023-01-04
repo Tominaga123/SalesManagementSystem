@@ -1,6 +1,10 @@
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -52,7 +56,8 @@ public class ManagementGUI extends JFrame implements ActionListener{
 	
 	JLabel totalLabel = new JLabel("合計 ￥0"); //合計金額を表示するラベル
 	JLabel taxLabel = new JLabel("(内消費税等 ￥0)"); //消費税額を表示するラベル
-	JLabel numberLabel = new JLabel("0000"); //レシートの通番を表示するラベル（フレーム生成時にデータベースから取得）
+	JLabel numLabel = new JLabel("伝票番号"); //伝票番号であることを示すラベル
+	JLabel numberLabel = new JLabel("0000"); //伝票番号の通番を表示するラベル（フレーム生成時にデータベースから取得）
 	
 	JButton insertButton = new JButton("追加"); //データベースに追加するボタン
 	JButton resetButton = new JButton("リセット"); //白紙にするボタン
@@ -125,7 +130,7 @@ public class ManagementGUI extends JFrame implements ActionListener{
 			}
 		}
 		//店員コードを選択するコンボボックスに項目を追加
-		for(int i = 1; i <= 10; i++) {
+		for(int i = 1; i <= 3; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = "00" + s;
@@ -136,12 +141,12 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		}
 		clerkCodeComboBox.setSelectedItem(null);
 		//商品コードを選択するコンボボックスに項目を追加
-		for(int i = 1; i <= 20; i++) {
+		for(int i = 1; i <= 2; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
-				s = "00" + s;
+				s = "A" + "00" + s;
 			}else {
-				s = 0 + s;
+				s = "A" + 0 + s;
 			}
 			goodsCode1ComboBox.addItem(s);
 			goodsCode2ComboBox.addItem(s);
@@ -189,6 +194,7 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		
 		panel6.add(totalLabel);
 		panel7.add(taxLabel);
+		panel8.add(numLabel);
 		panel8.add(numberLabel);
 		
 		panel9.add(insertButton);
@@ -226,6 +232,24 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		}if(e.getSource() == goodsCode3ComboBox){
 			goodsName3Label.setText((String) goodsCode3ComboBox.getSelectedItem());
 		}else if(e.getSource() == insertButton) {
+			String URL = "jdbc:mysql://192.168.0.154:3306/販売管理";
+			String USER = "店員1";
+			String PASS = "password";
+			String SQL = "INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計) values (" + 0001 + ",cast('" + 
+					yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + 
+					dateComboBox.getSelectedItem() + " " + hourComboBox.getSelectedItem() + ":" + 
+					minuteComboBox.getSelectedItem() + ":00' as datetime)," + clerkCodeComboBox.getSelectedItem() + "," + 
+					goodsCode1ComboBox.getSelectedItem() + "," + count1TextField.getText() + "," + 100 + ")";
+			
+			try {
+				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+				Statement stmt = conn.createStatement();
+				stmt.execute(SQL);
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+			}catch(Exception e2) {
+				e2.printStackTrace();
+			}
 			System.out.println("販売日時:" + yearComboBox.getSelectedItem() + "年" + monthComboBox.getSelectedItem() + "月" +
 					            dateComboBox.getSelectedItem() + "日" + hourComboBox.getSelectedItem() + "時" +
 					            minuteComboBox.getSelectedItem() + "分" + "\n" + "店員コード:"+ clerkCodeComboBox.getSelectedItem() +
@@ -240,6 +264,11 @@ public class ManagementGUI extends JFrame implements ActionListener{
 					            );
 			reset();
 		}else if(e.getSource() == resetButton) {
+			System.out.println("INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計) values (" + 0001 + ",cast('" + 
+					yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + 
+					dateComboBox.getSelectedItem() + " " + hourComboBox.getSelectedItem() + ":" + 
+					minuteComboBox.getSelectedItem() + ":00' as datetime)," + clerkCodeComboBox.getSelectedItem() + "," + 
+					goodsCode1ComboBox.getSelectedItem() + "," + count1TextField.getText() + "," + 100 + ")");
 			reset();
 		}	
 	}
@@ -292,5 +321,42 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		String str = new SimpleDateFormat("mm").format(date);
 		return str;
 	}
+	public String getTime() {
+		Date date = new Date();
+		String str = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(date);
+		return str;
+	}
 
 }
+
+/*
+create DATABASE 販売管理;
+
+create table 店員マスタ (
+店員コード char(10), 
+氏名 char(20), 
+性別 char(4) ,primary key (店員コード));
+
+create table 商品マスタ (
+商品コード char(10), 
+商品名 char(20), 
+価格 int(5) ,primary key (商品コード));
+
+create table 売上マスタ (
+注文番号 int(4),
+販売日時 char(20),
+店員コード char(10),
+商品コード char(10), 
+個数 int(3),
+小計 int(10), primary key (注文番号));
+
+INSERT INTO 商品マスタ ( 商品コード,商品名,価格 ) values ("A001","おいしい水",100);
+INSERT INTO 商品マスタ ( 商品コード,商品名,価格 ) values ("A002","しみわたるお茶",120);
+INSERT INTO 商品マスタ ( 商品コード,商品名,価格 ) values ("B001","満腹弁当",500);
+INSERT INTO 商品マスタ ( 商品コード,商品名,価格 ) values ("C001","和風サラダ",400);
+INSERT INTO 商品マスタ ( 商品コード,商品名,価格 ) values ("D001","味噌汁",300);
+
+INSERT INTO 店員マスタ ( 店員コード,氏名,性別,年齢 ) values ("001","西鶴 愛奈","女性",45);
+INSERT INTO 店員マスタ ( 店員コード,氏名,性別,年齢 ) values ("002","水谷 剛","男性",30);
+INSERT INTO 店員マスタ ( 店員コード,氏名,性別,年齢 ) values ("003","大久保 弘","男性",25);
+*/
