@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -37,21 +38,21 @@ public class ManagementGUI extends JFrame implements ActionListener{
 	JComboBox goodsCode1ComboBox = new JComboBox(); //商品コードの選択欄 
 	JLabel goodsName1Label = new JLabel("商品1"); //商品の名前を表示するラベル
 	JLabel count1Label = new JLabel("個数"); //商品の個数の入力欄であることを示すラベル
-	JTextField count1TextField = new JTextField(3); //個数の入力欄
+	JTextField count1TextField = new JTextField("0", 3); //個数の入力欄
 	JLabel subTotal1Label = new JLabel("￥0"); //小計を表示するラベル
 	
 	JLabel goodsCode2Label = new JLabel("商品コード");
 	JComboBox goodsCode2ComboBox = new JComboBox();
 	JLabel goodsName2Label = new JLabel("商品2");
 	JLabel count2Label = new JLabel("個数"); 
-	JTextField count2TextField = new JTextField(3);
+	JTextField count2TextField = new JTextField("0", 3);
 	JLabel subTotal2Label = new JLabel("￥0"); 
 	
 	JLabel goodsCode3Label = new JLabel("商品コード");
 	JComboBox goodsCode3ComboBox = new JComboBox();
 	JLabel goodsName3Label = new JLabel("商品3");
 	JLabel count3Label = new JLabel("個数"); 
-	JTextField count3TextField = new JTextField(3);
+	JTextField count3TextField = new JTextField("0", 3);
 	JLabel subTotal3Label = new JLabel("￥0"); 
 	
 	JLabel totalLabel = new JLabel("合計 ￥0"); //合計金額を表示するラベル
@@ -61,6 +62,16 @@ public class ManagementGUI extends JFrame implements ActionListener{
 	
 	JButton insertButton = new JButton("追加"); //データベースに追加するボタン
 	JButton resetButton = new JButton("リセット"); //白紙にするボタン
+	
+	String URL = "jdbc:mysql://127.0.0.1:3306/販売管理"; //SQLで使用
+	String USER = "店員1";
+	String PASS = "password";
+	String SQL;
+	
+	int price1 = 0; //小計の計算で使用 
+	int price2 = 0;
+	int price3 = 0; 
+	int subTotal1, subTotal2, subTotal3;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel();
@@ -213,6 +224,9 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		goodsCode1ComboBox.addActionListener(this);
 		goodsCode2ComboBox.addActionListener(this);
 		goodsCode3ComboBox.addActionListener(this);
+		count1TextField.addActionListener(this);
+		count2TextField.addActionListener(this);
+		count3TextField.addActionListener(this);
 		insertButton.addActionListener(this);
 		resetButton.addActionListener(this);
 		this.pack();
@@ -226,20 +240,41 @@ public class ManagementGUI extends JFrame implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == goodsCode1ComboBox){
-			goodsName1Label.setText((String) goodsCode1ComboBox.getSelectedItem());
-		}if(e.getSource() == goodsCode2ComboBox){
-			goodsName3Label.setText((String) goodsCode2ComboBox.getSelectedItem());
-		}if(e.getSource() == goodsCode3ComboBox){
-			goodsName3Label.setText((String) goodsCode3ComboBox.getSelectedItem());
+			try {
+				SQL = "SELECT * FROM 商品マスタ WHERE 商品コード = '" + goodsCode1ComboBox.getSelectedItem() + "';";
+				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(SQL);
+				System.out.println("ここまでおｋ");
+				while(rs.next()){
+					goodsName1Label.setText(rs.getString("商品名"));
+					price1 = rs.getInt("単価");
+				}
+				subTotal1 = price1 * Integer.parseInt(count1TextField.getText());
+				subTotal1Label.setText("￥" + Integer.toString(subTotal1));
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+			}catch(Exception e2) {
+				e2.printStackTrace();
+			}
+		}else if(e.getSource() == goodsCode2ComboBox){
+			
+		}else if(e.getSource() == goodsCode3ComboBox){
+			
+		}else if(e.getSource() == count1TextField){
+			subTotal1 = price1 * Integer.parseInt(count1TextField.getText());
+			subTotal1Label.setText("￥" + Integer.toString(subTotal1));
+		}else if(e.getSource() == count2TextField){
+			
+		}else if(e.getSource() == count3TextField){
+			
 		}else if(e.getSource() == insertButton) {
-			String URL = "jdbc:mysql://192.168.0.154:3306/販売管理";
-			String USER = "店員1";
-			String PASS = "password";
-			String SQL = "INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計) values (" + 0001 + ",cast('" + 
-					yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + 
+			String SQL = "INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計) values (" + 
+					0003 + ",cast('" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + 
 					dateComboBox.getSelectedItem() + " " + hourComboBox.getSelectedItem() + ":" + 
 					minuteComboBox.getSelectedItem() + ":00' as datetime)," + clerkCodeComboBox.getSelectedItem() + "," + 
-					goodsCode1ComboBox.getSelectedItem() + "," + count1TextField.getText() + "," + 100 + ")";
+					"'" + goodsCode1ComboBox.getSelectedItem() + "'" + "," + count1TextField.getText() + "," + 
+					subTotal1Label.getText().replace("￥", "") + ")";
 			
 			try {
 				Connection conn = DriverManager.getConnection(URL, USER, PASS);
@@ -250,25 +285,20 @@ public class ManagementGUI extends JFrame implements ActionListener{
 			}catch(Exception e2) {
 				e2.printStackTrace();
 			}
-			System.out.println("販売日時:" + yearComboBox.getSelectedItem() + "年" + monthComboBox.getSelectedItem() + "月" +
-					            dateComboBox.getSelectedItem() + "日" + hourComboBox.getSelectedItem() + "時" +
-					            minuteComboBox.getSelectedItem() + "分" + "\n" + "店員コード:"+ clerkCodeComboBox.getSelectedItem() +
-					            "\n" + "商品コード:" + goodsCode1ComboBox.getSelectedItem() + " 商品名:" + goodsName1Label.getText() + 
-					            " 個数:" + count1TextField.getText() + " 小計:" + subTotal1Label.getText() + "\n" +
-					            "商品コード:" + goodsCode2ComboBox.getSelectedItem() + " 商品名:" + goodsName2Label.getText() + 
-					            " 個数:" + count2TextField.getText() + " 小計:" + subTotal2Label.getText() + "\n" +
-					            "商品コード:" +	 goodsCode3ComboBox.getSelectedItem() + " 商品名:" + goodsName3Label.getText() + 
-					            " 個数:" + count3TextField.getText() + " 小計:" + subTotal3Label.getText() + "\n" +
-					            "合計:" + totalLabel.getText() + " 内消費税等" + taxLabel.getText() + "\n" + 
-					            "レシート通番:" + numberLabel.getText() + "\n" + "をデータベースに追加しました"
-					            );
+//			System.out.println("販売日時:" + yearComboBox.getSelectedItem() + "年" + monthComboBox.getSelectedItem() + "月" +
+//					            dateComboBox.getSelectedItem() + "日" + hourComboBox.getSelectedItem() + "時" +
+//					            minuteComboBox.getSelectedItem() + "分" + "\n" + "店員コード:"+ clerkCodeComboBox.getSelectedItem() +
+//					            "\n" + "商品コード:" + goodsCode1ComboBox.getSelectedItem() + " 商品名:" + goodsName1Label.getText() + 
+//					            " 個数:" + count1TextField.getText() + " 小計:" + subTotal1Label.getText() + "\n" +
+//					            "商品コード:" + goodsCode2ComboBox.getSelectedItem() + " 商品名:" + goodsName2Label.getText() + 
+//					            " 個数:" + count2TextField.getText() + " 小計:" + subTotal2Label.getText() + "\n" +
+//					            "商品コード:" +	 goodsCode3ComboBox.getSelectedItem() + " 商品名:" + goodsName3Label.getText() + 
+//					            " 個数:" + count3TextField.getText() + " 小計:" + subTotal3Label.getText() + "\n" +
+//					            "合計:" + totalLabel.getText() + " 内消費税等" + taxLabel.getText() + "\n" + 
+//					            "レシート通番:" + numberLabel.getText() + "\n" + "をデータベースに追加しました"
+//					            );
 			reset();
 		}else if(e.getSource() == resetButton) {
-			System.out.println("INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計) values (" + 0001 + ",cast('" + 
-					yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + 
-					dateComboBox.getSelectedItem() + " " + hourComboBox.getSelectedItem() + ":" + 
-					minuteComboBox.getSelectedItem() + ":00' as datetime)," + clerkCodeComboBox.getSelectedItem() + "," + 
-					goodsCode1ComboBox.getSelectedItem() + "," + count1TextField.getText() + "," + 100 + ")");
 			reset();
 		}	
 	}
