@@ -295,6 +295,7 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		}	
 	}
 
+	//伝票番号を取得するメソッド
 	public void numberSQL() {
 		try {
 			SQL = "SELECT MAX(伝票番号) FROM 売上マスタ;";
