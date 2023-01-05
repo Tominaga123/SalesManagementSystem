@@ -289,6 +289,34 @@ public class ManagementGUI extends JFrame implements ActionListener{
 			if(Integer.parseInt(subTotal3Label.getText()) > 0) {
 				insertSQL(goodsCode3ComboBox, count3TextField, subTotal3Label);
 			}
+//			String SQL = "INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計) values (" + 
+//					Integer.parseInt(numberLabel.getText()) + ",cast('" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + 
+//					dateComboBox.getSelectedItem() + " " + hourComboBox.getSelectedItem() + ":" + 
+//					minuteComboBox.getSelectedItem() + ":00' as datetime)," + "'" + clerkCodeComboBox.getSelectedItem() + 
+//					"'" + "," + "'" + goodsCode1ComboBox.getSelectedItem() + "'" + "," + count1TextField.getText() + "," + 
+//					subTotal1Label.getText().replace("￥", "") + ")";
+//			
+//			try {
+//				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+//				Statement stmt = conn.createStatement();
+//				stmt.execute(SQL);
+//			}catch(SQLException e2) {
+//				e2.printStackTrace();
+//			}catch(Exception e2) {
+//				e2.printStackTrace();
+//			}
+//			System.out.println("販売日時:" + yearComboBox.getSelectedItem() + "年" + monthComboBox.getSelectedItem() + "月" +
+//					            dateComboBox.getSelectedItem() + "日" + hourComboBox.getSelectedItem() + "時" +
+//					            minuteComboBox.getSelectedItem() + "分" + "\n" + "店員コード:"+ clerkCodeComboBox.getSelectedItem() +
+//					            "\n" + "商品コード:" + goodsCode1ComboBox.getSelectedItem() + " 商品名:" + goodsName1Label.getText() + 
+//					            " 個数:" + count1TextField.getText() + " 小計:" + subTotal1Label.getText() + "\n" +
+//					            "商品コード:" + goodsCode2ComboBox.getSelectedItem() + " 商品名:" + goodsName2Label.getText() + 
+//					            " 個数:" + count2TextField.getText() + " 小計:" + subTotal2Label.getText() + "\n" +
+//					            "商品コード:" +	 goodsCode3ComboBox.getSelectedItem() + " 商品名:" + goodsName3Label.getText() + 
+//					            " 個数:" + count3TextField.getText() + " 小計:" + subTotal3Label.getText() + "\n" +
+//					            "合計:" + totalLabel.getText() + " 内消費税等" + taxLabel.getText() + "\n" + 
+//					            "レシート通番:" + numberLabel.getText() + "\n" + "をデータベースに追加しました"
+//					            );
 			reset();
 		}else if(e.getSource() == resetButton) {
 			reset();
