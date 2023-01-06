@@ -161,6 +161,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	String USER = "店員1";
 	String PASS = "password";
 	String SQL;
+	String filterSQL = "";
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel();
@@ -464,6 +465,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		getContentPane().add(panel14);
 		getContentPane().add(panel15);
 		
+		numberTextField.addActionListener(this);
 		searchButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
@@ -472,29 +474,94 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-//		if(e.getSource() == searchButton) {
-//			try {
-//				SQL = "SELECT 伝票番号, 販売日時, U.店員コード, T.氏名, U.商品コード, S.商品名, 個数, 小計 "
-//						+ "FROM 売上マスタ U, 商品マスタ S, 店員マスタ T WHERE 1;";
-//				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-//				Statement stmt = conn.createStatement();
-//				ResultSet rs = stmt.executeQuery(SQL);
-//				while(rs.next()){
-//					nameLabel.setText(rs.getString("商品名"));
-//					priceLabel.setText(rs.getString("単価"));
-//				}
-//				calcSubTotal(priceLabel, textField, subTotalLabel);
-//				calcTotal();
-//			}catch(SQLException e2) {
-//				e2.printStackTrace();
-//			}catch(Exception e2) {
-//				e2.printStackTrace();
-//			}
-//		}
+		if(e.getSource() == numberTextField) {
+			filterSQL += " AND 伝票番号 = " + numberTextField.getText(); 
+			System.out.println("伝票番号 = " + numberTextField.getText() + "を検索条件に加えます");
+		}else if(e.getSource() == clerkCodeComboBox) {
+			filterSQL += " AND 店員コード = " + clerkCodeComboBox.getSelectedItem(); 
+			System.out.println("店員コード = " + clerkCodeComboBox.getSelectedItem() + "を検索条件に加えます");
+			
+		}else if(e.getSource() == searchButton) {
+			SQL = "SELECT 伝票番号, 販売日時, U.店員コード, T.氏名, U.商品コード, S.商品名, 個数, 小計 "
+					+ "FROM 売上マスタ U, 商品マスタ S, 店員マスタ T "
+					+ "WHERE U.店員コード = T.店員コード AND U.商品コード = S.商品コード" + filterSQL + ";";
+			System.out.println("SELECT 伝票番号, 販売日時, U.店員コード, T.氏名, U.商品コード, S.商品名, 個数, 小計 "
+					+ "FROM 売上マスタ U, 商品マスタ S, 店員マスタ T "
+					+ "WHERE U.店員コード = T.店員コード AND U.商品コード = S.商品コード" + filterSQL + ";で検索します");
+			try {
+				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(SQL);
+				if(rs.next()){
+					show(rs, numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
+							goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
+					if(rs.next()){
+						show(rs, numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
+								goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
+						if(rs.next()){
+							show(rs, numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
+									goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
+							if(rs.next()){
+								show(rs, numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
+										goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
+								if(rs.next()){
+									show(rs, numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
+											goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
+									if(rs.next()){
+										show(rs, numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
+												goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
+										if(rs.next()){
+											show(rs, numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
+													goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);
+											if(rs.next()){
+												show(rs, numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
+														goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
+												if(rs.next()){
+													show(rs, numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
+															goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
+													if(rs.next()){
+														show(rs, numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
+																goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
+													}	
+												}
+											}	
+										}
+									}	
+								}
+							}	
+						}
+					}	
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+			}catch(Exception e2) {
+				e2.printStackTrace();
+			}
+		}
 		
 	}
 	
-	//コンボボックスを現在の日時で初期化するためのメソッド
+	//検索結果を表示するメソッド
+	public void show(ResultSet rs, JLabel numberLabel, JLabel dateLabel, JLabel clerkCodeLabel, JLabel clerkNameLabel, 
+			JLabel goodsCodeLabel, JLabel goodsNameLabel, JLabel countLabel, JLabel subTotalLabel) {
+		try {
+			numberLabel.setText(rs.getString("伝票番号"));
+			dateLabel.setText(rs.getString("販売日時"));
+			clerkCodeLabel.setText(rs.getString("店員コード"));
+			clerkNameLabel.setText(rs.getString("氏名"));
+			goodsCodeLabel.setText(rs.getString("商品コード"));
+			goodsNameLabel.setText(rs.getString("商品名"));
+			countLabel.setText(rs.getString("個数"));
+			subTotalLabel.setText(rs.getString("小計"));
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
+
+	}
+	
+	//コンボボックスを現在の日時で初期化するメソッド
 	public String getYear() {
 		Date date = new Date();
 		String str = new SimpleDateFormat("yyyy").format(date);
