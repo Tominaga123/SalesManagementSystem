@@ -108,6 +108,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		panel8.setLayout(new FlowLayout());
 		panel9.setLayout(new FlowLayout());
 		
+		//各コンボボックスに、データベースから情報を取得して項目を追加
 		//日時を選択するコンボボックスに項目を追加
 		//現在の日時で初期化
 		yearComboBox.addItem(2023);
@@ -152,31 +153,39 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 			}
 		}
 		//店員コードを選択するコンボボックスに項目を追加
-		for(int i = 1; i <= 3; i++) {
-			String s = Integer.valueOf(i).toString();
-			if(i <= 9) {
-				s = "00" + s;
-			}else {
-				s = 0 + s;
+		try {
+			SQL = "SELECT 店員コード FROM 店員マスタ;";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				clerkCodeComboBox.addItem(rs.getString("店員コード"));
 			}
-			clerkCodeComboBox.addItem(s);
+			clerkCodeComboBox.setSelectedItem(null);
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
 		}
-		clerkCodeComboBox.setSelectedItem(null);
 		//商品コードを選択するコンボボックスに項目を追加
-		for(int i = 1; i <= 2; i++) {
-			String s = Integer.valueOf(i).toString();
-			if(i <= 9) {
-				s = "A" + "00" + s;
-			}else {
-				s = "A" + 0 + s;
+		try {
+			SQL = "SELECT 商品コード FROM 商品マスタ;";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				goodsCode1ComboBox.addItem(rs.getString("商品コード"));
+				goodsCode2ComboBox.addItem(rs.getString("商品コード"));
+				goodsCode3ComboBox.addItem(rs.getString("商品コード"));
 			}
-			goodsCode1ComboBox.addItem(s);
-			goodsCode2ComboBox.addItem(s);
-			goodsCode3ComboBox.addItem(s);
+			goodsCode1ComboBox.setSelectedItem(null);
+			goodsCode2ComboBox.setSelectedItem(null);
+			goodsCode3ComboBox.setSelectedItem(null);
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
 		}
-		goodsCode1ComboBox.setSelectedItem(null);
-		goodsCode2ComboBox.setSelectedItem(null);
-		goodsCode3ComboBox.setSelectedItem(null);
 		//伝票番号を取得
 		numberSQL();
 		

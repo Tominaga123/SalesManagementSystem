@@ -41,6 +41,8 @@ public class ManagementGUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == salesInputButton){
 			new SalesInputGUI();
+		}else if(e.getSource() == salesSearchButton){
+			new SalesSearchGUI();
 		}
 	}
 }
