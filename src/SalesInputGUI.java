@@ -298,7 +298,8 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 			reset();
 		}else if(e.getSource() == resetButton) {
 			reset();
-		}	
+		}
+		this.pack();
 	}
 
 	//伝票番号を取得するメソッド
@@ -368,10 +369,10 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		String SQL = "INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計) values (" + 
 				Integer.parseInt(numberLabel.getText()) + ",cast('" + yearComboBox.getSelectedItem() + "-" + 
 				monthComboBox.getSelectedItem() + "-" + dateComboBox.getSelectedItem() + " " + 
-				hourComboBox.getSelectedItem() + ":" + minuteComboBox.getSelectedItem() + ":00' as datetime)," + "'" + 
+				hourComboBox.getSelectedItem() + ":" + minuteComboBox.getSelectedItem() + "' as datetime)," + "'" + 
 				clerkCodeComboBox.getSelectedItem() + "'" + "," + "'" + box.getSelectedItem() + "'" + 
 				"," + textField.getText() + "," + subTotalLabel.getText() + ")";
-		
+		System.out.println(SQL + "を追加しました");
 		try {
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
 			Statement stmt = conn.createStatement();
