@@ -590,7 +590,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				this.pack(); //フレームのサイズ調整
 				if(last > 10) { //取得件数が11件以上ならページをめくるボタンをture、そうでないならfalseにする
 					nextButton.setEnabled(true);
-					previousButton.setEnabled(true);
 				} else {
 					nextButton.setEnabled(false);
 					previousButton.setEnabled(false);
@@ -684,6 +683,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
 				}
 				showNumberLabel.setText(Integer.toString(now));
+				previousButton.setEnabled(true);
+				if(now == last) { //最後の行を表示している場合は「次へ」ボタンをfalseにする
+					nextButton.setEnabled(false);
+				}
 			} catch (SQLException e3) {
 				e3.printStackTrace();
 			} catch(Exception e3) {
@@ -691,7 +694,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			}
 			
 		} else if(e.getSource() == previousButton) {
-			now = 10 * (int)Math.floor(now/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
+			now = 10 * (int)Math.floor((now-1)/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
 			try {
 				rs.absolute(now);
 				if(rs.next()){
@@ -775,7 +778,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
 				}
 				showNumberLabel.setText(Integer.toString(now));
-				
+				nextButton.setEnabled(true);
+				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
+					previousButton.setEnabled(false);
+				}
 			} catch (SQLException e3) {
 				e3.printStackTrace();
 			} catch(Exception e3) {
