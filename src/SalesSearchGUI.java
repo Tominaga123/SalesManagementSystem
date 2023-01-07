@@ -502,87 +502,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				conn = DriverManager.getConnection(URL, USER, PASS);
 				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 				rs = stmt.executeQuery(SQL);
-				//rs.next()がtrueであればラベルを更新し、falseであれば白紙にする
-				if(rs.next()){
-					show(rs, numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-							goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-							goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
-				}
-				if(rs.next()){
-					show(rs, numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-							goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-							goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
-				}
-				if(rs.next()){
-					show(rs, numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-							goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-							goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
-				}
-				if(rs.next()){
-					show(rs, numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-							goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-							goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
-				}
-				if(rs.next()){
-					show(rs, numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-							goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-							goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
-				}
-				if(rs.next()){
-					show(rs, numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-							goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-							goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
-				}
-				if(rs.next()){
-					show(rs, numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-							goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);	
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-							goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);
-				}
-				if(rs.next()){
-					show(rs, numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-							goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-							goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
-				}
-				if(rs.next()){
-					show(rs, numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-							goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset( numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-							goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
-				}
-				if(rs.next()){
-					show(rs, numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
-				}
+				result(); //検索結果を表示
 				rs.last(); //最後の行に移動し、行番号を取得
 				last = rs.getRow();
 				totalNumberLabel.setText(Integer.toString(last));
@@ -602,86 +522,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		} else if(e.getSource() == nextButton) {
 			try {
 				rs.absolute(now);
-				if(rs.next()){
-					show(rs, numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-							goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-							goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
-				}
-				if(rs.next()){
-					show(rs, numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-							goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-							goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
-				}
-				if(rs.next()){
-					show(rs, numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-							goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-							goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
-				}
-				if(rs.next()){
-					show(rs, numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-							goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-							goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
-				}
-				if(rs.next()){
-					show(rs, numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-							goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-							goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
-				}
-				if(rs.next()){
-					show(rs, numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-							goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-							goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
-				}
-				if(rs.next()){
-					show(rs, numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-							goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);	
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-							goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);
-				}
-				if(rs.next()){
-					show(rs, numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-							goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-							goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
-				}
-				if(rs.next()){
-					show(rs, numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-							goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset( numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-							goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
-				}
-				if(rs.next()){
-					show(rs, numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
-				}
+				result(); //検索結果を表示
 				showNumberLabel.setText(Integer.toString(now));
 				previousButton.setEnabled(true);
 				if(now == last) { //最後の行を表示している場合は「次へ」ボタンをfalseにする
@@ -697,86 +538,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			now = 10 * (int)Math.floor((now-1)/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
 			try {
 				rs.absolute(now);
-				if(rs.next()){
-					show(rs, numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-							goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-							goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
-				}
-				if(rs.next()){
-					show(rs, numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-							goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-							goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
-				}
-				if(rs.next()){
-					show(rs, numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-							goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-							goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
-				}
-				if(rs.next()){
-					show(rs, numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-							goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-							goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
-				}
-				if(rs.next()){
-					show(rs, numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-							goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-							goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
-				}
-				if(rs.next()){
-					show(rs, numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-							goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-							goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
-				}
-				if(rs.next()){
-					show(rs, numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-							goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);	
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-							goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);
-				}
-				if(rs.next()){
-					show(rs, numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-							goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-							goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
-				}
-				if(rs.next()){
-					show(rs, numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-							goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset( numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-							goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
-				}
-				if(rs.next()){
-					show(rs, numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
-					now = rs.getRow(); //現在の行番号を取得
-				}else {
-					reset(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-							goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
-				}
+				result(); //検索結果を表示
 				showNumberLabel.setText(Integer.toString(now));
 				nextButton.setEnabled(true);
 				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
@@ -832,8 +594,98 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		return str;
 	}
 	
-	//検索結果を表示するメソッド
-	public void show(ResultSet rs, JLabel numberLabel, JLabel dateLabel, JLabel clerkCodeLabel, JLabel clerkNameLabel, 
+	//それぞれのラベルに検索結果を表示するメソッド
+	public void result() {
+		try {
+			if(rs.next()){
+				show(numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
+						goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
+						goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
+			}
+			if(rs.next()){
+				show(numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
+						goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
+						goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
+			}
+			if(rs.next()){
+				show(numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
+						goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
+						goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
+			}
+			if(rs.next()){
+				show(numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
+						goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
+						goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
+			}
+			if(rs.next()){
+				show(numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
+						goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
+						goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
+			}
+			if(rs.next()){
+				show(numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
+						goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
+						goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
+			}
+			if(rs.next()){
+				show(numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
+						goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);	
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
+						goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);
+			}
+			if(rs.next()){
+				show(numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
+						goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
+						goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
+			}
+			if(rs.next()){
+				show(numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
+						goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset( numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
+						goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
+			}
+			if(rs.next()){
+				show(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
+						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
+				now = rs.getRow(); //現在の行番号を取得
+			}else {
+				reset(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
+						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
+			}
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
+	}
+	
+	//Resultsetオブジェクトがnullでなければラベルに内容を表示するメソッド
+	public void show(JLabel numberLabel, JLabel dateLabel, JLabel clerkCodeLabel, JLabel clerkNameLabel, 
 			JLabel goodsCodeLabel, JLabel goodsNameLabel, JLabel countLabel, JLabel subTotalLabel) {
 		try {
 			numberLabel.setText(rs.getString("伝票番号"));
@@ -851,7 +703,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 	}
 	
-	//検索結果をリセットするメソッド
+	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド
 	public void reset(JLabel numberLabel, JLabel dateLabel, JLabel clerkCodeLabel, JLabel clerkNameLabel, 
 			JLabel goodsCodeLabel, JLabel goodsNameLabel, JLabel countLabel, JLabel subTotalLabel) {
 		numberLabel.setText("");
