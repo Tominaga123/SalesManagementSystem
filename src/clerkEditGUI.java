@@ -495,7 +495,6 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 			} catch(Exception e3) {
 				e3.printStackTrace();
 			}
-			
 		} else if(e.getSource() == previousButton) {
 			now = 10 * (int)Math.floor((now-1)/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
 			try {
