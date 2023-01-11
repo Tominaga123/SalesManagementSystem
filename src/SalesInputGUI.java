@@ -100,7 +100,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	JPanel panel9 = new JPanel();
 	
 	SalesInputGUI(){
-		setTitle("売上入力システム");
+		setTitle("売上入力");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		panel1.setLayout(new FlowLayout());

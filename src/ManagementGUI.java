@@ -9,16 +9,59 @@ import javax.swing.JPanel;
 
 public class ManagementGUI extends JFrame implements ActionListener{
 	
-	JButton salesInputButton = new JButton("売上入力システム"); //データベースに追加するボタン
-	JButton salesSearchButton = new JButton("売上検索システム"); //白紙にするボタン
-
+	JButton salesManagementButton = new JButton("売上管理"); //売上管理画面を開くボタン
+	JButton editButton = new JButton("データベース編集"); //編集画面を開くボタン
+	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel();
 
 	
 	ManagementGUI(){
-		setTitle("売上管理システム");
+		setTitle("販売管理システム");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		panel1.setLayout(new FlowLayout());
+		panel2.setLayout(new FlowLayout());
+		
+		panel1.add(salesManagementButton);
+		panel2.add(editButton);
+		
+		getContentPane().add(panel1);
+		getContentPane().add(panel2);
+		
+		salesManagementButton.addActionListener(this);
+		editButton.addActionListener(this);
+		setSize(350,350);
+		setVisible(true);
+	}
+	
+	
+	public static void main(String[] args) {
+		new ManagementGUI();
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == salesManagementButton){
+			new salesManagementGUI();
+		}else if(e.getSource() == editButton){
+			new editGUI();
+		}
+		
+	}
+}
+
+//売上管理画面を生成するクラス
+class salesManagementGUI extends JFrame implements ActionListener{
+	
+	JButton salesInputButton = new JButton("売上入力"); //売上入力画面を開くボタン
+	JButton salesSearchButton = new JButton("売上検索"); //売上検索画面を開くボタン
+	
+	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
+
+	
+	salesManagementGUI(){
+		setTitle("売上管理");
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		panel1.setLayout(new FlowLayout());
 		
@@ -29,13 +72,8 @@ public class ManagementGUI extends JFrame implements ActionListener{
 
 		salesInputButton.addActionListener(this);
 		salesSearchButton.addActionListener(this);
-		this.pack();
+		setSize(350,350);
 		setVisible(true);
-	}
-	
-	
-	public static void main(String[] args) {
-		new ManagementGUI();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -43,6 +81,41 @@ public class ManagementGUI extends JFrame implements ActionListener{
 			new SalesInputGUI();
 		}else if(e.getSource() == salesSearchButton){
 			new SalesSearchGUI();
+		}
+	}
+}
+
+//どのデータベースを編集するか選択する画面を生成するクラス
+class editGUI extends JFrame implements ActionListener{
+	
+	JButton clerkEditButton = new JButton("店員マスタ編集"); //店員マスタ編集システムを開くボタン
+	JButton goodsEditButton = new JButton("商品マスタ編集"); //商品マスタ編集システムを開くボタン
+	
+	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
+
+	
+	editGUI(){
+		setTitle("データベース編集");
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		panel1.setLayout(new FlowLayout());
+		
+		panel1.add(clerkEditButton);
+		panel1.add(goodsEditButton);
+		
+		getContentPane().add(panel1);
+
+		clerkEditButton.addActionListener(this);
+		goodsEditButton.addActionListener(this);
+		setSize(350,350);
+		setVisible(true);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == clerkEditButton){
+			new clerkEditGUI();
+		}else if(e.getSource() == goodsEditButton){
+			new goodsEditGUI();
 		}
 	}
 }

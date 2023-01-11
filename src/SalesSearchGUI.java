@@ -42,8 +42,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	JLabel fccLabel = new JLabel("店員コード"); //店員コードの選択欄であることを示すラベル
 	JComboBox clerkCodeComboBox = new JComboBox(); //店員コードの選択欄
-	JLabel fcnLabel = new JLabel("  店員名"); //店員コードの選択欄であることを示すラベル
-	JComboBox clerkNameComboBox = new JComboBox(); //店員コードの選択欄
+	JLabel fcnLabel = new JLabel("  店員名"); //店員名の選択欄であることを示すラベル
+	JComboBox clerkNameComboBox = new JComboBox(); //店員名の選択欄
 	
 	JLabel fgcLabel = new JLabel("  商品コード"); //商品コードの選択欄であることを示すラベル
 	JComboBox goodsCodeComboBox = new JComboBox(); //商品コードの選択欄 
@@ -153,7 +153,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JLabel subTotalLabel9 = new JLabel();
 	JLabel subTotalLabel10 = new JLabel();
 	
-	JLabel totalNumberLabel = new JLabel("0"); //売上マスタの総件数を表示するラベル
+	JLabel totalNumberLabel = new JLabel("0"); //検索結果の総件数を表示するラベル
 	JLabel tnLabel = new JLabel("件中");
 	JLabel showNumberLabel = new JLabel("0"); //表示件数を表示するラベル
 	JLabel snLabel = new JLabel("件目まで表示 /");
@@ -182,7 +182,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JPanel panel15 = new JPanel();
 	
 	SalesSearchGUI(){
-		setTitle("売上検索システム");
+		setTitle("売上検索");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		//レイアウト設定
@@ -620,7 +620,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			filterSQL += " AND U.店員コード = '" + clerkCodeComboBox.getSelectedItem() + "'"; 
 		}
 		if(clerkNameComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 店員名 = '" + clerkNameComboBox.getSelectedItem() + "'"; 
+			filterSQL += " AND 氏名 = '" + clerkNameComboBox.getSelectedItem() + "'"; 
 		}
 		if(goodsCodeComboBox.getSelectedItem() != null) {
 			filterSQL += " AND U.商品コード = '" + goodsCodeComboBox.getSelectedItem() + "'";
