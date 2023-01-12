@@ -64,7 +64,7 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 	JTextField nameTextField9 = new JTextField();
 	JTextField nameTextField10 = new JTextField();
 	
-	JLabel pLabel = new JLabel("性別", JLabel.CENTER); //単価であることを示すラベル
+	JLabel pLabel = new JLabel("単価", JLabel.CENTER); //単価であることを示すラベル
 	JTextField priceTextField1 = new JTextField(); //単価を入力するテキストフィールド
 	JTextField priceTextField2 = new JTextField();
 	JTextField priceTextField3 = new JTextField();
@@ -194,7 +194,7 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 		flagComboBox.addItem(null);
 		flagComboBox.addItem("0");
 		flagComboBox.addItem("1");
-		codeComboBox.setSelectedItem(null);
+		flagComboBox.setSelectedItem(null);
 		
 		//編集で使用する削除フラグのコンボボックスに項目を追加
 	
@@ -521,7 +521,7 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 			}
 		}
 		if(flagComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 削除フラグ = '" + flagComboBox.getSelectedItem() + "'"; 
+			filterSQL += " AND 削除フラグ = " + flagComboBox.getSelectedItem(); 
 		}
 		String str = "SELECT * "
 				+ "FROM 商品マスタ "
@@ -641,88 +641,113 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 	
 	//データを更新するメソッド
 	public void update(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox, int x) {
-		int row = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) * 10 + x;
-		System.out.println(row);
-		try {
-			rs.absolute(row);
-			rs.updateString("商品コード", codeText.getText());
-			rs.updateString("商品名", nameText.getText());
-			rs.updateString("単価", priceText.getText());
-			rs.updateString("削除フラグ", (String)flagBox.getSelectedItem());
-			rs.updateRow();
-			newCode = codeText.getText();
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		System.out.println("商品コード:" + codeText.getText() + " 商品名:" + nameText.getText() +
-				" 生年月日" + priceText.getText() + " 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
-		allShow();
-		try {
-			rs.beforeFirst();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		System.out.println(newCode);
-		stopFlag = 0;
-		while(stopFlag == 0) {
-			result();
+		//すべての入力欄に空欄がなければデータを更新する
+		if(!codeText.getText().equals("") && !nameText.getText().equals("") && !priceText.getText().equals("") && 
+				flagBox.getSelectedItem() != null ) { 
+			int row = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) * 10 + x;
+			System.out.println(row);
+			try {
+				rs.absolute(row);
+				rs.updateString("商品コード", codeText.getText());
+				rs.updateString("商品名", nameText.getText());
+				rs.updateString("単価", priceText.getText());
+				rs.updateString("削除フラグ", (String)flagBox.getSelectedItem());
+				rs.updateRow();
+				newCode = codeText.getText();
+				System.out.println("商品コード:" + codeText.getText() + " 商品名:" + nameText.getText() +
+						" 生年月日" + priceText.getText() + " 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
+				//データを更新したのち、表を再取得して更新したデータがあるページへ飛ぶ
+				allShow();
+				try {
+					rs.beforeFirst();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				stopFlag = 0;
+				while(stopFlag == 0) {
+					result();
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+				System.out.println("データを更新できませんでした" + "\r" + "データが正しく入力されているか確認してください" +
+				"\r" + "例：商品コードまたは商品名が長すぎる");
+			}catch(Exception e2) {
+				e2.printStackTrace();
+			}
+		} else { //一つでも空欄がある場合、その旨のメッセージを出す
+			System.out.println("未入力の項目があります");
 		}
 	}
 	
 	//データを追加するメソッド
 	public void insert(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox) {
-		String SQL = "INSERT INTO 商品マスタ (商品コード, 商品名, 単価, 削除フラグ) values ('" + 
-				codeText.getText() + "', '" + nameText.getText() + "', " + priceText.getText() + 
-				", " + flagBox.getSelectedItem() + ");";
-		try {
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			stmt.execute(SQL);
-			newCode = codeText.getText();
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		System.out.println(SQL + "を追加しました");
-		allShow();
-		try {
-			rs.beforeFirst();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		System.out.println(newCode);
-		stopFlag = 0;
-		while(stopFlag == 0) {
-		result();
+		//すべての入力欄に空欄がなければデータを追加する
+		if(!codeText.getText().equals("") && !nameText.getText().equals("") && !priceText.getText().equals("") && 
+				flagBox.getSelectedItem() != null ) { 
+			String SQL = "INSERT INTO 商品マスタ (商品コード, 商品名, 単価, 削除フラグ) values ('" + 
+					codeText.getText() + "', '" + nameText.getText() + "', " + priceText.getText() + 
+					", " + flagBox.getSelectedItem() + ");";
+			try {
+				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+				Statement stmt = conn.createStatement();
+				stmt.execute(SQL);
+				newCode = codeText.getText();
+				System.out.println(SQL + "を追加しました");
+				//データを追加したのち、表を再取得して追加したデータがあるページへ飛ぶ
+				allShow();
+				stopFlag = 0;
+				while(stopFlag == 0) {
+					result();
+				}
+				try {
+					rs.beforeFirst();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+				System.out.println("データを追加できませんでした" + "\r" + "データが正しく入力されているか確認してください" +
+				"\r" + "例：商品コードまたは商品名が長すぎる");
+			}catch(Exception e2) {
+				e2.printStackTrace();
+			}
+		} else { //一つでも空欄がある場合、その旨のメッセージを出す
+			System.out.println("未入力の項目があります");
 		}
 	}
 	
 	//データを消去するメソッド
 	public void delete(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox) {
-		String SQL = "delete from 商品マスタ where 商品コード = '" + codeText.getText() + "';";
-		try {
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			stmt.execute(SQL);
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		System.out.println(SQL + "を削除しました");
-		int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
-		System.out.println(n);
-		allShow();
-		try {
-			rs.beforeFirst();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		for(int i = 1; i <= n; i++) {
-			result();
+		//商品コードが空欄でなければデータを消去する
+		if(!codeText.getText().equals("")) { 
+			String SQL = "delete from 商品マスタ where 商品コード = '" + codeText.getText() + "';";
+			try {
+				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+				Statement stmt = conn.createStatement();
+				stmt.execute(SQL);
+				System.out.println(SQL + "を削除しました");
+				//データを消去したのち、表を再取得して消去したデータがあったページへ飛ぶ
+				int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
+				System.out.println(n);
+				allShow();
+				try {
+					rs.beforeFirst();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				for(int i = 1; i <= n; i++) {
+					result();
+				}
+				if(now >= 10) {
+					previousButton.setEnabled(true);
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+			}catch(Exception e2) {
+				e2.printStackTrace();
+			}
+		} else {
+			System.out.println("商品コードが空欄のため消去できませんでした");
 		}
 	}
 

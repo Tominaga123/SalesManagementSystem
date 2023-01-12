@@ -254,7 +254,7 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		flagComboBox.addItem(null);
 		flagComboBox.addItem("0");
 		flagComboBox.addItem("1");
-		codeComboBox.setSelectedItem(null);
+		flagComboBox.setSelectedItem(null);
 		
 		//編集で使用する性別と削除フラグのコンボボックスに項目を追加
 		sexItem(sexComboBox1);
@@ -613,7 +613,7 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 					"-" + dateComboBox.getSelectedItem() + "'";
 		}
 		if(flagComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 削除フラグ = '" + flagComboBox.getSelectedItem() + "'"; 
+			filterSQL += " AND 削除フラグ = " + flagComboBox.getSelectedItem(); 
 		}
 		String str = "SELECT * "
 				+ "FROM 店員マスタ "
@@ -736,92 +736,117 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	//データを更新するメソッド
 	public void update(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
 			JComboBox flagBox, int x) {
-		int row = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) * 10 + x;
-		System.out.println(row);
-		try {
-			rs.absolute(row);
-			rs.updateString("店員コード", codeText.getText());
-			rs.updateString("氏名", nameText.getText());
-			rs.updateString("性別", (String)sexBox.getSelectedItem());
-			rs.updateString("生年月日", birthdayText.getText());
-			rs.updateString("削除フラグ", (String)flagBox.getSelectedItem());
-			rs.updateRow();
-			newCode = codeText.getText();
-			System.out.println("店員コード:" + codeText.getText() + " 氏名:" + nameText.getText() +
-					" 性別:" + sexBox.getSelectedItem() + " 生年月日" + birthdayText.getText() + 
-					" 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
-			allShow();
+		//すべての入力欄に空欄がなければデータを更新する
+		if(!codeText.getText().equals("") && !nameText.getText().equals("") && sexBox.getSelectedItem() != null && 
+				!birthdayText.getText().equals("") && flagBox.getSelectedItem() != null ) { 
+			int row = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) * 10 + x;
+			System.out.println(row);
 			try {
-				rs.beforeFirst();
-			} catch (SQLException e) {
-				e.printStackTrace();
+				rs.absolute(row);
+				rs.updateString("店員コード", codeText.getText());
+				rs.updateString("氏名", nameText.getText());
+				rs.updateString("性別", (String)sexBox.getSelectedItem());
+				rs.updateString("生年月日", birthdayText.getText());
+				rs.updateString("削除フラグ", (String)flagBox.getSelectedItem());
+				rs.updateRow();
+				newCode = codeText.getText();
+				System.out.println("店員コード:" + codeText.getText() + " 氏名:" + nameText.getText() +
+						" 性別:" + sexBox.getSelectedItem() + " 生年月日" + birthdayText.getText() + 
+						" 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
+				//データを更新したのち、表を再取得して更新したデータがあるページへ飛ぶ
+				allShow();
+				try {
+					rs.beforeFirst();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				stopFlag = 0;
+				while(stopFlag == 0) {
+					result();
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+				System.out.println("データを更新できませんでした" + "\r" + "データが正しく入力されているか確認してください" +
+				"\r" + "例：店員コードまたは店員名が長すぎる" + "\r" + "例：生年月日が形式通りに入力されていない");
+			}catch(Exception e2) {
+				e2.printStackTrace();
 			}
-			System.out.println(newCode);
-			stopFlag = 0;
-			while(stopFlag == 0) {
-				result();
-			}
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
+		} else { //一つでも空欄がある場合、その旨のメッセージを出す
+			System.out.println("未入力の項目があります");
 		}
 	}
 	
 	//データを追加するメソッド
 	public void insert(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
 			JComboBox flagBox) {
-		String SQL = "INSERT INTO 店員マスタ (店員コード, 氏名, 性別, 生年月日, 削除フラグ) values ('" + 
-				codeText.getText() + "', '" + nameText.getText() + "', '" + sexBox.getSelectedItem() + 
-				"', cast('" + birthdayText.getText() + "' as date), " + flagBox.getSelectedItem() + ");";
-		try {
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			stmt.execute(SQL);
-			newCode = codeText.getText();
-			System.out.println(SQL + "を追加しました");
-			allShow();
+		//すべての入力欄に空欄がなければデータを追加する
+		if(!codeText.getText().equals("") && !nameText.getText().equals("") && sexBox.getSelectedItem() != null && 
+				!birthdayText.getText().equals("") && flagBox.getSelectedItem() != null ) { 
+			String SQL = "INSERT INTO 店員マスタ (店員コード, 氏名, 性別, 生年月日, 削除フラグ) values ('" + 
+					codeText.getText() + "', '" + nameText.getText() + "', '" + sexBox.getSelectedItem() + 
+					"', cast('" + birthdayText.getText() + "' as date), " + flagBox.getSelectedItem() + ");";
 			try {
-				rs.beforeFirst();
-			} catch (SQLException e) {
-				e.printStackTrace();
+				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+				Statement stmt = conn.createStatement();
+				stmt.execute(SQL);
+				newCode = codeText.getText();
+				System.out.println(SQL + "を追加しました");
+				//データを追加したのち、表を再取得して追加したデータがあるページへ飛ぶ
+				allShow();
+				try {
+					rs.beforeFirst();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				stopFlag = 0;
+				while(stopFlag == 0) {
+					result();
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+				System.out.println("データを追加できませんでした" + "\r" + "データが正しく入力されているか確認してください" +
+				"\r" + "例：店員コードまたは店員名が長すぎる" + "\r" + "例：生年月日が形式通りに入力されていない");
+			}catch(Exception e2) {
+				e2.printStackTrace();
 			}
-			System.out.println(newCode);
-			stopFlag = 0;
-			while(stopFlag == 0) {
-			result();
-			}
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
+		} else { //一つでも空欄がある場合、その旨のメッセージを出す
+			System.out.println("未入力の項目があります");
 		}
 	}
 	
 	//データを消去するメソッド
 	public void delete(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
 			JComboBox flagBox) {
-		String SQL = "delete from 店員マスタ where 店員コード = '" + codeText.getText() + "';";
-		try {
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			stmt.execute(SQL);
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		System.out.println(SQL + "を削除しました");
-		int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
-		System.out.println(n);
-		allShow();
-		try {
-			rs.beforeFirst();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		for(int i = 1; i <= n; i++) {
-			result();
+		//店員コードが空欄でなければデータを消去する
+		if(!codeText.getText().equals("")) { 
+			String SQL = "delete from 店員マスタ where 店員コード = '" + codeText.getText() + "';";
+			try {
+				Connection conn = DriverManager.getConnection(URL, USER, PASS);
+				Statement stmt = conn.createStatement();
+				stmt.execute(SQL);
+				System.out.println(SQL + "を削除しました");
+				//データを消去したのち、表を再取得して消去したデータがあったページへ飛ぶ
+				int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
+				System.out.println(n);
+				allShow();
+				try {
+					rs.beforeFirst();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				for(int i = 1; i <= n; i++) {
+					result();
+				}
+				if(now >= 10) {
+					previousButton.setEnabled(true);
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+			}catch(Exception e2) {
+				e2.printStackTrace();
+			}
+		} else {
+			System.out.println("店員コードが空欄のため消去できませんでした");
 		}
 	}
 	

@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 
 public class SalesSearchGUI extends JFrame implements ActionListener{
 	
-	JLabel fLabel = new JLabel("絞り込み条件");//絞り込み条件の入力欄であることを示すラベル
+	JLabel filterLabel = new JLabel("絞り込み条件");//絞り込み条件の入力欄であることを示すラベル
 	
 	//絞り込み条件の入力欄
 	JLabel fnLabel = new JLabel("伝票番号"); //伝票番号の入力欄であることを示すラベル
@@ -54,6 +54,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JTextField totalTextField = new JTextField("0", 6); //合計額の入力欄
 	JComboBox totalRangeComboBox = new JComboBox(); //入力した合計額以上か等を選択するボックス
 	
+	JLabel ffLabel = new JLabel("  削除フラグ"); //削除フラグの選択欄であることを示すラベル
+	JComboBox flagComboBox = new JComboBox(); //削除フラグの選択欄
 	
 	JButton searchButton = new JButton("検索"); //検索ボタン
 	
@@ -153,6 +155,18 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JLabel subTotalLabel9 = new JLabel();
 	JLabel subTotalLabel10 = new JLabel();
 	
+	JLabel fLabel = new JLabel("削除フラグ"); //削除フラグであることを示すラベル
+	JLabel flagLabel1 = new JLabel(); //削除フラグを表示するラベル
+	JLabel flagLabel2 = new JLabel();
+	JLabel flagLabel3 = new JLabel();
+	JLabel flagLabel4 = new JLabel();
+	JLabel flagLabel5 = new JLabel();
+	JLabel flagLabel6 = new JLabel();
+	JLabel flagLabel7 = new JLabel();
+	JLabel flagLabel8 = new JLabel();
+	JLabel flagLabel9 = new JLabel();
+	JLabel flagLabel10 = new JLabel();
+	
 	JLabel totalNumberLabel = new JLabel("0"); //検索結果の総件数を表示するラベル
 	JLabel tnLabel = new JLabel("件中");
 	JLabel showNumberLabel = new JLabel("0"); //表示件数を表示するラベル
@@ -193,7 +207,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel2_2.setLayout(new FlowLayout());
 		panel3.setLayout(new FlowLayout());
 		panel4.setLayout(new FlowLayout());
-		panel5.setLayout(new GridLayout(11, 8, 0, 2));
+		panel5.setLayout(new GridLayout(11, 9, 0, 2));
 		panel15.setLayout(new FlowLayout());
 		
 		
@@ -317,6 +331,12 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		totalRangeComboBox.addItem("以下");
 		totalRangeComboBox.addItem("一致");
 		
+		//削除フラグを選択するコンボボックスに項目を追加
+		flagComboBox.addItem(null);
+		flagComboBox.addItem("0");
+		flagComboBox.addItem("1");
+		flagComboBox.setSelectedItem(null);
+		
 		//ラベルの色分け設定
 		setColor1(nLabel);
 		setColor1(dLabel);
@@ -326,6 +346,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		setColor1(gnLabel);
 		setColor1(ctLabel);
 		setColor1(stLabel);
+		setColor1(fLabel);
 		
 		setColor2(numberLabel2);
 		setColor2(dateLabel2);
@@ -335,7 +356,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		setColor2(goodsNameLabel2);
 		setColor2(countLabel2);
 		setColor2(subTotalLabel2);
-
+		setColor2(flagLabel2);
+		
 		setColor2(numberLabel4);
 		setColor2(dateLabel4);
 		setColor2(clerkCodeLabel4);
@@ -344,6 +366,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		setColor2(goodsNameLabel4);
 		setColor2(countLabel4);
 		setColor2(subTotalLabel4);
+		setColor2(flagLabel4);
 		
 		setColor2(numberLabel6);
 		setColor2(dateLabel6);
@@ -353,6 +376,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		setColor2(goodsNameLabel6);
 		setColor2(countLabel6);
 		setColor2(subTotalLabel6);
+		setColor2(flagLabel6);
 		
 		setColor2(numberLabel8);
 		setColor2(dateLabel8);
@@ -362,6 +386,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		setColor2(goodsNameLabel8);
 		setColor2(countLabel8);
 		setColor2(subTotalLabel8);
+		setColor2(flagLabel8);
 		
 		setColor2(numberLabel10);
 		setColor2(dateLabel10);
@@ -371,8 +396,9 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		setColor2(goodsNameLabel10);
 		setColor2(countLabel10);
 		setColor2(subTotalLabel10);
+		setColor2(flagLabel10);
 		
-		panel1.add(fLabel);
+		panel1.add(filterLabel);
 		
 		panel2_1.add(fnLabel);
 		panel2_1.add(numberTextField);
@@ -400,10 +426,12 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel2_2.add(ftoLabel);
 		panel2_2.add(totalTextField);
 		panel2_2.add(totalRangeComboBox);
+		panel2_2.add(ffLabel);
+		panel2_2.add(flagComboBox);
 		
 		panel2.add(panel2_1);
 		panel2.add(panel2_2);
-		
+
 		panel3.add(searchButton);
 		
 		panel5.add(nLabel);
@@ -414,6 +442,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(gnLabel);
 		panel5.add(ctLabel);
 		panel5.add(stLabel);
+		panel5.add(fLabel);
 		
 		panel5.add(numberLabel1);
 		panel5.add(dateLabel1);
@@ -423,6 +452,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel1);
 		panel5.add(countLabel1);
 		panel5.add(subTotalLabel1);
+		panel5.add(flagLabel1);
 		
 		panel5.add(numberLabel2);
 		panel5.add(dateLabel2);
@@ -432,6 +462,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel2);
 		panel5.add(countLabel2);
 		panel5.add(subTotalLabel2);
+		panel5.add(flagLabel2);
 		
 		panel5.add(numberLabel3);
 		panel5.add(dateLabel3);
@@ -441,7 +472,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel3);
 		panel5.add(countLabel3);
 		panel5.add(subTotalLabel3);
-		
+		panel5.add(flagLabel3);
 
 		panel5.add(numberLabel4);
 		panel5.add(dateLabel4);
@@ -451,6 +482,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel4);
 		panel5.add(countLabel4);
 		panel5.add(subTotalLabel4);
+		panel5.add(flagLabel4);
 		
 		panel5.add(numberLabel5);
 		panel5.add(dateLabel5);
@@ -460,6 +492,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel5);
 		panel5.add(countLabel5);
 		panel5.add(subTotalLabel5);
+		panel5.add(flagLabel5);
 		
 		panel5.add(numberLabel6);
 		panel5.add(dateLabel6);
@@ -469,6 +502,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel6);
 		panel5.add(countLabel6);
 		panel5.add(subTotalLabel6);
+		panel5.add(flagLabel6);
 		
 		panel5.add(numberLabel7);
 		panel5.add(dateLabel7);
@@ -478,6 +512,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel7);
 		panel5.add(countLabel7);
 		panel5.add(subTotalLabel7);
+		panel5.add(flagLabel7);
 		
 		panel5.add(numberLabel8);
 		panel5.add(dateLabel8);
@@ -487,6 +522,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel8);
 		panel5.add(countLabel8);
 		panel5.add(subTotalLabel8);
+		panel5.add(flagLabel8);
 		
 		panel5.add(numberLabel9);
 		panel5.add(dateLabel9);
@@ -496,6 +532,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel9);
 		panel5.add(countLabel9);
 		panel5.add(subTotalLabel9);
+		panel5.add(flagLabel9);
 		
 		panel5.add(numberLabel10);
 		panel5.add(dateLabel10);
@@ -505,6 +542,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(goodsNameLabel10);
 		panel5.add(countLabel10);
 		panel5.add(subTotalLabel10);
+		panel5.add(flagLabel10);
 		
 		panel15.add(previousButton);
 		panel15.add(showNumberLabel);
@@ -640,7 +678,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 						+ totalTextField.getText() + ")";
 			}
 		}
-		String str = "SELECT 伝票番号, 販売日時, U.店員コード, 氏名, U.商品コード, 商品名, 個数, 小計 "
+		if(flagComboBox.getSelectedItem() != null) {
+			filterSQL += " AND U.削除フラグ = " + flagComboBox.getSelectedItem(); 
+		}
+		String str = "SELECT 伝票番号, 販売日時, U.店員コード, 氏名, U.商品コード, 商品名, 個数, 小計, U.削除フラグ "
 				+ "FROM 売上マスタ U, 商品マスタ S, 店員マスタ T "
 				+ "WHERE U.店員コード = T.店員コード AND U.商品コード = S.商品コード" + filterSQL + 
 				" ORDER BY 伝票番号 ASC;";
@@ -653,83 +694,83 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		try {
 			if(rs.next()){
 				show(numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-						goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
+						goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1, flagLabel1);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel1, dateLabel1, clerkCodeLabel1, clerkNameLabel1, 
-						goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1);
+						goodsCodeLabel1, goodsNameLabel1, countLabel1, subTotalLabel1, flagLabel1);
 			}
 			if(rs.next()){
 				show(numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-						goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
+						goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2, flagLabel2);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel2, dateLabel2, clerkCodeLabel2, clerkNameLabel2, 
-						goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2);
+						goodsCodeLabel2, goodsNameLabel2, countLabel2, subTotalLabel2, flagLabel2);
 			}
 			if(rs.next()){
 				show(numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-						goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
+						goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3, flagLabel3);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel3, dateLabel3, clerkCodeLabel3, clerkNameLabel3, 
-						goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3);
+						goodsCodeLabel3, goodsNameLabel3, countLabel3, subTotalLabel3, flagLabel3);
 			}
 			if(rs.next()){
 				show(numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-						goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
+						goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4, flagLabel4);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel4, dateLabel4, clerkCodeLabel4, clerkNameLabel4, 
-						goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4);
+						goodsCodeLabel4, goodsNameLabel4, countLabel4, subTotalLabel4, flagLabel4);
 			}
 			if(rs.next()){
 				show(numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-						goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
+						goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5, flagLabel5);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel5, dateLabel5, clerkCodeLabel5, clerkNameLabel5, 
-						goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5);
+						goodsCodeLabel5, goodsNameLabel5, countLabel5, subTotalLabel5, flagLabel5);
 			}
 			if(rs.next()){
 				show(numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-						goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
+						goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6, flagLabel6);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel6, dateLabel6, clerkCodeLabel6, clerkNameLabel6, 
-						goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6);
+						goodsCodeLabel6, goodsNameLabel6, countLabel6, subTotalLabel6, flagLabel6);
 			}
 			if(rs.next()){
 				show(numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-						goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);	
+						goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7, flagLabel7);	
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel7, dateLabel7, clerkCodeLabel7, clerkNameLabel7, 
-						goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7);
+						goodsCodeLabel7, goodsNameLabel7, countLabel7, subTotalLabel7, flagLabel7);
 			}
 			if(rs.next()){
 				show(numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-						goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
+						goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8, flagLabel8);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel8, dateLabel8, clerkCodeLabel8, clerkNameLabel8, 
-						goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8);
+						goodsCodeLabel8, goodsNameLabel8, countLabel8, subTotalLabel8, flagLabel8);
 			}
 			if(rs.next()){
 				show(numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-						goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
+						goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9, flagLabel9);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset( numberLabel9, dateLabel9, clerkCodeLabel9, clerkNameLabel9, 
-						goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9);
+						goodsCodeLabel9, goodsNameLabel9, countLabel9, subTotalLabel9, flagLabel9);
 			}
 			if(rs.next()){
 				show(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
+						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10, flagLabel10);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
-						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10);
+						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10, flagLabel10);
 			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -740,7 +781,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	//Resultsetオブジェクトがnullでなければラベルに内容を表示するメソッド
 	public void show(JLabel numberLabel, JLabel dateLabel, JLabel clerkCodeLabel, JLabel clerkNameLabel, 
-			JLabel goodsCodeLabel, JLabel goodsNameLabel, JLabel countLabel, JLabel subTotalLabel) {
+			JLabel goodsCodeLabel, JLabel goodsNameLabel, JLabel countLabel, JLabel subTotalLabel, JLabel flagLabel) {
 		try {
 			numberLabel.setText(rs.getString("伝票番号"));
 			String str = rs.getString("販売日時") + "0";
@@ -753,6 +794,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			goodsNameLabel.setText(rs.getString("商品名"));
 			countLabel.setText(rs.getString("個数"));
 			subTotalLabel.setText(rs.getString("小計"));
+			flagLabel.setText(rs.getString("削除フラグ"));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
@@ -762,7 +804,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド
 	public void reset(JLabel numberLabel, JLabel dateLabel, JLabel clerkCodeLabel, JLabel clerkNameLabel, 
-			JLabel goodsCodeLabel, JLabel goodsNameLabel, JLabel countLabel, JLabel subTotalLabel) {
+			JLabel goodsCodeLabel, JLabel goodsNameLabel, JLabel countLabel, JLabel subTotalLabel, JLabel flagLabel) {
 		numberLabel.setText("");
 		dateLabel.setText(null);
 		clerkCodeLabel.setText(null);
@@ -771,6 +813,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		goodsNameLabel.setText(null);
 		countLabel.setText(null);
 		subTotalLabel.setText(null);
+		flagLabel.setText(null);
 	}
 	
 	//コンボボックスを現在の日時で初期化するメソッド
