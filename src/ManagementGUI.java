@@ -13,7 +13,7 @@ public class ManagementGUI extends JFrame implements ActionListener{
 	JButton editButton = new JButton("データベース編集"); //編集画面を開くボタン
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
-	JPanel panel2 = new JPanel();
+
 
 	
 	ManagementGUI(){
@@ -21,17 +21,15 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		panel1.setLayout(new FlowLayout());
-		panel2.setLayout(new FlowLayout());
 		
 		panel1.add(salesManagementButton);
-		panel2.add(editButton);
+		panel1.add(editButton);
 		
 		getContentPane().add(panel1);
-		getContentPane().add(panel2);
 		
 		salesManagementButton.addActionListener(this);
 		editButton.addActionListener(this);
-		setSize(350,350);
+		setSize(350,100);
 		setVisible(true);
 	}
 	
@@ -72,7 +70,7 @@ class salesManagementGUI extends JFrame implements ActionListener{
 
 		salesInputButton.addActionListener(this);
 		salesSearchButton.addActionListener(this);
-		setSize(350,350);
+		setSize(350,100);
 		setVisible(true);
 	}
 
@@ -107,7 +105,7 @@ class editGUI extends JFrame implements ActionListener{
 
 		clerkEditButton.addActionListener(this);
 		goodsEditButton.addActionListener(this);
-		setSize(350,350);
+		setSize(350,100);
 		setVisible(true);
 	}
 
