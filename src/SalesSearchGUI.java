@@ -59,6 +59,47 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	JButton searchButton = new JButton("検索"); //検索ボタン
 	
+	//集計の条件の入力欄
+	JLabel vacantLabel1 = new JLabel(" "); //検索と集計の間に空白を設けるためのラベル
+	
+	JLabel aggregateLabel = new JLabel("集計");//集計の入力欄であることを示すラベル
+	
+	JComboBox firstYearComboBox = new JComboBox(); //何年からかを選択するボックス
+	JLabel yearUnitLabel1 = new JLabel("年 "); //「年」を表示するラベル
+	JLabel karaLabel1 = new JLabel("  ～"); //「～」を表示するラベル
+	JComboBox lastYearComboBox = new JComboBox(); //何年までかを選択するボックス
+	JLabel yearUnitLabel2 = new JLabel("年 "); //「年」を表示するラベル
+	JLabel joshiLabel1 = new JLabel("  の"); //「の」を表示するラベル
+	
+	JComboBox firstMonthComboBox = new JComboBox(); //何月からかを選択するボックス
+	JLabel monthUnitLabel1 = new JLabel("月 "); //「月」を表示するラベル
+	JComboBox lastMonthComboBox = new JComboBox(); //何月までかを選択するボックス
+	JLabel monthUnitLabel2 = new JLabel("月 "); //「月」を表示するラベル
+	
+	JComboBox firstDateComboBox = new JComboBox(); //何日からかを選択するボックス
+	JLabel dateUnitLabel1 = new JLabel("日 "); //「日」を表示するラベル
+	JComboBox lastDateComboBox = new JComboBox(); //何日までかを選択するボックス
+	JLabel dateUnitLabel2 = new JLabel("日 "); //「日」を表示するラベル
+	
+	JComboBox firstHourComboBox = new JComboBox(); //何時からかを選択するボックス
+	JLabel hourUnitLabel1 = new JLabel("時 "); //「時」を表示するラベル
+	JComboBox lastHourComboBox = new JComboBox(); //何時までかを選択するボックス
+	JLabel hourUnitLabel2 = new JLabel("時 "); //「時」を表示するラベル
+		
+	JComboBox RangeComboBox = new JComboBox(); //「すべて」「商品コードA台」「001」等を選ぶ
+	JLabel joshiLabel5 = new JLabel("  の"); //「の」を表示するラベル
+	
+	JComboBox objectComboBox1 = new JComboBox(); //「商品」「伝票」「店員」を選ぶ
+	JLabel joshiLabel6 = new JLabel("  の"); //「の」を表示するラベル
+	
+	JComboBox objectComboBox2 = new JComboBox(); //「売上額」「売上件数」「売上個数」「人数」「種類」を選ぶ
+	
+	JButton aggregateButton = new JButton("集計"); //集計ボタン
+	JLabel vacantLabel2 = new JLabel("      "); //集計ボタンと集計結果の間に空白を設けるためのラベル
+	JLabel aggregateResultLabel = new JLabel(""); //集計結果を表示するラベル
+	JLabel unitLabel = new JLabel("円"); //単位を表示するラベル
+	
+	//検索結果の表示場所
 	JLabel nLabel = new JLabel("伝票番号", JLabel.CENTER); //伝票番号であることを示すラベル
 	JLabel numberLabel1 = new JLabel("", JLabel.CENTER); //伝票番号を表示するラベル
 	JLabel numberLabel2 = new JLabel("", JLabel.CENTER);
@@ -192,6 +233,9 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JPanel panel2_2 = new JPanel();
 	JPanel panel3 = new JPanel();
 	JPanel panel4 = new JPanel();
+	JPanel panel4_1 = new JPanel();
+	JPanel panel4_2 = new JPanel();
+	JPanel panel4_3 = new JPanel();
 	JPanel panel5 = new JPanel();
 	JPanel panel15 = new JPanel();
 	
@@ -206,14 +250,17 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel2_1.setLayout(new FlowLayout());
 		panel2_2.setLayout(new FlowLayout());
 		panel3.setLayout(new FlowLayout());
-		panel4.setLayout(new FlowLayout());
+		panel4.setLayout(new BoxLayout(panel4, BoxLayout.Y_AXIS));
+		panel4_1.setLayout(new FlowLayout());
+		panel4_2.setLayout(new FlowLayout());
+		panel4_3.setLayout(new FlowLayout());
 		panel5.setLayout(new GridLayout(11, 9, 0, 2));
 		panel15.setLayout(new FlowLayout());
 		
 		
 		//日時を選択するコンボボックスに項目を追加
 		//現在の日時で初期化
-		yearComboBox.addItem(2023);
+		yearComboBox.addItem(getYear());
 		for(int i = 1; i <= 12; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -337,6 +384,113 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		flagComboBox.addItem("1");
 		flagComboBox.setSelectedItem(null);
 		
+		//集計で使用するコンボボックスに項目を追加
+		//firstYearComboBoxに項目を追加
+		try {
+			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				firstYearComboBox.addItem(rs.getString("時間"));
+			} 
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
+		//lastYearComboBoxに項目を追加
+		try {
+			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				lastYearComboBox.addItem(rs.getString("時間"));
+			} 
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
+		//firstMonthComboBoxに項目を追加
+		for(int i = 1; i <= 12; i++) {
+		String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		firstMonthComboBox.addItem(s);
+			if(s.equals(getMonth())){
+				firstMonthComboBox.setSelectedItem("01");
+			}
+		}		
+		//lastMonthComboBoxに項目を追加
+		for(int i = 1; i <= 12; i++) {
+		String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		lastMonthComboBox.addItem(s);
+			if(s.equals(getMonth())){
+				lastMonthComboBox.setSelectedIndex(i-1);
+			}
+		}
+		//firstDateComboBoxに項目を追加
+		for(int i = 1; i <= 31; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			firstDateComboBox.addItem(s);
+			if(s.equals(getDate())){
+				firstDateComboBox.setSelectedItem("01");
+			}
+		}
+		//lastDateComboBoxに項目を追加
+		for(int i = 1; i <= 31; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			lastDateComboBox.addItem(s);
+			if(s.equals(getDate())){
+				lastDateComboBox.setSelectedIndex(i-1);
+			}
+		}
+		//firstHourComboBoxに項目を追加
+		for(int i = 0; i <= 23; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			firstHourComboBox.addItem(s);
+			if(s.equals(getHour())){
+				firstHourComboBox.setSelectedItem("01");
+			}
+		}
+		//lastHourComboBoxに項目を追加
+		for(int i = 0; i <= 23; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			lastHourComboBox.addItem(s);
+			if(s.equals(getHour())){
+				lastHourComboBox.setSelectedIndex(i);
+			}
+		}
+		//RangeComboBoxに項目を追加
+		RangeComboBox.addItem("すべて");
+		
+		//objectComboBox1に項目を追加
+		objectComboBox1.addItem("商品");
+		objectComboBox1.addItem("店員");
+		objectComboBox1.addItem("伝票");
+		//objectComboBox2に項目を追加
+		objectComboBox2.addItem("売上額");
+		objectComboBox2.addItem("売上件数");
+		objectComboBox2.addItem("売上個数");
+		
 		//ラベルの色分け設定
 		setColor1(nLabel);
 		setColor1(dLabel);
@@ -433,6 +587,45 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel2.add(panel2_2);
 
 		panel3.add(searchButton);
+		
+		panel4_1.add(aggregateLabel);
+		
+		panel4_2.add(firstYearComboBox);
+		panel4_2.add(yearUnitLabel1);
+		panel4_2.add(firstMonthComboBox);
+		panel4_2.add(monthUnitLabel1);
+		panel4_2.add(firstDateComboBox);
+		panel4_2.add(dateUnitLabel1);
+		panel4_2.add(firstHourComboBox);
+		panel4_2.add(hourUnitLabel1);
+		
+		panel4_2.add(karaLabel1);
+		
+		panel4_2.add(lastYearComboBox);
+		panel4_2.add(yearUnitLabel2);
+		panel4_2.add(lastMonthComboBox);
+		panel4_2.add(monthUnitLabel2);
+		panel4_2.add(lastDateComboBox);
+		panel4_2.add(dateUnitLabel2);
+		panel4_2.add(lastHourComboBox);
+		panel4_2.add(hourUnitLabel2);
+		
+		panel4_2.add(joshiLabel1);
+		
+		panel4_2.add(RangeComboBox);
+		panel4_2.add(joshiLabel5);
+		panel4_2.add(objectComboBox1);
+		panel4_2.add(joshiLabel6);
+		panel4_2.add(objectComboBox2);
+		
+		panel4_3.add(aggregateButton);
+		panel4_3.add(vacantLabel2);
+		panel4_3.add(aggregateResultLabel);
+		panel4_3.add(unitLabel);
+		
+		panel4.add(panel4_1);
+		panel4.add(panel4_2);
+		panel4.add(panel4_3);
 		
 		panel5.add(nLabel);
 		panel5.add(dLabel);
@@ -554,15 +747,17 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		getContentPane().add(panel1);
 		getContentPane().add(panel2);
 		getContentPane().add(panel3);
-		getContentPane().add(panel4);
 		getContentPane().add(panel5);
 		getContentPane().add(panel15);
+		getContentPane().add(vacantLabel1);
+		getContentPane().add(panel4);
 		
 		searchButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
+		aggregateButton.addActionListener(this);
 		this.pack();
 		setVisible(true);
 	}
@@ -621,6 +816,23 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				e3.printStackTrace();
 			} catch(Exception e3) {
 				e3.printStackTrace();
+			}
+		} else if(e.getSource() == aggregateButton) {
+			//集計するためのSQLを作成する
+			SQL = createAggregateSQL(firstYearComboBox, lastYearComboBox, firstMonthComboBox, lastMonthComboBox, 
+					firstDateComboBox, lastDateComboBox, firstHourComboBox, lastHourComboBox, RangeComboBox, 
+					objectComboBox1, objectComboBox2);
+			try {
+				conn = DriverManager.getConnection(URL, USER, PASS);
+				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				rs = stmt.executeQuery(SQL);
+				if(rs.next()) {
+					aggregateResultLabel.setText(rs.getString("集計結果"));
+				}
+			}catch(SQLException e2) {
+				e2.printStackTrace();
+			}catch(Exception e2) {
+				e2.printStackTrace();
 			}
 		}
 	}
@@ -814,6 +1026,22 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		countLabel.setText(null);
 		subTotalLabel.setText(null);
 		flagLabel.setText(null);
+	}
+	
+	public String createAggregateSQL(JComboBox fyBox, JComboBox lyBox, JComboBox fmBox, JComboBox lmBox, 
+			JComboBox fdBox, JComboBox ldBox, JComboBox fhBox, JComboBox lhBox, JComboBox rBox, 
+			JComboBox oBox1, JComboBox oBox2) {
+		if(oBox2.getSelectedItem().equals("売上額")) {
+			String selectStr = "sum(小計)"; 
+		} else if(oBox2.getSelectedItem().equals("売上額")) {
+			
+		}
+		String str = "SELECT sum(小計) as 集計結果"
+				+ " FROM 売上マスタ"
+				+ " WHERE 1" + filterSQL + ";";
+		
+		filterSQL = ""; //filterSQLをリセットする
+		return str;
 	}
 	
 	//コンボボックスを現在の日時で初期化するメソッド

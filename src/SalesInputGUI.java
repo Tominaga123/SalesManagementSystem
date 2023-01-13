@@ -116,7 +116,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		//各コンボボックスに、データベースから情報を取得して項目を追加
 		//日時を選択するコンボボックスに項目を追加
 		//現在の日時で初期化
-		yearComboBox.addItem(2023);
+		yearComboBox.addItem(getYear());
 		for(int i = 1; i <= 12; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {

@@ -39,6 +39,7 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 	JLabel voidLabel2 = new JLabel();
 	
 	JButton searchButton = new JButton("絞り込み"); //検索ボタン
+	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
 	
 	JLabel cLabel = new JLabel("商品コード", JLabel.CENTER); //商品コードであることを示すラベル
 	JTextField codeTextField1 = new JTextField(); //商品コードを編集するテキストフィールド
@@ -222,6 +223,7 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 		panel2.add(flagComboBox);
 		
 		panel3.add(searchButton);
+		panel3.add(releaseButton);
 		
 		panel4.add(cLabel);
 		panel4.add(nLabel);
@@ -338,6 +340,7 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 		editButton10.addActionListener(this);
 		
 		searchButton.addActionListener(this);
+		releaseButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
 		nextButton.setEnabled(false);
@@ -352,30 +355,16 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == searchButton) { //「絞り込み」ボタンを押した場合
-			SQL = createSQL();
-			System.out.println(SQL + " で絞り込みます");
-			try {
-				conn = DriverManager.getConnection(URL, USER, PASS);
-				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-				rs = stmt.executeQuery(SQL);
-				result(); //検索結果を表示
-				rs.last(); //最後の行に移動し、行番号を取得
-				last = rs.getRow();
-				rs.absolute(now); //最後の行番号を取得したのち、元の行に戻る
-				totalNumberLabel.setText(Integer.toString(last));
-				this.pack(); //フレームのサイズ調整
-				if(last >= 10) { //取得件数が10件以上ならページをめくるボタンをture、そうでないならfalseにする
-					nextButton.setEnabled(true);
-				} else {
-					nextButton.setEnabled(false);
-					previousButton.setEnabled(false);
-				}
-			}catch(SQLException e2) {
-				e2.printStackTrace();
-			}catch(Exception e2) {
-				e2.printStackTrace();
-			}
-		} else if(e.getSource() == nextButton) { //「次へ」ボタンを押した場合
+			allShow();
+		} else if(e.getSource() == releaseButton) { //「絞り込み解除」ボタンを押した場合
+			//絞り込み条件をリセット
+			codeComboBox.setSelectedItem(null);
+			nameComboBox.setSelectedItem(null);
+			priceTextField.setText("0");
+			priceRangeComboBox.setSelectedItem("以上");
+			flagComboBox.setSelectedItem(null);
+			allShow();
+		}   else if(e.getSource() == nextButton) { //「次へ」ボタンを押した場合
 				result(); //検索結果を表示
 				previousButton.setEnabled(true);
 		} else if(e.getSource() == previousButton) { //「前へ」ボタンを押した場合
@@ -484,7 +473,8 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 
 	//最初とデータの編集（更新、追加、消去）をした際に検索結果を更新するメソッド
 	public void allShow() {
-		SQL = "SELECT * FROM 商品マスタ ORDER BY 商品コード ASC;";
+		SQL = createSQL();
+		System.out.println(SQL + " で表示します");
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASS);
 			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
@@ -494,7 +484,6 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 			last = rs.getRow();
 			rs.absolute(now); //最後の行番号を取得したのち、元の行に戻る
 			totalNumberLabel.setText(Integer.toString(last));
-			showNumberLabel.setText(Integer.toString(now));
 			previousButton.setEnabled(false);
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -539,6 +528,8 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
 				reset(codeTextField1, nameTextField1, priceTextField1, flagComboBox1, updateButton1, editButton1); //白紙にする
+				//更新または追加されたデータの商品コードと同じものがないまま一行目が空欄になればページ送りをストップ
+				stopFlag = 1;
 			}
 			if(rs.next()){
 				show(codeTextField2, nameTextField2, priceTextField2, flagComboBox2, updateButton2, editButton2);
@@ -613,6 +604,7 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 			JButton updateButton, JButton editButton) {
 		try {
 			codeText.setText(rs.getString("商品コード"));
+			//更新または追加されたデータの店員コードと同じであればページ送りをストップ
 			if(rs.getString("商品コード").equals(newCode)) {
 				stopFlag = 1;
 			}
@@ -695,14 +687,14 @@ public class goodsEditGUI extends JFrame implements ActionListener{
 				System.out.println(SQL + "を追加しました");
 				//データを追加したのち、表を再取得して追加したデータがあるページへ飛ぶ
 				allShow();
-				stopFlag = 0;
-				while(stopFlag == 0) {
-					result();
-				}
 				try {
 					rs.beforeFirst();
 				} catch (SQLException e) {
 					e.printStackTrace();
+				}
+				stopFlag = 0;
+				while(stopFlag == 0) {
+					result();
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
