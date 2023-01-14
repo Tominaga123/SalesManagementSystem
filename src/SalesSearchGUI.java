@@ -86,7 +86,12 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JComboBox lastHourComboBox = new JComboBox(); //何時までかを選択するボックス
 	JLabel hourUnitLabel2 = new JLabel("時 "); //「時」を表示するラベル
 		
-	JComboBox RangeComboBox = new JComboBox(); //「すべて」「商品コードA台」「001」等を選ぶ
+	JComboBox firstMinuteComboBox = new JComboBox(); //何分からかを選択するボックス
+	JLabel minuteUnitLabel1 = new JLabel("分 "); //「分」を表示するラベル
+	JComboBox lastMinuteComboBox = new JComboBox(); //何分までかを選択するボックス
+	JLabel minuteUnitLabel2 = new JLabel("分 "); //「分」を表示するラベル
+	
+	JComboBox rangeComboBox = new JComboBox(); //「すべて」「商品コードA台」「001」等を選ぶ
 	JLabel joshiLabel5 = new JLabel("  の"); //「の」を表示するラベル
 	
 	JComboBox objectComboBox1 = new JComboBox(); //「商品」「伝票」「店員」を選ぶ
@@ -386,6 +391,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		
 		//集計で使用するコンボボックスに項目を追加
 		//firstYearComboBoxに項目を追加
+		firstYearComboBox.addItem("指定なし");
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
@@ -399,7 +405,9 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
+		firstYearComboBox.setSelectedIndex(1);
 		//lastYearComboBoxに項目を追加
+		lastYearComboBox.addItem("指定なし");
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
@@ -413,74 +421,108 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
+		lastYearComboBox.setSelectedItem(getYear());
 		//firstMonthComboBoxに項目を追加
+		firstMonthComboBox.addItem("指定なし");
 		for(int i = 1; i <= 12; i++) {
 		String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
 		firstMonthComboBox.addItem(s);
-			if(s.equals(getMonth())){
-				firstMonthComboBox.setSelectedItem("01");
-			}
 		}		
+		firstMonthComboBox.setSelectedItem("01");
 		//lastMonthComboBoxに項目を追加
+		lastMonthComboBox.addItem("指定なし");
 		for(int i = 1; i <= 12; i++) {
 		String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
 		lastMonthComboBox.addItem(s);
-			if(s.equals(getMonth())){
-				lastMonthComboBox.setSelectedIndex(i-1);
-			}
 		}
+		lastMonthComboBox.setSelectedItem(getMonth());
 		//firstDateComboBoxに項目を追加
+		firstDateComboBox.addItem("指定なし");
 		for(int i = 1; i <= 31; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
-			firstDateComboBox.addItem(s);
-			if(s.equals(getDate())){
-				firstDateComboBox.setSelectedItem("01");
-			}
+		firstDateComboBox.addItem(s);
 		}
+		firstDateComboBox.setSelectedItem("01");
 		//lastDateComboBoxに項目を追加
+		lastDateComboBox.addItem("指定なし");
 		for(int i = 1; i <= 31; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
-			lastDateComboBox.addItem(s);
-			if(s.equals(getDate())){
-				lastDateComboBox.setSelectedIndex(i-1);
-			}
+		lastDateComboBox.addItem(s);
 		}
+		lastDateComboBox.setSelectedItem(getDate());
 		//firstHourComboBoxに項目を追加
+		firstHourComboBox.addItem("指定なし");
 		for(int i = 0; i <= 23; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
 			firstHourComboBox.addItem(s);
-			if(s.equals(getHour())){
-				firstHourComboBox.setSelectedItem("01");
-			}
 		}
+		firstHourComboBox.setSelectedItem("00");
 		//lastHourComboBoxに項目を追加
+		lastHourComboBox.addItem("指定なし");
 		for(int i = 0; i <= 23; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
-			lastHourComboBox.addItem(s);
-			if(s.equals(getHour())){
-				lastHourComboBox.setSelectedIndex(i);
-			}
+		lastHourComboBox.addItem(s);
 		}
-		//RangeComboBoxに項目を追加
-		RangeComboBox.addItem("すべて");
+		lastHourComboBox.setSelectedItem(getHour());
+		//firstMinuteComboBoxに項目を追加
+		firstMinuteComboBox.addItem("指定なし");
+		for(int i = 0; i <= 59; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			firstMinuteComboBox.addItem(s);
+		}
+		firstMinuteComboBox.setSelectedItem("00");
+		//lastMinuteComboBoxに項目を追加
+		lastMinuteComboBox.addItem("指定なし");
+		for(int i = 0; i <= 59; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		lastMinuteComboBox.addItem(s);
+		}
+		lastMinuteComboBox.setSelectedItem(getMinute());
+		
+		//rangeComboBoxに項目を追加
+		rangeComboBox.addItem("すべて");
+		try {
+			SQL = "SELECT CONCAT(LEFT(商品コード, 1), '群') AS 先頭コード FROM 商品マスタ GROUP BY 先頭コード;";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				rangeComboBox.addItem(rs.getString("先頭コード"));
+			} 
+			SQL = "SELECT 商品コード FROM 商品マスタ;";
+			rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				rangeComboBox.addItem(rs.getString("商品コード"));
+			} 
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
 		
 		//objectComboBox1に項目を追加
 		objectComboBox1.addItem("商品");
@@ -598,6 +640,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel4_2.add(dateUnitLabel1);
 		panel4_2.add(firstHourComboBox);
 		panel4_2.add(hourUnitLabel1);
+		panel4_2.add(firstMinuteComboBox);
+		panel4_2.add(minuteUnitLabel1);
 		
 		panel4_2.add(karaLabel1);
 		
@@ -609,10 +653,12 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel4_2.add(dateUnitLabel2);
 		panel4_2.add(lastHourComboBox);
 		panel4_2.add(hourUnitLabel2);
+		panel4_2.add(lastMinuteComboBox);
+		panel4_2.add(minuteUnitLabel2);
 		
 		panel4_2.add(joshiLabel1);
 		
-		panel4_2.add(RangeComboBox);
+		panel4_2.add(rangeComboBox);
 		panel4_2.add(joshiLabel5);
 		panel4_2.add(objectComboBox1);
 		panel4_2.add(joshiLabel6);
@@ -757,6 +803,21 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		previousButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
+		
+		firstYearComboBox.addActionListener(this);
+		firstMonthComboBox.addActionListener(this);
+		firstDateComboBox.addActionListener(this);
+		firstHourComboBox.addActionListener(this);
+		firstMinuteComboBox.addActionListener(this);
+		lastYearComboBox.addActionListener(this);
+		lastMonthComboBox.addActionListener(this);
+		lastDateComboBox.addActionListener(this);
+		lastHourComboBox.addActionListener(this);
+		lastMinuteComboBox.addActionListener(this);
+		rangeComboBox.addActionListener(this);
+		objectComboBox1.addActionListener(this);
+		objectComboBox2.addActionListener(this);
+		
 		aggregateButton.addActionListener(this);
 		this.pack();
 		setVisible(true);
@@ -820,19 +881,108 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		} else if(e.getSource() == aggregateButton) {
 			//集計するためのSQLを作成する
 			SQL = createAggregateSQL(firstYearComboBox, lastYearComboBox, firstMonthComboBox, lastMonthComboBox, 
-					firstDateComboBox, lastDateComboBox, firstHourComboBox, lastHourComboBox, RangeComboBox, 
-					objectComboBox1, objectComboBox2);
+					firstDateComboBox, lastDateComboBox, firstHourComboBox, lastHourComboBox, firstMinuteComboBox, 
+					lastMinuteComboBox, rangeComboBox, objectComboBox1, objectComboBox2);
+			System.out.println(SQL);
 			try {
 				conn = DriverManager.getConnection(URL, USER, PASS);
 				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 				rs = stmt.executeQuery(SQL);
 				if(rs.next()) {
-					aggregateResultLabel.setText(rs.getString("集計結果"));
+					System.out.println("rs.getString(\"集計結果\")" + rs.getString("集計結果"));
+					if(rs.getString("集計結果") == null) {
+						aggregateResultLabel.setText("0");
+					} else {
+						aggregateResultLabel.setText(rs.getString("集計結果"));
+					}
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
 			}catch(Exception e2) {
 				e2.printStackTrace();
+			}
+		} else if(e.getSource() == objectComboBox1) {
+			//選んだ項目によってobjectComboBox2とrangeComboBoxの項目を変更
+			switch((String)objectComboBox1.getSelectedItem()) {
+			case "商品":
+				//objectComboBox2の項目を変更
+				String item1 = (String) objectComboBox2.getSelectedItem();
+				objectComboBox2.removeAllItems();
+				objectComboBox2.addItem("売上額");
+				objectComboBox2.addItem("売上件数");
+				objectComboBox2.addItem("売上個数");
+				objectComboBox2.setSelectedItem(item1);
+				//rangeComboBoxの項目を変更
+				rangeComboBox.removeAllItems();
+				rangeComboBox.addItem("すべて");
+				try {
+					SQL = "SELECT CONCAT(LEFT(商品コード, 1), '群') AS 先頭コード FROM 商品マスタ GROUP BY 先頭コード;";
+					Connection conn = DriverManager.getConnection(URL, USER, PASS);
+					Statement stmt = conn.createStatement();
+					ResultSet rs = stmt.executeQuery(SQL);
+					while(rs.next()){
+						rangeComboBox.addItem(rs.getString("先頭コード"));
+					} 
+					SQL = "SELECT 商品コード FROM 商品マスタ;";
+					rs = stmt.executeQuery(SQL);
+					while(rs.next()){
+						rangeComboBox.addItem(rs.getString("商品コード"));
+					} 
+				}catch(SQLException e2) {
+					e2.printStackTrace();
+				}catch(Exception e2) {
+					e2.printStackTrace();
+				}
+				break;
+			case "店員":
+				//objectComboBox2の項目を変更
+				String item2 = (String) objectComboBox2.getSelectedItem();
+				objectComboBox2.removeAllItems();
+				objectComboBox2.addItem("売上額");
+				objectComboBox2.addItem("売上件数");
+				objectComboBox2.setSelectedItem(item2);
+				//rangeComboBoxの項目を変更
+				rangeComboBox.removeAllItems();
+				rangeComboBox.addItem("すべて");
+				try {
+					SQL = "SELECT 店員コード FROM 店員マスタ;";
+					Connection conn = DriverManager.getConnection(URL, USER, PASS);
+					Statement stmt = conn.createStatement();
+					ResultSet rs = stmt.executeQuery(SQL);
+					rs = stmt.executeQuery(SQL);
+					while(rs.next()){
+						rangeComboBox.addItem(rs.getString("店員コード"));
+					} 
+				}catch(SQLException e2) {
+					e2.printStackTrace();
+				}catch(Exception e2) {
+					e2.printStackTrace();
+				}
+				break;
+			case "伝票":
+				//objectComboBox2の項目を変更
+				String item3 = (String) objectComboBox2.getSelectedItem();
+				objectComboBox2.removeAllItems();
+				objectComboBox2.addItem("売上額");
+				objectComboBox2.addItem("件数");
+				objectComboBox2.setSelectedItem(item3);
+				//rangeComboBoxの項目を変更
+				rangeComboBox.removeAllItems();
+				rangeComboBox.addItem("すべて");
+				try {
+					SQL = "SELECT DISTINCT(伝票番号) AS 伝票番号 FROM 売上マスタ;";
+					Connection conn = DriverManager.getConnection(URL, USER, PASS);
+					Statement stmt = conn.createStatement();
+					ResultSet rs = stmt.executeQuery(SQL);
+					rs = stmt.executeQuery(SQL);
+					while(rs.next()){
+						rangeComboBox.addItem(rs.getString("伝票番号"));
+					} 
+				}catch(SQLException e2) {
+					e2.printStackTrace();
+				}catch(Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1029,18 +1179,215 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	public String createAggregateSQL(JComboBox fyBox, JComboBox lyBox, JComboBox fmBox, JComboBox lmBox, 
-			JComboBox fdBox, JComboBox ldBox, JComboBox fhBox, JComboBox lhBox, JComboBox rBox, 
-			JComboBox oBox1, JComboBox oBox2) {
-		if(oBox2.getSelectedItem().equals("売上額")) {
-			String selectStr = "sum(小計)"; 
-		} else if(oBox2.getSelectedItem().equals("売上額")) {
-			
-		}
-		String str = "SELECT sum(小計) as 集計結果"
-				+ " FROM 売上マスタ"
-				+ " WHERE 1" + filterSQL + ";";
+			JComboBox fdBox, JComboBox ldBox, JComboBox fhBox, JComboBox lhBox, JComboBox fmiBox, JComboBox lmiBox,
+			JComboBox rBox, JComboBox oBox1, JComboBox oBox2) {
+		String str = "";
 		
-		filterSQL = ""; //filterSQLをリセットする
+		//objectComboBox1が「商品」「店員」「伝票」のいずれかで場合分け
+		switch((String)oBox1.getSelectedItem()) {
+		//「商品」の場合
+		case "商品": 
+			//objectComboBox2が「売上額」「売上件数」「売上個数」のいずれかで場合分け
+			switch((String)oBox2.getSelectedItem()) {
+			case "売上額":
+				if(rBox.getSelectedItem().equals("すべて")) {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//最終的なSQL文
+					str = "SELECT sum(小計) AS 集計結果"
+							+ " FROM 売上マスタ"
+							+ " WHERE" + filterSQL + ";";
+				} else {
+					if(false) {
+						//群の場合
+					} else {
+						//通常の商品コードの場合
+						filterSQL += " 1";
+						//時間の条件を追加
+						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+						//商品コードの条件を追加
+						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
+						str = "SELECT sum(小計) AS 集計結果 "
+								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
+					}
+				}
+				break;
+			case "売上件数":
+				if(rBox.getSelectedItem().equals("すべて")) {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					str = "SELECT count(T.伝票番号) AS 集計結果 "
+							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+				} else {
+					if(false) {
+						//群が含まれている場合
+					} else {
+						//通常の商品コードの場合
+						filterSQL += " 1";
+						//時間の条件を追加
+						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+						//商品コードの条件を追加
+						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
+						str = "SELECT count(T.伝票番号) AS 集計結果 "
+								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+					}
+				}
+				break;
+			case "売上個数":
+				if(rBox.getSelectedItem().equals("すべて")) {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					str = "SELECT sum(個数) AS 集計結果 "
+							+ "FROM 売上マスタ"
+							+ " WHERE" + filterSQL + ";";
+				} else {
+					if(false) {
+						//群が含まれている場合
+					} else {
+						//通常の商品コードの場合
+						filterSQL += " 1";
+						//時間の条件を追加
+						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+						//商品コードの条件を追加
+						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
+						str = "SELECT sum(個数) AS 集計結果 "
+								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
+					}
+				}
+			}
+			break;
+		//「店員」の場合
+		case "店員":
+			//objectComboBox2が「売上額」「売上件数」のいずれかで場合分け
+			switch((String)oBox2.getSelectedItem()) {
+			case "売上額":
+				if(rBox.getSelectedItem().equals("すべて")) {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//最終的なSQL文
+					str = "SELECT sum(小計) AS 集計結果"
+							+ " FROM 売上マスタ"
+							+ " WHERE" + filterSQL + ";";
+				} else {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//店員コードの条件を追加
+					filterSQL += " AND 店員コード = '" + rangeComboBox.getSelectedItem() + "'";
+					str = "SELECT sum(小計) AS 集計結果 "
+							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
+				}
+				break;
+			case "売上件数":
+				if(rBox.getSelectedItem().equals("すべて")) {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					str = "SELECT count(T.伝票番号) AS 集計結果 "
+							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+				} else {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//店員コードの条件を追加
+					filterSQL += " AND 店員コード = '" + rangeComboBox.getSelectedItem() + "'";
+					str = "SELECT count(T.伝票番号) AS 集計結果 "
+							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+				}
+			}
+			break;
+		//「伝票」の場合
+		case "伝票":
+			//objectComboBox2が「売上額」「件数」のいずれかで場合分け
+			switch((String)oBox2.getSelectedItem()) {
+			case "売上額":
+				if(rBox.getSelectedItem().equals("すべて")) {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//最終的なSQL文
+					str = "SELECT sum(小計) AS 集計結果"
+							+ " FROM 売上マスタ"
+							+ " WHERE" + filterSQL + ";";
+				} else {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//伝票番号の条件を追加
+					filterSQL += " AND 伝票番号 = " + rangeComboBox.getSelectedItem();
+					//最終的なSQL文
+					str = "SELECT sum(小計) AS 集計結果"
+							+ " FROM 売上マスタ"
+							+ " WHERE" + filterSQL + ";";
+				}
+				break;
+			case "件数":
+				if(rBox.getSelectedItem().equals("すべて")) {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					str = "SELECT count(T.伝票番号) AS 集計結果 "
+							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+				} else {
+					filterSQL += " 1";
+					//時間の条件を追加
+					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//伝票番号の条件を追加
+					filterSQL += " AND 伝票番号 = " + rangeComboBox.getSelectedItem();
+					str = "SELECT count(T.伝票番号) AS 集計結果 "
+							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+				}
+			}
+		}
+		
+		//filterSQLをリセットする
+		filterSQL = ""; 
 		return str;
 	}
 	
