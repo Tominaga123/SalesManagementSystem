@@ -64,6 +64,9 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	JLabel aggregateLabel = new JLabel("集計");//集計の入力欄であることを示すラベル
 	
+	//ある期間のみ集計（例：2023/01/01 00:00 ~ 2023/01/10 23:59の売上）
+	JLabel choiceLabel1 = new JLabel("ある期間のみ集計"); //ある期間のみ集計することを示すラベル
+	JButton choiceButton1 = new JButton("選択");
 	JComboBox firstYearComboBox = new JComboBox(); //何年からかを選択するボックス
 	JLabel yearUnitLabel1 = new JLabel("年 "); //「年」を表示するラベル
 	JLabel karaLabel1 = new JLabel("  ～"); //「～」を表示するラベル
@@ -90,6 +93,43 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JLabel minuteUnitLabel1 = new JLabel("分 "); //「分」を表示するラベル
 	JComboBox lastMinuteComboBox = new JComboBox(); //何分までかを選択するボックス
 	JLabel minuteUnitLabel2 = new JLabel("分 "); //「分」を表示するラベル
+	
+	//繰り返される一定の期間を集計（例：毎日12:00 ~ 12:59の売上）
+	JLabel choiceLabel2 = new JLabel("繰り返される一定の期間を集計"); //繰り返される一定の期間を集計することを示すラベル
+	JButton choiceButton2 = new JButton("選択");
+	JComboBox RfirstYearComboBox = new JComboBox(); //何年からかを選択するボックス
+	JLabel RyearUnitLabel1 = new JLabel("年 "); //「年」を表示するラベル
+	JLabel RkaraLabel1 = new JLabel("  ～"); //「～」を表示するラベル
+	JComboBox RlastYearComboBox = new JComboBox(); //何年までかを選択するボックス
+	JLabel RyearUnitLabel2 = new JLabel("年 "); //「年」を表示するラベル
+	JLabel RjoshiLabel1 = new JLabel("  の"); //「の」を表示するラベル
+	
+	JComboBox RfirstMonthComboBox = new JComboBox(); //何月からかを選択するボックス
+	JLabel RmonthUnitLabel1 = new JLabel("月 "); //「月」を表示するラベル
+	JLabel RkaraLabel2 = new JLabel("  ～"); //「～」を表示するラベル
+	JComboBox RlastMonthComboBox = new JComboBox(); //何月までかを選択するボックス
+	JLabel RmonthUnitLabel2 = new JLabel("月 "); //「月」を表示するラベル
+	JLabel RjoshiLabel2 = new JLabel("  の"); //「の」を表示するラベル
+	
+	JComboBox RfirstDateComboBox = new JComboBox(); //何日からかを選択するボックス
+	JLabel RdateUnitLabel1 = new JLabel("日 "); //「日」を表示するラベル
+	JLabel RkaraLabel3 = new JLabel("  ～"); //「～」を表示するラベル
+	JComboBox RlastDateComboBox = new JComboBox(); //何日までかを選択するボックス
+	JLabel RdateUnitLabel2 = new JLabel("日 "); //「日」を表示するラベル
+	JLabel RjoshiLabel3 = new JLabel("  の"); //「の」を表示するラベル
+	
+	JComboBox RfirstHourComboBox = new JComboBox(); //何時からかを選択するボックス
+	JLabel RhourUnitLabel1 = new JLabel("時 "); //「時」を表示するラベル
+	JLabel RkaraLabel4 = new JLabel("  ～"); //「～」を表示するラベル
+	JComboBox RlastHourComboBox = new JComboBox(); //何時までかを選択するボックス
+	JLabel RhourUnitLabel2 = new JLabel("時 "); //「時」を表示するラベル
+	JLabel RjoshiLabel4 = new JLabel("  の"); //「の」を表示するラベル
+		
+	JComboBox RfirstMinuteComboBox = new JComboBox(); //何分からかを選択するボックス
+	JLabel RminuteUnitLabel1 = new JLabel("分 "); //「分」を表示するラベル
+	JLabel RkaraLabel5 = new JLabel("  ～"); //「～」を表示するラベル
+	JComboBox RlastMinuteComboBox = new JComboBox(); //何分までかを選択するボックス
+	JLabel RminuteUnitLabel2 = new JLabel("分 "); //「分」を表示するラベル
 	
 	JComboBox rangeComboBox = new JComboBox(); //「すべて」「商品コードA台」「001」等を選ぶ
 	JLabel joshiLabel5 = new JLabel("  の"); //「の」を表示するラベル
@@ -241,6 +281,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JPanel panel4_1 = new JPanel();
 	JPanel panel4_2 = new JPanel();
 	JPanel panel4_3 = new JPanel();
+	JPanel panel4_4 = new JPanel();
+	JPanel panel4_5 = new JPanel();
+	JPanel panel4_6 = new JPanel();
+	JPanel panel4_7 = new JPanel();
 	JPanel panel5 = new JPanel();
 	JPanel panel15 = new JPanel();
 	
@@ -259,6 +303,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel4_1.setLayout(new FlowLayout());
 		panel4_2.setLayout(new FlowLayout());
 		panel4_3.setLayout(new FlowLayout());
+		panel4_4.setLayout(new FlowLayout());
+		panel4_5.setLayout(new FlowLayout());
+		panel4_6.setLayout(new FlowLayout());
+		panel4_7.setLayout(new FlowLayout());
 		panel5.setLayout(new GridLayout(11, 9, 0, 2));
 		panel15.setLayout(new FlowLayout());
 		
@@ -632,46 +680,90 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		
 		panel4_1.add(aggregateLabel);
 		
-		panel4_2.add(firstYearComboBox);
-		panel4_2.add(yearUnitLabel1);
-		panel4_2.add(firstMonthComboBox);
-		panel4_2.add(monthUnitLabel1);
-		panel4_2.add(firstDateComboBox);
-		panel4_2.add(dateUnitLabel1);
-		panel4_2.add(firstHourComboBox);
-		panel4_2.add(hourUnitLabel1);
-		panel4_2.add(firstMinuteComboBox);
-		panel4_2.add(minuteUnitLabel1);
+		panel4_2.add(choiceLabel1);
+		panel4_2.add(choiceButton1);
 		
-		panel4_2.add(karaLabel1);
+		panel4_3.add(firstYearComboBox);
+		panel4_3.add(yearUnitLabel1);
+		panel4_3.add(firstMonthComboBox);
+		panel4_3.add(monthUnitLabel1);
+		panel4_3.add(firstDateComboBox);
+		panel4_3.add(dateUnitLabel1);
+		panel4_3.add(firstHourComboBox);
+		panel4_3.add(hourUnitLabel1);
+		panel4_3.add(firstMinuteComboBox);
+		panel4_3.add(minuteUnitLabel1);
 		
-		panel4_2.add(lastYearComboBox);
-		panel4_2.add(yearUnitLabel2);
-		panel4_2.add(lastMonthComboBox);
-		panel4_2.add(monthUnitLabel2);
-		panel4_2.add(lastDateComboBox);
-		panel4_2.add(dateUnitLabel2);
-		panel4_2.add(lastHourComboBox);
-		panel4_2.add(hourUnitLabel2);
-		panel4_2.add(lastMinuteComboBox);
-		panel4_2.add(minuteUnitLabel2);
+		panel4_3.add(karaLabel1);
 		
-		panel4_2.add(joshiLabel1);
+		panel4_3.add(lastYearComboBox);
+		panel4_3.add(yearUnitLabel2);
+		panel4_3.add(lastMonthComboBox);
+		panel4_3.add(monthUnitLabel2);
+		panel4_3.add(lastDateComboBox);
+		panel4_3.add(dateUnitLabel2);
+		panel4_3.add(lastHourComboBox);
+		panel4_3.add(hourUnitLabel2);
+		panel4_3.add(lastMinuteComboBox);
+		panel4_3.add(minuteUnitLabel2);
 		
-		panel4_2.add(rangeComboBox);
-		panel4_2.add(joshiLabel5);
-		panel4_2.add(objectComboBox1);
-		panel4_2.add(joshiLabel6);
-		panel4_2.add(objectComboBox2);
+//		panel4_2.add(joshiLabel1);
 		
-		panel4_3.add(aggregateButton);
-		panel4_3.add(vacantLabel2);
-		panel4_3.add(aggregateResultLabel);
-		panel4_3.add(unitLabel);
+		panel4_4.add(choiceLabel2);
+		panel4_4.add(choiceButton2);
+		
+		panel4_5.add(RfirstYearComboBox);
+		panel4_5.add(RyearUnitLabel1);
+		panel4_5.add(RkaraLabel1);
+		panel4_5.add(RlastYearComboBox);
+		panel4_5.add(RyearUnitLabel2);
+		panel4_5.add(RjoshiLabel1);
+		
+		panel4_5.add(RfirstMonthComboBox);
+		panel4_5.add(RmonthUnitLabel1);
+		panel4_5.add(RkaraLabel2);
+		panel4_5.add(RlastMonthComboBox);
+		panel4_5.add(RmonthUnitLabel2);
+		panel4_5.add(RjoshiLabel2);
+		
+		panel4_5.add(RfirstDateComboBox);
+		panel4_5.add(RdateUnitLabel1);
+		panel4_5.add(RkaraLabel3);
+		panel4_5.add(RlastDateComboBox);
+		panel4_5.add(RdateUnitLabel2);
+		panel4_5.add(RjoshiLabel3);
+		
+		panel4_5.add(RfirstHourComboBox);
+		panel4_5.add(RhourUnitLabel1);
+		panel4_5.add(RkaraLabel4);
+		panel4_5.add(RlastHourComboBox);
+		panel4_5.add(RhourUnitLabel2);
+		panel4_5.add(RjoshiLabel4);
+		
+		panel4_5.add(RfirstMinuteComboBox);
+		panel4_5.add(RminuteUnitLabel1);
+		panel4_5.add(RkaraLabel5);
+		panel4_5.add(RlastMinuteComboBox);
+		panel4_5.add(RminuteUnitLabel2);
+		
+		panel4_6.add(rangeComboBox);
+		panel4_6.add(joshiLabel5);
+		panel4_6.add(objectComboBox1);
+		panel4_6.add(joshiLabel6);
+		panel4_6.add(objectComboBox2);
+		
+		panel4_7.add(aggregateButton);
+		panel4_7.add(vacantLabel2);
+		panel4_7.add(aggregateResultLabel);
+		panel4_7.add(unitLabel);
 		
 		panel4.add(panel4_1);
 		panel4.add(panel4_2);
 		panel4.add(panel4_3);
+		panel4.add(panel4_4);
+		panel4.add(panel4_5);
+		panel4.add(panel4_6);
+		panel4.add(panel4_7);
 		
 		panel5.add(nLabel);
 		panel5.add(dLabel);
