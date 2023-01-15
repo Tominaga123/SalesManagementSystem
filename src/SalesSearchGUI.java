@@ -1202,8 +1202,19 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 							+ " FROM 売上マスタ"
 							+ " WHERE" + filterSQL + ";";
 				} else {
-					if(false) {
+					if(((String)rBox.getSelectedItem()).contains("群")) {
 						//群の場合
+						filterSQL += " 1";
+						//時間の条件を追加
+						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+						
+						str = "SELECT SUM(小計) AS 集計結果 "
+								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 小計 FROM 売上マスタ WHERE" + filterSQL + ") T "
+								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
+						
 					} else {
 						//通常の商品コードの場合
 						filterSQL += " 1";
@@ -1218,6 +1229,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 					}
 				}
+			
+				unitLabel.setText("円");
 				break;
 			case "売上件数":
 				if(rBox.getSelectedItem().equals("すべて")) {
@@ -1228,10 +1241,20 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
 							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
 					str = "SELECT count(T.伝票番号) AS 集計結果 "
-							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 				} else {
-					if(false) {
+					if(((String)rBox.getSelectedItem()).contains("群")) {
 						//群が含まれている場合
+						filterSQL += " 1";
+						//時間の条件を追加
+						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+						
+						str = "SELECT count(T.伝票番号) AS 集計結果 "
+								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 伝票番号 FROM 売上マスタ WHERE" + filterSQL + ") T "
+								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
 						//通常の商品コードの場合
 						filterSQL += " 1";
@@ -1246,6 +1269,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 					}
 				}
+				unitLabel.setText("件");
 				break;
 			case "売上個数":
 				if(rBox.getSelectedItem().equals("すべて")) {
@@ -1259,8 +1283,18 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 							+ "FROM 売上マスタ"
 							+ " WHERE" + filterSQL + ";";
 				} else {
-					if(false) {
+					if(((String)rBox.getSelectedItem()).contains("群")) {
 						//群が含まれている場合
+						filterSQL += " 1";
+						//時間の条件を追加
+						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
+								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
+						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
+								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+						
+						str = "SELECT SUM(個数) AS 集計結果 "
+								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 個数 FROM 売上マスタ WHERE" + filterSQL + ") T "
+								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
 						//通常の商品コードの場合
 						filterSQL += " 1";
@@ -1275,6 +1309,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 					}
 				}
+				unitLabel.setText("個");
 			}
 			break;
 		//「店員」の場合
@@ -1305,6 +1340,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 					str = "SELECT sum(小計) AS 集計結果 "
 							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 				}
+				unitLabel.setText("円");
 				break;
 			case "売上件数":
 				if(rBox.getSelectedItem().equals("すべて")) {
@@ -1328,6 +1364,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 					str = "SELECT count(T.伝票番号) AS 集計結果 "
 							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				}
+				unitLabel.setText("件");
 			}
 			break;
 		//「伝票」の場合
@@ -1360,6 +1397,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 							+ " FROM 売上マスタ"
 							+ " WHERE" + filterSQL + ";";
 				}
+				unitLabel.setText("円");
 				break;
 			case "件数":
 				if(rBox.getSelectedItem().equals("すべて")) {
@@ -1383,9 +1421,9 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 					str = "SELECT count(T.伝票番号) AS 集計結果 "
 							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				}
+				unitLabel.setText("件");
 			}
 		}
-		
 		//filterSQLをリセットする
 		filterSQL = ""; 
 		return str;
