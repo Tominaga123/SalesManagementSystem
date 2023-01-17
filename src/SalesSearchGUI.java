@@ -66,7 +66,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	//ある期間のみ集計（例：2023/01/01 00:00 ~ 2023/01/10 23:59の売上）
 	JLabel choiceLabel1 = new JLabel("ある期間のみ集計"); //ある期間のみ集計することを示すラベル
-	JButton choiceButton1 = new JButton("選択");
+	JButton choiceButton1 = new JButton("選択中");
 	JComboBox firstYearComboBox = new JComboBox(); //何年からかを選択するボックス
 	JLabel yearUnitLabel1 = new JLabel("年 "); //「年」を表示するラベル
 	JLabel karaLabel1 = new JLabel("  ～"); //「～」を表示するラベル
@@ -439,7 +439,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		
 		//集計で使用するコンボボックスに項目を追加
 		//firstYearComboBoxに項目を追加
-		firstYearComboBox.addItem("指定なし");
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
@@ -453,9 +452,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
-		firstYearComboBox.setSelectedIndex(1);
+		firstYearComboBox.setSelectedIndex(0);
 		//lastYearComboBoxに項目を追加
-		lastYearComboBox.addItem("指定なし");
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
@@ -471,7 +469,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		lastYearComboBox.setSelectedItem(getYear());
 		//firstMonthComboBoxに項目を追加
-		firstMonthComboBox.addItem("指定なし");
 		for(int i = 1; i <= 12; i++) {
 		String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -481,7 +478,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}		
 		firstMonthComboBox.setSelectedItem("01");
 		//lastMonthComboBoxに項目を追加
-		lastMonthComboBox.addItem("指定なし");
 		for(int i = 1; i <= 12; i++) {
 		String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -491,7 +487,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		lastMonthComboBox.setSelectedItem(getMonth());
 		//firstDateComboBoxに項目を追加
-		firstDateComboBox.addItem("指定なし");
 		for(int i = 1; i <= 31; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -501,7 +496,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		firstDateComboBox.setSelectedItem("01");
 		//lastDateComboBoxに項目を追加
-		lastDateComboBox.addItem("指定なし");
 		for(int i = 1; i <= 31; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -511,7 +505,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		lastDateComboBox.setSelectedItem(getDate());
 		//firstHourComboBoxに項目を追加
-		firstHourComboBox.addItem("指定なし");
 		for(int i = 0; i <= 23; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -521,7 +514,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		firstHourComboBox.setSelectedItem("00");
 		//lastHourComboBoxに項目を追加
-		lastHourComboBox.addItem("指定なし");
 		for(int i = 0; i <= 23; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -531,7 +523,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		lastHourComboBox.setSelectedItem(getHour());
 		//firstMinuteComboBoxに項目を追加
-		firstMinuteComboBox.addItem("指定なし");
 		for(int i = 0; i <= 59; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -541,7 +532,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		firstMinuteComboBox.setSelectedItem("00");
 		//lastMinuteComboBoxに項目を追加
-		lastMinuteComboBox.addItem("指定なし");
 		for(int i = 0; i <= 59; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -550,6 +540,119 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		lastMinuteComboBox.addItem(s);
 		}
 		lastMinuteComboBox.setSelectedItem(getMinute());
+		
+		//RfirstYearComboBoxに項目を追加
+		RfirstYearComboBox.addItem("指定なし");
+		try {
+			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				RfirstYearComboBox.addItem(rs.getString("時間"));
+			} 
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
+		RfirstYearComboBox.setSelectedIndex(1);
+		//RlastYearComboBoxに項目を追加
+		RlastYearComboBox.addItem("指定なし");
+		try {
+			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				RlastYearComboBox.addItem(rs.getString("時間"));
+			} 
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
+		RlastYearComboBox.setSelectedItem(getYear());
+		//RfirstMonthComboBoxに項目を追加
+		RfirstMonthComboBox.addItem("指定なし");
+		for(int i = 1; i <= 12; i++) {
+		String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		RfirstMonthComboBox.addItem(s);
+		}		
+		RfirstMonthComboBox.setSelectedItem("01");
+		//RlastMonthComboBoxに項目を追加
+		RlastMonthComboBox.addItem("指定なし");
+		for(int i = 1; i <= 12; i++) {
+		String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		RlastMonthComboBox.addItem(s);
+		}
+		RlastMonthComboBox.setSelectedItem(getMonth());
+		//RfirstDateComboBoxに項目を追加
+		RfirstDateComboBox.addItem("指定なし");
+		for(int i = 1; i <= 31; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		RfirstDateComboBox.addItem(s);
+		}
+		RfirstDateComboBox.setSelectedItem("01");
+		//RlastDateComboBoxに項目を追加
+		RlastDateComboBox.addItem("指定なし");
+		for(int i = 1; i <= 31; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		RlastDateComboBox.addItem(s);
+		}
+		RlastDateComboBox.setSelectedItem(getDate());
+		//RfirstHourComboBoxに項目を追加
+		RfirstHourComboBox.addItem("指定なし");
+		for(int i = 0; i <= 23; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			RfirstHourComboBox.addItem(s);
+		}
+		RfirstHourComboBox.setSelectedItem("00");
+		//RlastHourComboBoxに項目を追加
+		RlastHourComboBox.addItem("指定なし");
+		for(int i = 0; i <= 23; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		RlastHourComboBox.addItem(s);
+		}
+		RlastHourComboBox.setSelectedItem(getHour());
+		//RfirstMinuteComboBoxに項目を追加
+		RfirstMinuteComboBox.addItem("指定なし");
+		for(int i = 0; i <= 59; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			RfirstMinuteComboBox.addItem(s);
+		}
+		RfirstMinuteComboBox.setSelectedItem("00");
+		//RlastMinuteComboBoxに項目を追加
+		RlastMinuteComboBox.addItem("指定なし");
+		for(int i = 0; i <= 59; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		RlastMinuteComboBox.addItem(s);
+		}
+		RlastMinuteComboBox.setSelectedItem(getMinute());
 		
 		//rangeComboBoxに項目を追加
 		rangeComboBox.addItem("すべて");
@@ -896,16 +999,18 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
 		
-		firstYearComboBox.addActionListener(this);
-		firstMonthComboBox.addActionListener(this);
-		firstDateComboBox.addActionListener(this);
-		firstHourComboBox.addActionListener(this);
-		firstMinuteComboBox.addActionListener(this);
-		lastYearComboBox.addActionListener(this);
-		lastMonthComboBox.addActionListener(this);
-		lastDateComboBox.addActionListener(this);
-		lastHourComboBox.addActionListener(this);
-		lastMinuteComboBox.addActionListener(this);
+		choiceButton1.addActionListener(this);
+		choiceButton2.addActionListener(this);
+		RfirstYearComboBox.addActionListener(this);
+		RfirstMonthComboBox.addActionListener(this);
+		RfirstDateComboBox.addActionListener(this);
+		RfirstHourComboBox.addActionListener(this);
+		RfirstMinuteComboBox.addActionListener(this);
+		RlastYearComboBox.addActionListener(this);
+		RlastMonthComboBox.addActionListener(this);
+		RlastDateComboBox.addActionListener(this);
+		RlastHourComboBox.addActionListener(this);
+		RlastMinuteComboBox.addActionListener(this);
 		rangeComboBox.addActionListener(this);
 		objectComboBox1.addActionListener(this);
 		objectComboBox2.addActionListener(this);
@@ -969,6 +1074,16 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				e3.printStackTrace();
 			} catch(Exception e3) {
 				e3.printStackTrace();
+			}
+		} else if(e.getSource() == choiceButton1) {
+			if(choiceButton1.getText().equals("選択")) {
+				choiceButton1.setText("選択中");
+				choiceButton2.setText("選択");
+			}
+		} else if(e.getSource() == choiceButton2) {
+			if(choiceButton2.getText().equals("選択")) {
+				choiceButton2.setText("選択中");
+				choiceButton1.setText("選択");
 			}
 		} else if(e.getSource() == aggregateButton) {
 			//集計するためのSQLを作成する
@@ -1518,6 +1633,44 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		//filterSQLをリセットする
 		filterSQL = ""; 
+		return str;
+	}
+	
+	//時間についてのSQL文を作成するメソッド
+	public String timeRangeSQL() {
+		String str = "";
+		if(choiceButton1.getText().equals("選択中")){
+			str += " AND 販売日時 >= '" + firstYearComboBox.getSelectedItem() + "-" + firstMonthComboBox.getSelectedItem() + 
+					"-" + firstDateComboBox.getSelectedItem() + " " + firstHourComboBox.getSelectedItem() + ":" + firstMinuteComboBox.getSelectedItem() + "'";
+			str += " AND 販売日時 <= '" + lastYearComboBox.getSelectedItem() + "-" + lastMonthComboBox.getSelectedItem() + 
+					"-" + lastDateComboBox.getSelectedItem() + " " + lastHourComboBox.getSelectedItem() + ":" + lastMinuteComboBox.getSelectedItem() + "'";
+		} else if(choiceButton2.getText().equals("選択中")) {
+			if(!RfirstYearComboBox.getSelectedItem().equals("指定なし")) {
+				str = "SELECT *, DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%Y') <= 24;";
+				
+			}
+			if(!RfirstMonthComboBox.getSelectedItem().equals("指定なし")) {
+				str = "SELECT *, DATE_FORMAT(販売日時, '%m') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%m') <= 24;";
+				//SELECT *, DATE_FORMAT(販売日時, '%m') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%m') <= '2';
+				//mをMと大文字にするとjanuaryという文字列で抽出されるので注意
+			}
+			if(!RfirstDateComboBox.getSelectedItem().equals("指定なし")) {
+				str = "SELECT *, DATE_FORMAT(販売日時, '%d') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%d') <= 24;";
+			}
+			if(!RfirstHourComboBox.getSelectedItem().equals("指定なし")) {
+				str = "SELECT *, DATE_FORMAT(販売日時, '%H') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%H') <= 24;";
+				//SELECT *, DATE_FORMAT(販売日時, '%H:%m') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H:%m') <= '15:00';
+				//%m or ％Mだと月で抽出される。また、12時から13時だと<=にしている関係から13時台も抽出してしまう。よって時と分はセットにする。
+			}
+			if(!RfirstMinuteComboBox.getSelectedItem().equals("指定なし")) {
+				str = "SELECT *, DATE_FORMAT(販売日時, '%M') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%M') <= 24;";
+			}
+			//汎用SQL
+			//SELECT {sum(小計) or sum(個数) or (count(T.伝票番号))} AS 集計結果 
+			//FROM (SELECT *, DATE_FORMAT(販売日時, '%{ ? }'), LEFT(商品コード, 1) AS 先頭コード FROM 売上マスタ WHERE + timeRangeSQL + filterSQL {+ GROUP BY 伝票番号}) T
+			//WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';;
+			
+		}
 		return str;
 	}
 	
