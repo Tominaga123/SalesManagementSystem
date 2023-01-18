@@ -268,6 +268,11 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	String PASS = "password";
 	String SQL;
 	String filterSQL = "";
+	String selectSQL = "SELECT";
+	String subSelectSQL = "SELECT *"; 
+	String timeSQL = ""; 
+	String groupBySQL = "";
+	String whereSQL = "";
 	Connection conn;
 	Statement stmt;
 	ResultSet rs;
@@ -1385,10 +1390,17 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		flagLabel.setText(null);
 	}
 	
+	//集計のためのSQLを作成するメソッド
 	public String createAggregateSQL(JComboBox fyBox, JComboBox lyBox, JComboBox fmBox, JComboBox lmBox, 
 			JComboBox fdBox, JComboBox ldBox, JComboBox fhBox, JComboBox lhBox, JComboBox fmiBox, JComboBox lmiBox,
 			JComboBox rBox, JComboBox oBox1, JComboBox oBox2) {
-		String str = "";
+		
+		//returnで返す文字列
+		String str = ""; 
+	
+		//時間の条件を指定するSQLを作成する
+		timeRangeSQL();
+		System.out.println("timeSQL : " + timeSQL);
 		
 		//objectComboBox1が「商品」「店員」「伝票」のいずれかで場合分け
 		switch((String)oBox1.getSelectedItem()) {
@@ -1398,122 +1410,118 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			switch((String)oBox2.getSelectedItem()) {
 			case "売上額":
 				if(rBox.getSelectedItem().equals("すべて")) {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//「すべて」の「商品」の「売上額」に応じた条件を指定するSQL
+					selectSQL += " SUM(小計)";
 					//最終的なSQL文
-					str = "SELECT sum(小計) AS 集計結果"
-							+ " FROM 売上マスタ"
-							+ " WHERE" + filterSQL + ";";
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";";  
+//					str = "SELECT sum(小計) AS 集計結果"
+//							+ " FROM 売上マスタ"
+//							+ " WHERE" + filterSQL + ";";
 				} else {
 					if(((String)rBox.getSelectedItem()).contains("群")) {
-						//群の場合
-						filterSQL += " 1";
-						//時間の条件を追加
-						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-						
-						str = "SELECT SUM(小計) AS 集計結果 "
-								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 小計 FROM 売上マスタ WHERE" + filterSQL + ") T "
-								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
-						
+						//「〇群」の「商品」の「売上額」に応じた条件を指定するSQL
+						selectSQL += " SUM(小計)";
+						subSelectSQL += " ,LEFT(商品コード, 1) AS 先頭コード";
+						whereSQL += " WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "'";
+						//最終的なSQL文
+//						str = selectSQL + " AS 集計結果"
+//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//							+ whereSQL + ";";  
+//						str = "SELECT SUM(小計) AS 集計結果 "
+//								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 小計 FROM 売上マスタ WHERE" + filterSQL + ") T "
+//								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
-						//通常の商品コードの場合
-						filterSQL += " 1";
-						//時間の条件を追加
-						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-						//商品コードの条件を追加
+						//「特定の商品コード」の「商品」の「売上額」に応じた条件を指定するSQL
+						selectSQL += " SUM(小計)";
 						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
-						str = "SELECT sum(小計) AS 集計結果 "
-								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
+						//最終的なSQL文
+//						str = selectSQL + " AS 集計結果"
+//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//							+ whereSQL + ";";  						
+//						str = "SELECT sum(小計) AS 集計結果 "
+//								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 					}
 				}
-			
 				unitLabel.setText("円");
 				break;
 			case "売上件数":
 				if(rBox.getSelectedItem().equals("すべて")) {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					str = "SELECT count(T.伝票番号) AS 集計結果 "
-							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
+					//「すべて」の「商品」の「売上件数」に応じた条件を指定するSQL
+					selectSQL += " COUNT(伝票番号)";
+					//最終的なSQL文
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";";  
+//					str = "SELECT count(T.伝票番号) AS 集計結果 "
+//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 				} else {
 					if(((String)rBox.getSelectedItem()).contains("群")) {
-						//群が含まれている場合
-						filterSQL += " 1";
-						//時間の条件を追加
-						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-						
-						str = "SELECT count(T.伝票番号) AS 集計結果 "
-								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 伝票番号 FROM 売上マスタ WHERE" + filterSQL + ") T "
-								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
+						//「〇群」の「商品」の「売上件数」に応じた条件を指定するSQL
+						selectSQL += " COUNT(伝票番号)";
+						subSelectSQL += " ,LEFT(商品コード, 1) AS 先頭コード";
+						whereSQL += " WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "'";
+						//最終的なSQL文
+//						str = selectSQL + " AS 集計結果"
+//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//							+ whereSQL + ";";  
+//						str = "SELECT count(T.伝票番号) AS 集計結果 "
+//								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 伝票番号 FROM 売上マスタ WHERE" + filterSQL + ") T "
+//								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
-						//通常の商品コードの場合
-						filterSQL += " 1";
-						//時間の条件を追加
-						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-						//商品コードの条件を追加
+						//「特定の商品コード」の「商品」の「売上件数」に応じた条件を指定するSQL
+						selectSQL += " COUNT(伝票番号)";
 						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
-						str = "SELECT count(T.伝票番号) AS 集計結果 "
-								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+						//最終的なSQL文
+//						str = selectSQL + " AS 集計結果"
+//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//							+ whereSQL + ";";  						
+//						str = "SELECT count(T.伝票番号) AS 集計結果 "
+//								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 					}
 				}
 				unitLabel.setText("件");
 				break;
 			case "売上個数":
+				//SELECT {sum(小計) or sum(個数) or (count(T.伝票番号))} AS 集計結果 
+				//FROM (SELECT *, LEFT(商品コード, 1) AS 先頭コード FROM 売上マスタ WHERE 1 + timeRangeSQL + filterSQL {+ GROUP BY 伝票番号}) T
+				//WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';;
+				//String selectSQL = "SELECT"; String subSelectSQL = "SELECT *"; String timeSQL = ""; String groupBySQL = "";
+				
 				if(rBox.getSelectedItem().equals("すべて")) {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					str = "SELECT sum(個数) AS 集計結果 "
-							+ "FROM 売上マスタ"
-							+ " WHERE" + filterSQL + ";";
+					//「すべて」の「商品」の「売上個数」に応じた条件を指定するSQL
+					selectSQL += " SUM(個数)";
+					//最終的なSQL文
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";";  
+//					str = "SELECT sum(個数) AS 集計結果 "
+//							+ "FROM 売上マスタ"
+//							+ " WHERE" + filterSQL + ";";
 				} else {
 					if(((String)rBox.getSelectedItem()).contains("群")) {
-						//群が含まれている場合
-						filterSQL += " 1";
-						//時間の条件を追加
-						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-						
-						str = "SELECT SUM(個数) AS 集計結果 "
-								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 個数 FROM 売上マスタ WHERE" + filterSQL + ") T "
-								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
+						//「〇群」の「商品」の「売上個数」に応じた条件を指定するSQL
+						selectSQL += " SUM(個数)";
+						subSelectSQL += " ,LEFT(商品コード, 1) AS 先頭コード";
+						whereSQL += " WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "'";
+						//最終的なSQL文
+//						str = selectSQL + " AS 集計結果"
+//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//							+ whereSQL + ";";  						
+//						str = "SELECT SUM(個数) AS 集計結果 "
+//								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 個数 FROM 売上マスタ WHERE" + filterSQL + ") T "
+//								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
-						//通常の商品コードの場合
-						filterSQL += " 1";
-						//時間の条件を追加
-						filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-								"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-						filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-								"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-						//商品コードの条件を追加
+						//「特定の商品コード」の「商品」の「売上個数」に応じた条件を指定するSQL
+						selectSQL += " SUM(個数)";
 						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
-						str = "SELECT sum(個数) AS 集計結果 "
-								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
+						//最終的なSQL文
+//						str = selectSQL + " AS 集計結果"
+//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//							+ whereSQL + ";";  	
+//						str = "SELECT sum(個数) AS 集計結果 "
+//								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 					}
 				}
 				unitLabel.setText("個");
@@ -1525,51 +1533,50 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			switch((String)oBox2.getSelectedItem()) {
 			case "売上額":
 				if(rBox.getSelectedItem().equals("すべて")) {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//「すべて」の「店員」の「売上額」に応じた条件を指定するSQL
+					selectSQL += " SUM(小計)";
 					//最終的なSQL文
-					str = "SELECT sum(小計) AS 集計結果"
-							+ " FROM 売上マスタ"
-							+ " WHERE" + filterSQL + ";";
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";";  
+//					str = "SELECT sum(小計) AS 集計結果"
+//							+ " FROM 売上マスタ"
+//							+ " WHERE" + filterSQL + ";";
 				} else {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					//店員コードの条件を追加
+					//「特定の店員コード」の「店員」の「売上額」に応じた条件を指定するSQL
+					selectSQL += " SUM(小計)";
 					filterSQL += " AND 店員コード = '" + rangeComboBox.getSelectedItem() + "'";
-					str = "SELECT sum(小計) AS 集計結果 "
-							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
+					//最終的なSQL文
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";"; 
+//					str = "SELECT sum(小計) AS 集計結果 "
+//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 				}
 				unitLabel.setText("円");
 				break;
 			case "売上件数":
 				if(rBox.getSelectedItem().equals("すべて")) {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					str = "SELECT count(T.伝票番号) AS 集計結果 "
-							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+					//「すべて」の「店員」の「売上件数」に応じた条件を指定するSQL
+					selectSQL += " COUNT(伝票番号)";
+					groupBySQL += " GROUP BY 伝票番号";
+					//最終的なSQL文
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";"; 
+//					str = "SELECT count(T.伝票番号) AS 集計結果 "
+//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				} else {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					//店員コードの条件を追加
+					//「特定の店員コード」の「店員」の「売上件数」に応じた条件を指定するSQL
+					selectSQL += " COUNT(伝票番号)";
 					filterSQL += " AND 店員コード = '" + rangeComboBox.getSelectedItem() + "'";
-					str = "SELECT count(T.伝票番号) AS 集計結果 "
-							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+					groupBySQL += " GROUP BY 伝票番号";
+					//最終的なSQL文
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";";
+//					str = "SELECT count(T.伝票番号) AS 集計結果 "
+//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				}
 				unitLabel.setText("件");
 			}
@@ -1580,98 +1587,102 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			switch((String)oBox2.getSelectedItem()) {
 			case "売上額":
 				if(rBox.getSelectedItem().equals("すべて")) {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
+					//「すべて」の「伝票」の「売上額」に応じた条件を指定するSQL
+					selectSQL += " SUM(小計)";
 					//最終的なSQL文
-					str = "SELECT sum(小計) AS 集計結果"
-							+ " FROM 売上マスタ"
-							+ " WHERE" + filterSQL + ";";
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";"; 
+//					str = "SELECT sum(小計) AS 集計結果"
+//							+ " FROM 売上マスタ"
+//							+ " WHERE" + filterSQL + ";";
 				} else {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					//伝票番号の条件を追加
+					//「特定の伝票番号」の「伝票」の「売上額」に応じた条件を指定するSQL
+					selectSQL += " SUM(小計)";
 					filterSQL += " AND 伝票番号 = " + rangeComboBox.getSelectedItem();
 					//最終的なSQL文
-					str = "SELECT sum(小計) AS 集計結果"
-							+ " FROM 売上マスタ"
-							+ " WHERE" + filterSQL + ";";
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";"; 
+//					str = "SELECT sum(小計) AS 集計結果"
+//							+ " FROM 売上マスタ"
+//							+ " WHERE" + filterSQL + ";";
 				}
 				unitLabel.setText("円");
 				break;
 			case "件数":
 				if(rBox.getSelectedItem().equals("すべて")) {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					str = "SELECT count(T.伝票番号) AS 集計結果 "
-							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+					//「すべて」の「伝票」の「件数」に応じた条件を指定するSQL
+					selectSQL += " COUNT(伝票番号)";
+					groupBySQL += " GROUP BY 伝票番号";
+					//最終的なSQL文
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";";  
+//					str = "SELECT count(T.伝票番号) AS 集計結果 "
+//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				} else {
-					filterSQL += " 1";
-					//時間の条件を追加
-					filterSQL += " AND 販売日時 >= '" + fyBox.getSelectedItem() + "-" + fmBox.getSelectedItem() + 
-							"-" + fdBox.getSelectedItem() + " " + fhBox.getSelectedItem() + ":" + fmiBox.getSelectedItem() + "'";
-					filterSQL += " AND 販売日時 <= '" + lyBox.getSelectedItem() + "-" + lmBox.getSelectedItem() + 
-							"-" + ldBox.getSelectedItem() + " " + lhBox.getSelectedItem() + ":" + lmiBox.getSelectedItem() + "'";
-					//伝票番号の条件を追加
+					//「特定の伝票番号」の「伝票」の「件数」に応じた条件を指定するSQL
+					selectSQL += " COUNT(伝票番号)";
 					filterSQL += " AND 伝票番号 = " + rangeComboBox.getSelectedItem();
-					str = "SELECT count(T.伝票番号) AS 集計結果 "
-							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
+					groupBySQL += " GROUP BY 伝票番号";
+					//最終的なSQL文
+//					str = selectSQL + " AS 集計結果"
+//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+//						+ whereSQL + ";";  
+//					str = "SELECT count(T.伝票番号) AS 集計結果 "
+//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				}
 				unitLabel.setText("件");
 			}
 		}
-		//filterSQLをリセットする
+		//最終的なSQL文
+		str = selectSQL + " AS 集計結果"
+			+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+			+ whereSQL + ";";  
+		//SQLをリセットする
 		filterSQL = ""; 
+		filterSQL = "";
+		selectSQL = "SELECT";
+		subSelectSQL = "SELECT *"; 
+		timeSQL = ""; 
+		groupBySQL = "";
+		whereSQL = "";
 		return str;
 	}
 	
 	//時間についてのSQL文を作成するメソッド
-	public String timeRangeSQL() {
-		String str = "";
-		if(choiceButton1.getText().equals("選択中")){
-			str += " AND 販売日時 >= '" + firstYearComboBox.getSelectedItem() + "-" + firstMonthComboBox.getSelectedItem() + 
+	public void timeRangeSQL() {
+		//ある特定の期間を集計する場合
+		if(choiceButton1.getText().equals("選択中")){ 
+			timeSQL += " AND 販売日時 >= '" + firstYearComboBox.getSelectedItem() + "-" + firstMonthComboBox.getSelectedItem() + 
 					"-" + firstDateComboBox.getSelectedItem() + " " + firstHourComboBox.getSelectedItem() + ":" + firstMinuteComboBox.getSelectedItem() + "'";
-			str += " AND 販売日時 <= '" + lastYearComboBox.getSelectedItem() + "-" + lastMonthComboBox.getSelectedItem() + 
+			timeSQL += " AND 販売日時 <= '" + lastYearComboBox.getSelectedItem() + "-" + lastMonthComboBox.getSelectedItem() + 
 					"-" + lastDateComboBox.getSelectedItem() + " " + lastHourComboBox.getSelectedItem() + ":" + lastMinuteComboBox.getSelectedItem() + "'";
-		} else if(choiceButton2.getText().equals("選択中")) {
-			if(!RfirstYearComboBox.getSelectedItem().equals("指定なし")) {
-				str = "SELECT *, DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%Y') <= 24;";
-				
-			}
+		} 
+		//繰り返される一定の期間を集計する場合
+		else if(choiceButton2.getText().equals("選択中")) { 
+			//月で抽出する
+			//なお、mをM(大文字)にするとjanuaryという文字列で抽出されるので注意
 			if(!RfirstMonthComboBox.getSelectedItem().equals("指定なし")) {
-				str = "SELECT *, DATE_FORMAT(販売日時, '%m') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%m') <= 24;";
-				//SELECT *, DATE_FORMAT(販売日時, '%m') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%m') <= '2';
-				//mをMと大文字にするとjanuaryという文字列で抽出されるので注意
+				timeSQL += " AND DATE_FORMAT(販売日時, '%m') >= " + RfirstMonthComboBox.getSelectedItem() 
+				+ " AND DATE_FORMAT(販売日時, '%m') <= " + RlastMonthComboBox.getSelectedItem() ;
 			}
+			//日付で抽出する
 			if(!RfirstDateComboBox.getSelectedItem().equals("指定なし")) {
-				str = "SELECT *, DATE_FORMAT(販売日時, '%d') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%d') <= 24;";
+				timeSQL += " AND DATE_FORMAT(販売日時, '%d') >= " + RfirstDateComboBox.getSelectedItem() 
+				+ " AND DATE_FORMAT(販売日時, '%d') <= " + RlastDateComboBox.getSelectedItem() ;
 			}
+			//時刻で抽出する
+			//なお、%m or ％Mだと月で抽出される。また、12時から13時だと<=にしている関係から13時台も抽出してしまう
+			//よって時と分はセットにする
 			if(!RfirstHourComboBox.getSelectedItem().equals("指定なし")) {
-				str = "SELECT *, DATE_FORMAT(販売日時, '%H') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%H') <= 24;";
-				//SELECT *, DATE_FORMAT(販売日時, '%H:%m') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H:%m') <= '15:00';
-				//%m or ％Mだと月で抽出される。また、12時から13時だと<=にしている関係から13時台も抽出してしまう。よって時と分はセットにする。
+				timeSQL += " AND TIME(販売日時) BETWEEN '" + RfirstHourComboBox.getSelectedItem() + ":" + 
+				RfirstMinuteComboBox.getSelectedItem() + "' AND '"+ RlastHourComboBox.getSelectedItem() + ":" + 
+				RlastMinuteComboBox.getSelectedItem() + "'";
 			}
-			if(!RfirstMinuteComboBox.getSelectedItem().equals("指定なし")) {
-				str = "SELECT *, DATE_FORMAT(販売日時, '%M') AS 時間 FROM 売上マスタ WHERE DATE_FORMAT(販売日時, '%H') >=15 AND DATE_FORMAT(販売日時, '%M') <= 24;";
-			}
-			//汎用SQL
-			//SELECT {sum(小計) or sum(個数) or (count(T.伝票番号))} AS 集計結果 
-			//FROM (SELECT *, DATE_FORMAT(販売日時, '%{ ? }'), LEFT(商品コード, 1) AS 先頭コード FROM 売上マスタ WHERE + timeRangeSQL + filterSQL {+ GROUP BY 伝票番号}) T
-			//WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';;
-			
 		}
-		return str;
+		System.out.println("timeSQL : " + timeSQL);
 	}
 	
 	//コンボボックスを現在の日時で初期化するメソッド
