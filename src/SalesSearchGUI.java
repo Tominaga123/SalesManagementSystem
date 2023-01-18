@@ -123,11 +123,9 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JLabel RkaraLabel4 = new JLabel("  ～"); //「～」を表示するラベル
 	JComboBox RlastHourComboBox = new JComboBox(); //何時までかを選択するボックス
 	JLabel RhourUnitLabel2 = new JLabel("時 "); //「時」を表示するラベル
-	JLabel RjoshiLabel4 = new JLabel("  の"); //「の」を表示するラベル
 		
 	JComboBox RfirstMinuteComboBox = new JComboBox(); //何分からかを選択するボックス
 	JLabel RminuteUnitLabel1 = new JLabel("分 "); //「分」を表示するラベル
-	JLabel RkaraLabel5 = new JLabel("  ～"); //「～」を表示するラベル
 	JComboBox RlastMinuteComboBox = new JComboBox(); //何分までかを選択するボックス
 	JLabel RminuteUnitLabel2 = new JLabel("分 "); //「分」を表示するラベル
 	
@@ -843,14 +841,11 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		
 		panel4_5.add(RfirstHourComboBox);
 		panel4_5.add(RhourUnitLabel1);
+		panel4_5.add(RfirstMinuteComboBox);
+		panel4_5.add(RminuteUnitLabel1);
 		panel4_5.add(RkaraLabel4);
 		panel4_5.add(RlastHourComboBox);
 		panel4_5.add(RhourUnitLabel2);
-		panel4_5.add(RjoshiLabel4);
-		
-		panel4_5.add(RfirstMinuteComboBox);
-		panel4_5.add(RminuteUnitLabel1);
-		panel4_5.add(RkaraLabel5);
 		panel4_5.add(RlastMinuteComboBox);
 		panel4_5.add(RminuteUnitLabel2);
 		
@@ -1412,36 +1407,16 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				if(rBox.getSelectedItem().equals("すべて")) {
 					//「すべて」の「商品」の「売上額」に応じた条件を指定するSQL
 					selectSQL += " SUM(小計)";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";";  
-//					str = "SELECT sum(小計) AS 集計結果"
-//							+ " FROM 売上マスタ"
-//							+ " WHERE" + filterSQL + ";";
 				} else {
 					if(((String)rBox.getSelectedItem()).contains("群")) {
 						//「〇群」の「商品」の「売上額」に応じた条件を指定するSQL
 						selectSQL += " SUM(小計)";
 						subSelectSQL += " ,LEFT(商品コード, 1) AS 先頭コード";
 						whereSQL += " WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "'";
-						//最終的なSQL文
-//						str = selectSQL + " AS 集計結果"
-//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//							+ whereSQL + ";";  
-//						str = "SELECT SUM(小計) AS 集計結果 "
-//								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 小計 FROM 売上マスタ WHERE" + filterSQL + ") T "
-//								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
 						//「特定の商品コード」の「商品」の「売上額」に応じた条件を指定するSQL
 						selectSQL += " SUM(小計)";
 						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
-						//最終的なSQL文
-//						str = selectSQL + " AS 集計結果"
-//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//							+ whereSQL + ";";  						
-//						str = "SELECT sum(小計) AS 集計結果 "
-//								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 					}
 				}
 				unitLabel.setText("円");
@@ -1450,78 +1425,34 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				if(rBox.getSelectedItem().equals("すべて")) {
 					//「すべて」の「商品」の「売上件数」に応じた条件を指定するSQL
 					selectSQL += " COUNT(伝票番号)";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";";  
-//					str = "SELECT count(T.伝票番号) AS 集計結果 "
-//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 				} else {
 					if(((String)rBox.getSelectedItem()).contains("群")) {
 						//「〇群」の「商品」の「売上件数」に応じた条件を指定するSQL
 						selectSQL += " COUNT(伝票番号)";
 						subSelectSQL += " ,LEFT(商品コード, 1) AS 先頭コード";
 						whereSQL += " WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "'";
-						//最終的なSQL文
-//						str = selectSQL + " AS 集計結果"
-//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//							+ whereSQL + ";";  
-//						str = "SELECT count(T.伝票番号) AS 集計結果 "
-//								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 伝票番号 FROM 売上マスタ WHERE" + filterSQL + ") T "
-//								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
 						//「特定の商品コード」の「商品」の「売上件数」に応じた条件を指定するSQL
 						selectSQL += " COUNT(伝票番号)";
 						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
-						//最終的なSQL文
-//						str = selectSQL + " AS 集計結果"
-//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//							+ whereSQL + ";";  						
-//						str = "SELECT count(T.伝票番号) AS 集計結果 "
-//								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 					}
 				}
 				unitLabel.setText("件");
 				break;
 			case "売上個数":
-				//SELECT {sum(小計) or sum(個数) or (count(T.伝票番号))} AS 集計結果 
-				//FROM (SELECT *, LEFT(商品コード, 1) AS 先頭コード FROM 売上マスタ WHERE 1 + timeRangeSQL + filterSQL {+ GROUP BY 伝票番号}) T
-				//WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';;
-				//String selectSQL = "SELECT"; String subSelectSQL = "SELECT *"; String timeSQL = ""; String groupBySQL = "";
-				
 				if(rBox.getSelectedItem().equals("すべて")) {
 					//「すべて」の「商品」の「売上個数」に応じた条件を指定するSQL
 					selectSQL += " SUM(個数)";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";";  
-//					str = "SELECT sum(個数) AS 集計結果 "
-//							+ "FROM 売上マスタ"
-//							+ " WHERE" + filterSQL + ";";
 				} else {
 					if(((String)rBox.getSelectedItem()).contains("群")) {
 						//「〇群」の「商品」の「売上個数」に応じた条件を指定するSQL
 						selectSQL += " SUM(個数)";
 						subSelectSQL += " ,LEFT(商品コード, 1) AS 先頭コード";
 						whereSQL += " WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "'";
-						//最終的なSQL文
-//						str = selectSQL + " AS 集計結果"
-//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//							+ whereSQL + ";";  						
-//						str = "SELECT SUM(個数) AS 集計結果 "
-//								+ "FROM (SELECT LEFT(商品コード, 1) AS 先頭コード, 個数 FROM 売上マスタ WHERE" + filterSQL + ") T "
-//								+ "WHERE 先頭コード = '" + ((String)rBox.getSelectedItem()).replace("群", "") + "';";
 					} else {
 						//「特定の商品コード」の「商品」の「売上個数」に応じた条件を指定するSQL
 						selectSQL += " SUM(個数)";
 						filterSQL += " AND 商品コード = '" + rangeComboBox.getSelectedItem() + "'";
-						//最終的なSQL文
-//						str = selectSQL + " AS 集計結果"
-//							+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//							+ whereSQL + ";";  	
-//						str = "SELECT sum(個数) AS 集計結果 "
-//								+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 					}
 				}
 				unitLabel.setText("個");
@@ -1535,23 +1466,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				if(rBox.getSelectedItem().equals("すべて")) {
 					//「すべて」の「店員」の「売上額」に応じた条件を指定するSQL
 					selectSQL += " SUM(小計)";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";";  
-//					str = "SELECT sum(小計) AS 集計結果"
-//							+ " FROM 売上マスタ"
-//							+ " WHERE" + filterSQL + ";";
 				} else {
 					//「特定の店員コード」の「店員」の「売上額」に応じた条件を指定するSQL
 					selectSQL += " SUM(小計)";
 					filterSQL += " AND 店員コード = '" + rangeComboBox.getSelectedItem() + "'";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";"; 
-//					str = "SELECT sum(小計) AS 集計結果 "
-//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + ") T;";
 				}
 				unitLabel.setText("円");
 				break;
@@ -1560,23 +1478,11 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 					//「すべて」の「店員」の「売上件数」に応じた条件を指定するSQL
 					selectSQL += " COUNT(伝票番号)";
 					groupBySQL += " GROUP BY 伝票番号";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";"; 
-//					str = "SELECT count(T.伝票番号) AS 集計結果 "
-//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				} else {
 					//「特定の店員コード」の「店員」の「売上件数」に応じた条件を指定するSQL
 					selectSQL += " COUNT(伝票番号)";
 					filterSQL += " AND 店員コード = '" + rangeComboBox.getSelectedItem() + "'";
 					groupBySQL += " GROUP BY 伝票番号";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";";
-//					str = "SELECT count(T.伝票番号) AS 集計結果 "
-//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				}
 				unitLabel.setText("件");
 			}
@@ -1589,24 +1495,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				if(rBox.getSelectedItem().equals("すべて")) {
 					//「すべて」の「伝票」の「売上額」に応じた条件を指定するSQL
 					selectSQL += " SUM(小計)";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";"; 
-//					str = "SELECT sum(小計) AS 集計結果"
-//							+ " FROM 売上マスタ"
-//							+ " WHERE" + filterSQL + ";";
 				} else {
 					//「特定の伝票番号」の「伝票」の「売上額」に応じた条件を指定するSQL
 					selectSQL += " SUM(小計)";
 					filterSQL += " AND 伝票番号 = " + rangeComboBox.getSelectedItem();
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";"; 
-//					str = "SELECT sum(小計) AS 集計結果"
-//							+ " FROM 売上マスタ"
-//							+ " WHERE" + filterSQL + ";";
 				}
 				unitLabel.setText("円");
 				break;
@@ -1615,23 +1507,11 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 					//「すべて」の「伝票」の「件数」に応じた条件を指定するSQL
 					selectSQL += " COUNT(伝票番号)";
 					groupBySQL += " GROUP BY 伝票番号";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";";  
-//					str = "SELECT count(T.伝票番号) AS 集計結果 "
-//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				} else {
 					//「特定の伝票番号」の「伝票」の「件数」に応じた条件を指定するSQL
 					selectSQL += " COUNT(伝票番号)";
 					filterSQL += " AND 伝票番号 = " + rangeComboBox.getSelectedItem();
 					groupBySQL += " GROUP BY 伝票番号";
-					//最終的なSQL文
-//					str = selectSQL + " AS 集計結果"
-//						+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
-//						+ whereSQL + ";";  
-//					str = "SELECT count(T.伝票番号) AS 集計結果 "
-//							+ "FROM (SELECT * FROM 売上マスタ WHERE" + filterSQL + " GROUP BY 伝票番号) T;";
 				}
 				unitLabel.setText("件");
 			}
@@ -1655,28 +1535,46 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	public void timeRangeSQL() {
 		//ある特定の期間を集計する場合
 		if(choiceButton1.getText().equals("選択中")){ 
-			timeSQL += " AND 販売日時 >= '" + firstYearComboBox.getSelectedItem() + "-" + firstMonthComboBox.getSelectedItem() + 
-					"-" + firstDateComboBox.getSelectedItem() + " " + firstHourComboBox.getSelectedItem() + ":" + firstMinuteComboBox.getSelectedItem() + "'";
-			timeSQL += " AND 販売日時 <= '" + lastYearComboBox.getSelectedItem() + "-" + lastMonthComboBox.getSelectedItem() + 
-					"-" + lastDateComboBox.getSelectedItem() + " " + lastHourComboBox.getSelectedItem() + ":" + lastMinuteComboBox.getSelectedItem() + "'";
+			timeSQL += " AND 販売日時 >= '" + firstYearComboBox.getSelectedItem() + "-" + 
+			firstMonthComboBox.getSelectedItem() + "-" + firstDateComboBox.getSelectedItem() + " " + 
+			firstHourComboBox.getSelectedItem() + ":" + firstMinuteComboBox.getSelectedItem() + "'";
+			
+			timeSQL += " AND 販売日時 <= '" + lastYearComboBox.getSelectedItem() + "-" + 
+			lastMonthComboBox.getSelectedItem() + "-" + lastDateComboBox.getSelectedItem() + " " + 
+			lastHourComboBox.getSelectedItem() + ":" + lastMinuteComboBox.getSelectedItem() + "'";
 		} 
 		//繰り返される一定の期間を集計する場合
 		else if(choiceButton2.getText().equals("選択中")) { 
+			//年で抽出する
+			//どちらのコンボボックスも「指定なし」でない場合のみ、条件に追加
+			if(!(RfirstYearComboBox.getSelectedItem().equals("指定なし")||
+					RlastYearComboBox.getSelectedItem().equals("指定なし"))) {
+				timeSQL += " AND DATE_FORMAT(販売日時, '%Y') >= " + RfirstYearComboBox.getSelectedItem() 
+				+ " AND DATE_FORMAT(販売日時, '%Y') <= " + RlastYearComboBox.getSelectedItem() ;
+			}
 			//月で抽出する
+			//どちらのコンボボックスも「指定なし」でない場合のみ、条件に追加
 			//なお、mをM(大文字)にするとjanuaryという文字列で抽出されるので注意
-			if(!RfirstMonthComboBox.getSelectedItem().equals("指定なし")) {
+			if(!(RfirstMonthComboBox.getSelectedItem().equals("指定なし")||
+					RlastMonthComboBox.getSelectedItem().equals("指定なし"))) {
 				timeSQL += " AND DATE_FORMAT(販売日時, '%m') >= " + RfirstMonthComboBox.getSelectedItem() 
 				+ " AND DATE_FORMAT(販売日時, '%m') <= " + RlastMonthComboBox.getSelectedItem() ;
 			}
 			//日付で抽出する
-			if(!RfirstDateComboBox.getSelectedItem().equals("指定なし")) {
+			//どちらのコンボボックスも「指定なし」でない場合のみ、条件に追加
+			if(!(RfirstDateComboBox.getSelectedItem().equals("指定なし")||
+					RlastDateComboBox.getSelectedItem().equals("指定なし"))) {
 				timeSQL += " AND DATE_FORMAT(販売日時, '%d') >= " + RfirstDateComboBox.getSelectedItem() 
 				+ " AND DATE_FORMAT(販売日時, '%d') <= " + RlastDateComboBox.getSelectedItem() ;
 			}
 			//時刻で抽出する
+			//どちらのコンボボックスも「指定なし」でない場合のみ、条件に追加
 			//なお、%m or ％Mだと月で抽出される。また、12時から13時だと<=にしている関係から13時台も抽出してしまう
 			//よって時と分はセットにする
-			if(!RfirstHourComboBox.getSelectedItem().equals("指定なし")) {
+			if(!(RfirstHourComboBox.getSelectedItem().equals("指定なし")||
+					RlastHourComboBox.getSelectedItem().equals("指定なし")||
+					RfirstMinuteComboBox.getSelectedItem().equals("指定なし")||
+					RlastMinuteComboBox.getSelectedItem().equals("指定なし"))) {
 				timeSQL += " AND TIME(販売日時) BETWEEN '" + RfirstHourComboBox.getSelectedItem() + ":" + 
 				RfirstMinuteComboBox.getSelectedItem() + "' AND '"+ RlastHourComboBox.getSelectedItem() + ":" + 
 				RlastMinuteComboBox.getSelectedItem() + "'";
