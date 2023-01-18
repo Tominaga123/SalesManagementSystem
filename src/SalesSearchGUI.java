@@ -1518,7 +1518,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		}
 		//最終的なSQL文
 		str = selectSQL + " AS 集計結果"
-			+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 1" + timeSQL + filterSQL + groupBySQL + ") T"
+			+ " FROM (" + subSelectSQL + " FROM 売上マスタ WHERE 削除フラグ = 0" + timeSQL + filterSQL + groupBySQL + ") T"
 			+ whereSQL + ";";  
 		//SQLをリセットする
 		filterSQL = ""; 
