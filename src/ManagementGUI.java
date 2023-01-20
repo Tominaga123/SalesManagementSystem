@@ -52,7 +52,7 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		}else if(e.getSource() == stockManagementButton){
 			
 		}else if(e.getSource() == searchButton){
-			
+			new searchGUI();
 		}else if(e.getSource() == editButton){
 			new editGUI();
 		}
@@ -94,6 +94,39 @@ class salesManagementGUI extends JFrame implements ActionListener{
 		}
 	}
 }
+
+//データ検索画面を生成するクラス
+class searchGUI extends JFrame implements ActionListener{
+	
+	JButton salesSearchButton = new JButton("売上検索、集計"); //売上検索画面を開くボタン
+	JButton clerkSearchButton = new JButton("売上検索、集計"); //店員検索画面を開くボタン
+	JButton goodsSearchButton = new JButton("売上検索、集計"); //商品検索画面を開くボタン
+	
+	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
+	
+	searchGUI(){
+		setTitle("データ検索");
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		panel1.setLayout(new FlowLayout());
+		
+		panel1.add(salesSearchButton);
+		
+		getContentPane().add(panel1);
+
+		salesSearchButton.addActionListener(this);
+		setSize(350,100);
+		setVisible(true);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == salesSearchButton){
+			new SalesSearchGUI();
+		}
+	}
+}
+
+
 
 //どのデータベースを編集するか選択する画面を生成するクラス
 class editGUI extends JFrame implements ActionListener{
