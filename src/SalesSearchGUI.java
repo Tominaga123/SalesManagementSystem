@@ -292,7 +292,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JPanel panel15 = new JPanel();
 	
 	SalesSearchGUI(){
-		setTitle("売上検索");
+		setTitle("売上検索、集計");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		//レイアウト設定
