@@ -53,6 +53,7 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	JButton searchButton = new JButton("絞り込み"); //検索ボタン
 	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
 	
+	
 	JLabel cLabel = new JLabel("店員コード", JLabel.CENTER); //店員コードであることを示すラベル
 	JTextField codeTextField1 = new JTextField(); //店員コードを編集するテキストフィールド
 	JTextField codeTextField2 = new JTextField();
@@ -143,6 +144,8 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	
 	JButton nextButton = new JButton("次へ"); //ページをめくるボタン
 	JButton previousButton = new JButton("前へ"); 
+	JButton firstButton = new JButton("最初へ");
+	JButton lastButton = new JButton("最後へ"); 
 	
 	int now, last; //ページをめくる際に使用
 	String newCode; //データの更新、追加後に、当該データがあるページに飛ぶために使用
@@ -390,13 +393,14 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		panel4.add(updateButton10);
 		panel4.add(editButton10);
 
-		
+		panel15.add(firstButton);
 		panel15.add(previousButton);
 		panel15.add(showNumberLabel);
 		panel15.add(snLabel);
 		panel15.add(totalNumberLabel);
 		panel15.add(tnLabel);
 		panel15.add(nextButton);
+		panel15.add(lastButton);
 		
 		getContentPane().add(panel1);
 		getContentPane().add(panel2);
@@ -431,6 +435,8 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		releaseButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
+		firstButton.addActionListener(this);
+		lastButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
 		
@@ -479,7 +485,27 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 			} catch(Exception e3) {
 				e3.printStackTrace();
 			}
-		} else if(e.getSource() == updateButton1) {
+		} 
+		//「最初へ」ボタンを押した場合
+		else if(e.getSource() == firstButton) { 
+			try {
+				rs.beforeFirst(); //先頭行のひとつ前まで戻る
+				result(); //1件目から表示
+				previousButton.setEnabled(false);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} 
+		//「最後へ」ボタンを押した場合
+		else if(e.getSource() == lastButton) { 
+			now = 10 * (int)Math.floor((last-1)/10); //現在行を最終ページのひとつ前に戻す
+			try {
+				rs.absolute(now);
+				result();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}else if(e.getSource() == updateButton1) {
 			update(codeTextField1, nameTextField1, sexComboBox1, birthdayTextField1, flagComboBox1, 1);
 		} else if(e.getSource() == updateButton2) {
 			update(codeTextField2, nameTextField2, sexComboBox2, birthdayTextField2, flagComboBox2, 2);
