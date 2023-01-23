@@ -718,7 +718,4 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		return str;
 	}
 	
-	public static void main(String[] args) {
-		new StockSearchGUI();
-	}
 }
