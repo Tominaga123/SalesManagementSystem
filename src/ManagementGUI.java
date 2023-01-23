@@ -17,7 +17,6 @@ public class ManagementGUI extends JFrame implements ActionListener{
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel(); //コンポーネントを置くパネル
 
-	
 	ManagementGUI(){
 		setTitle("販売管理システム");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
