@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.BoxLayout;
@@ -203,7 +204,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	JPanel panel5 = new JPanel();
 	
 	StockSearchGUI(){
-		setTitle("売上検索、集計");
+		setTitle("在庫検索");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		//レイアウト設定
@@ -680,40 +681,68 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 				inQuantityLabel.setText("0個");
 				inPriceLabel.setText("￥0");
 			}
-			//続いて、表示した商品コードをもとに払出数量・金額を取得する
-			//払出がない場合は0を記す
-			SQL = "SELECT Z.商品コード, 払出数量, 払出数量*仕入単価 AS 払出金額"
-				+ " FROM (SELECT 商品コード, SUM(個数) AS 払出数量 FROM 売上マスタ GROUP BY 商品コード) U,"
-				+ " (SELECT 商品コード, 仕入単価, SUM(仕入数) AS 受入数量, SUM(仕入数)*仕入単価 AS 受入金額"
-				+ " FROM 在庫マスタ GROUP BY 商品コード, 仕入日, 仕入単価) Z"
-				+ " WHERE Z.商品コード = U.商品コード AND Z.商品コード = '" + codeLabel.getText() + "'"
-				+ " GROUP BY Z.商品コード;";
+			//続いて払出数量・金額を取得する
+			//まず日別の仕入数と仕入単価を配列に格納する
+			SQL = "SELECT * FROM 在庫マスタ WHERE 商品コード = '" + codeLabel.getText() + "' ORDER BY 仕入日 ASC;";
 			conn = DriverManager.getConnection(URL, USER, PASS);
 			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			otherRs = stmt.executeQuery(SQL);
+			ArrayList<Integer> inQuantity = new ArrayList<Integer>();
+			ArrayList<Integer> inPrice = new ArrayList<Integer>();
+			//仕入がある場合
 			if(otherRs.next()) {
-				outQuantityLabel.setText(otherRs.getString("払出数量") + "個");
-				outPriceLabel.setText("￥" + otherRs.getString("払出金額"));
-			} else {
+				otherRs.beforeFirst();
+				while(otherRs.next()) {
+					inQuantity.add(otherRs.getInt("仕入数"));
+					inPrice.add(otherRs.getInt("仕入単価"));
+				}
+				for(int i = 0; i < inQuantity.size(); i++) {
+					System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + ", 仕入単価:" + inPrice.get(i));
+				}
+				//払出数量が日別の仕入数を超えるたびに仕入単価を更新して払出金額を計算する
+				SQL = "SELECT * FROM 売上マスタ WHERE 商品コード = '" + codeLabel.getText() + "' AND 削除フラグ = 0 ORDER BY 販売日時 ASC, 伝票番号 ASC;";
+				otherRs = stmt.executeQuery(SQL);
+				int outQuantity = 0; //払出数量の合計
+				int sum = 0; //計算に使用
+				int outPrice = 0; //払出金額の合計
+				int i = 0;
+				while(otherRs.next()) {
+					sum += otherRs.getInt("個数");
+					if(sum > inQuantity.get(i)) {
+						outQuantity += inQuantity.get(i);
+						outPrice += inQuantity.get(i) * inPrice.get(i);
+						sum -= inQuantity.get(i);
+						i++;
+					}
+				}
+				outQuantity += sum;
+				outPrice += sum * inPrice.get(i);
+				outQuantityLabel.setText(Integer.toString(outQuantity) + "個");
+				outPriceLabel.setText("￥" + Integer.toString(outPrice));
+				
+				inQuantity.clear();
+				inPrice.clear();	
+			}
+			//仕入がない場合
+			else {
 				outQuantityLabel.setText("0個");
 				outPriceLabel.setText("￥0");
 			}
+			
 			//最後に、受入数量・金額から払出数量・金額を差し引いて残高を計算する
-			int i = Integer.parseInt(inQuantityLabel.getText().replace("個", "")) - 
+			int q = Integer.parseInt(inQuantityLabel.getText().replace("個", "")) - 
 						Integer.parseInt(outQuantityLabel.getText().replace("個", ""));
 			
-			int j = Integer.parseInt(inPriceLabel.getText().replace("￥", "")) - 
+			int p = Integer.parseInt(inPriceLabel.getText().replace("￥", "")) - 
 						Integer.parseInt(outPriceLabel.getText().replace("￥", ""));
 			
-			balanceQuantityLabel.setText(Integer.toString(i) + "個");
-			balancePriceLabel.setText("￥" + Integer.toString(j));
+			balanceQuantityLabel.setText(Integer.toString(q) + "個");
+			balancePriceLabel.setText("￥" + Integer.toString(p));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
-//SELECT Z.商品コード, 払出数量, 払出数量*仕入単価 AS 払出金額 FROM (SELECT 商品コード, SUM(個数) AS 払出数量 FROM 売上マスタ GROUP BY 商品コード) U, (SELECT 商品コード, 仕入単価, SUM(仕入数) AS 受入数量, SUM(仕入数)*仕入単価 AS 受入金額 FROM 在庫マスタ GROUP BY 商品コード, 仕入日, 仕入単価) Z WHERE Z.商品コード = U.商品コード AND Z.商品コード = 'A001' GROUP BY Z.商品コード;		
-
 	}
 	
 	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド

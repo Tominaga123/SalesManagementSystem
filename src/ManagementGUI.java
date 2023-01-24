@@ -116,7 +116,7 @@ class searchGUI extends JFrame implements ActionListener{
 		clerkSearchButton.addActionListener(this);
 		goodsSearchButton.addActionListener(this);
 		stockSearchButton.addActionListener(this);
-		setSize(350,100);
+		setSize(350,120);
 		setVisible(true);
 	}
 
@@ -160,7 +160,7 @@ class editGUI extends JFrame implements ActionListener{
 		clerkEditButton.addActionListener(this);
 		goodsEditButton.addActionListener(this);
 		stockEditButton.addActionListener(this);
-		setSize(350,100);
+		setSize(350,120);
 		setVisible(true);
 	}
 

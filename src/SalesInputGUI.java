@@ -15,7 +15,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 
 
@@ -45,7 +44,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	JLabel p1Label = new JLabel("単価 ￥"); //単価であることを示すラベル
 	JLabel price1Label = new JLabel("0"); //単価を表すラベル
 	JLabel count1Label = new JLabel("個数"); //商品の個数の入力欄であることを示すラベル
-	JTextField count1TextField = new JTextField("0", 3); //個数の入力欄
+	JComboBox count1ComboBox = new JComboBox(); //個数の入力欄
 	JLabel st1Label = new JLabel("小計 ￥"); //小計であることを示すラベル
 	JLabel subTotal1Label = new JLabel("0"); //小計を表示するラベル
 	
@@ -56,7 +55,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	JLabel p2Label = new JLabel("単価 ￥");
 	JLabel price2Label = new JLabel("0");
 	JLabel count2Label = new JLabel("個数"); 
-	JTextField count2TextField = new JTextField("0", 3);
+	JComboBox count2ComboBox = new JComboBox();
 	JLabel st2Label = new JLabel("小計 ￥");
 	JLabel subTotal2Label = new JLabel("0"); 
 	
@@ -67,7 +66,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	JLabel p3Label = new JLabel("単価 ￥");
 	JLabel price3Label = new JLabel("0");
 	JLabel count3Label = new JLabel("個数"); 
-	JTextField count3TextField = new JTextField("0", 3);
+	JComboBox count3ComboBox = new JComboBox();
 	JLabel st3Label = new JLabel("小計 ￥");
 	JLabel subTotal3Label = new JLabel("0"); 
 	
@@ -190,9 +189,15 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 			e2.printStackTrace();
 		}
 		
-		//商品コードを選択するコンボボックスに項目を追加
+		//商品コードと商品名を選択するコンボボックスに項目を追加
+		//ただし、在庫残高があるもののみ
 		try {
-			SQL = "SELECT 商品コード FROM 商品マスタ WHERE 削除フラグ = 0;";
+			SQL = "SELECT Z.商品コード, 商品名, SUM(受入数量)-払出数量 AS 残高数量"
+					+ " FROM (SELECT 商品コード, SUM(仕入数) AS 受入数量 FROM 在庫マスタ GROUP BY 商品コード) Z,"
+					+ " (SELECT * FROM 商品マスタ WHERE 削除フラグ = 0) S,"
+					+ " (SELECT 商品コード, SUM(個数) AS 払出数量 FROM 売上マスタ GROUP BY 商品コード) U"
+					+ " WHERE Z.商品コード = S.商品コード AND Z.商品コード = U.商品コード"
+					+ " GROUP BY Z.商品コード;";
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
@@ -200,27 +205,15 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 				goodsCode1ComboBox.addItem(rs.getString("商品コード"));
 				goodsCode2ComboBox.addItem(rs.getString("商品コード"));
 				goodsCode3ComboBox.addItem(rs.getString("商品コード"));
-			}
-			goodsCode1ComboBox.setSelectedItem(null);
-			goodsCode2ComboBox.setSelectedItem(null);
-			goodsCode3ComboBox.setSelectedItem(null);
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		
-		//商品名を選択するコンボボックスに項目を追加
-		try {
-			SQL = "SELECT 商品名 FROM 商品マスタ WHERE 削除フラグ = 0;";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
-			while(rs.next()){
+				
 				goodsName1ComboBox.addItem(rs.getString("商品名"));
 				goodsName2ComboBox.addItem(rs.getString("商品名"));
 				goodsName3ComboBox.addItem(rs.getString("商品名"));
 			}
+			goodsCode1ComboBox.setSelectedItem(null);
+			goodsCode2ComboBox.setSelectedItem(null);
+			goodsCode3ComboBox.setSelectedItem(null);
+			
 			goodsName1ComboBox.setSelectedItem(null);
 			goodsName2ComboBox.setSelectedItem(null);
 			goodsName3ComboBox.setSelectedItem(null);
@@ -257,7 +250,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		panel3.add(p1Label);
 		panel3.add(price1Label);
 		panel3.add(count1Label);
-		panel3.add(count1TextField);
+		panel3.add(count1ComboBox);
 		panel3.add(st1Label);
 		panel3.add(subTotal1Label);
 		
@@ -268,7 +261,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		panel4.add(p2Label);
 		panel4.add(price2Label);
 		panel4.add(count2Label);
-		panel4.add(count2TextField);
+		panel4.add(count2ComboBox);
 		panel4.add(st2Label);
 		panel4.add(subTotal2Label);
 		
@@ -279,7 +272,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		panel5.add(p3Label);
 		panel5.add(price3Label);
 		panel5.add(count3Label);
-		panel5.add(count3TextField);
+		panel5.add(count3ComboBox);
 		panel5.add(st3Label);
 		panel5.add(subTotal3Label);
 		
@@ -314,9 +307,9 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		goodsName1ComboBox.addActionListener(this);
 		goodsName2ComboBox.addActionListener(this);
 		goodsName3ComboBox.addActionListener(this);
-		count1TextField.addActionListener(this);
-		count2TextField.addActionListener(this);
-		count3TextField.addActionListener(this);
+		count1ComboBox.addActionListener(this);
+		count2ComboBox.addActionListener(this);
+		count3ComboBox.addActionListener(this);
 		insertButton.addActionListener(this);
 		resetButton.addActionListener(this);
 		goodsCode1ComboBox.setEnabled(false);
@@ -363,44 +356,44 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 			goodsCode1ComboBox.setEnabled(true);
 			goodsName1ComboBox.setEnabled(true);
 		}else if(e.getSource() == goodsCode1ComboBox){ //商品コードを使用して商品名、単価を取得し、小計、合計を更新
-			selectGoodsCodeSQL(goodsCode1ComboBox, goodsName1ComboBox, price1Label, count1TextField, subTotal1Label, goodsCode2ComboBox, goodsName2ComboBox);
+			selectGoodsCodeSQL(goodsCode1ComboBox, goodsName1ComboBox, price1Label, count1ComboBox, subTotal1Label, goodsCode2ComboBox, goodsName2ComboBox);
 			
 		}else if(e.getSource() == goodsCode2ComboBox){ //商品コードを使用して商品名、単価を取得し、小計、合計を更新
-			selectGoodsCodeSQL(goodsCode2ComboBox, goodsName2ComboBox, price2Label, count2TextField, subTotal2Label, goodsCode3ComboBox, goodsName3ComboBox);
+			selectGoodsCodeSQL(goodsCode2ComboBox, goodsName2ComboBox, price2Label, count2ComboBox, subTotal2Label, goodsCode3ComboBox, goodsName3ComboBox);
 			
 		}else if(e.getSource() == goodsCode3ComboBox){ //商品コードを使用して商品名、単価を取得し、小計、合計を更新
-			selectGoodsCodeSQL(goodsCode3ComboBox, goodsName3ComboBox, price3Label, count3TextField, subTotal3Label, goodsCode3ComboBox, goodsName3ComboBox);
+			selectGoodsCodeSQL(goodsCode3ComboBox, goodsName3ComboBox, price3Label, count3ComboBox, subTotal3Label, goodsCode3ComboBox, goodsName3ComboBox);
 			
 		}else if(e.getSource() == goodsName1ComboBox){ //商品名を使用して商品コード、単価を取得し、小計、合計を更新
-			selectGoodsNameSQL(goodsCode1ComboBox, goodsName1ComboBox, price1Label, count1TextField, subTotal1Label, goodsCode2ComboBox, goodsName2ComboBox);
+			selectGoodsNameSQL(goodsCode1ComboBox, goodsName1ComboBox, price1Label, count1ComboBox, subTotal1Label, goodsCode2ComboBox, goodsName2ComboBox);
 			
 		}else if(e.getSource() == goodsName2ComboBox){ //商品名を使用して商品コード、単価を取得し、小計、合計を更新
-			selectGoodsNameSQL(goodsCode2ComboBox, goodsName2ComboBox, price2Label, count2TextField, subTotal2Label, goodsCode3ComboBox, goodsName3ComboBox);
+			selectGoodsNameSQL(goodsCode2ComboBox, goodsName2ComboBox, price2Label, count2ComboBox, subTotal2Label, goodsCode3ComboBox, goodsName3ComboBox);
 			
 		}else if(e.getSource() == goodsName3ComboBox){ //商品名を使用して商品コード、単価を取得し、小計、合計を更新
-			selectGoodsNameSQL(goodsCode3ComboBox, goodsName3ComboBox, price3Label, count3TextField, subTotal3Label, goodsCode3ComboBox, goodsName3ComboBox);
+			selectGoodsNameSQL(goodsCode3ComboBox, goodsName3ComboBox, price3Label, count3ComboBox, subTotal3Label, goodsCode3ComboBox, goodsName3ComboBox);
 			
-		}else if(e.getSource() == count1TextField){ //入力された個数から小計を計算
-			calcSubTotal(price1Label, count1TextField, subTotal1Label, goodsCode2ComboBox, goodsName2ComboBox);
+		}else if(e.getSource() == count1ComboBox){ //入力された個数から小計を計算
+			calcSubTotal(price1Label, count1ComboBox, subTotal1Label, goodsCode2ComboBox, goodsName2ComboBox);
 			calcTotal();
 			
-		}else if(e.getSource() == count2TextField){ //入力された個数から小計を計算
-			calcSubTotal(price2Label, count2TextField, subTotal2Label, goodsCode3ComboBox, goodsName3ComboBox);
+		}else if(e.getSource() == count2ComboBox){ //入力された個数から小計を計算
+			calcSubTotal(price2Label, count2ComboBox, subTotal2Label, goodsCode3ComboBox, goodsName3ComboBox);
 			calcTotal();
 			
-		}else if(e.getSource() == count3TextField){ //入力された個数から小計を計算
-			calcSubTotal(price3Label, count3TextField, subTotal3Label, goodsCode3ComboBox, goodsName3ComboBox);
+		}else if(e.getSource() == count3ComboBox){ //入力された個数から小計を計算
+			calcSubTotal(price3Label, count3ComboBox, subTotal3Label, goodsCode3ComboBox, goodsName3ComboBox);
 			calcTotal();
 			
 		}else if(e.getSource() == insertButton) { //入力された内容をデータベースに追加
 			String alart = ""; //空欄がある場合のメッセージ
 			if(!(clerkCodeComboBox.getSelectedItem() == null)) {
 				if(Integer.parseInt(subTotal1Label.getText()) > 0) {
-					insertSQL(goodsCode1ComboBox, count1TextField, subTotal1Label);
+					insertSQL(goodsCode1ComboBox, count1ComboBox, subTotal1Label);
 					if(Integer.parseInt(subTotal2Label.getText()) > 0) {
-						insertSQL(goodsCode2ComboBox, count2TextField, subTotal2Label);
+						insertSQL(goodsCode2ComboBox, count1ComboBox, subTotal2Label);
 						if(Integer.parseInt(subTotal3Label.getText()) > 0) {
-							insertSQL(goodsCode3ComboBox, count3TextField, subTotal3Label);
+							insertSQL(goodsCode3ComboBox, count1ComboBox, subTotal3Label);
 						}
 					}
 				reset();
@@ -442,7 +435,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	}
 	
 	//商品コードを使用して、商品マスタから商品名、単価を取得し、小計、合計を更新するメソッド
-	public void selectGoodsCodeSQL(JComboBox codeBox, JComboBox nameBox, JLabel priceLabel, JTextField textField, 
+	public void selectGoodsCodeSQL(JComboBox codeBox, JComboBox nameBox, JLabel priceLabel, JComboBox countBox, 
 			JLabel subTotalLabel, JComboBox nextCodeBox, JComboBox nextNameBox) {
 		try {
 			SQL = "SELECT * FROM 商品マスタ WHERE 商品コード = '" + codeBox.getSelectedItem() + "';";
@@ -453,18 +446,18 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 				nameBox.setSelectedItem(rs.getString("商品名"));
 				priceLabel.setText(rs.getString("単価"));
 			}
-			calcSubTotal(priceLabel, textField, subTotalLabel, nextCodeBox, nextNameBox);
+			getCount(codeBox, countBox); //商品の個数を選択するコンボボックスに項目を追加
+			calcSubTotal(priceLabel, countBox, subTotalLabel, nextCodeBox, nextNameBox);
 			calcTotal();
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
-		
 	}
 	
 	//商品名を使用して、商品マスタから商品コード、単価を取得し、小計、合計を更新するメソッド
-	public void selectGoodsNameSQL(JComboBox codeBox, JComboBox nameBox, JLabel priceLabel, JTextField textField, 
+	public void selectGoodsNameSQL(JComboBox codeBox, JComboBox nameBox, JLabel priceLabel, JComboBox countBox, 
 			JLabel subTotalLabel, JComboBox nextCodeBox, JComboBox nextNameBox) {
 		try {
 			SQL = "SELECT * FROM 商品マスタ WHERE 商品名 = '" + nameBox.getSelectedItem() + "';";
@@ -475,26 +468,56 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 				codeBox.setSelectedItem(rs.getString("商品コード"));
 				priceLabel.setText(rs.getString("単価"));
 			}
-			calcSubTotal(priceLabel, textField, subTotalLabel, nextCodeBox, nextNameBox);
+			getCount(codeBox, countBox); //商品の個数を選択するコンボボックスに項目を追加
+			calcSubTotal(priceLabel, countBox, subTotalLabel, nextCodeBox, nextNameBox);
 			calcTotal();
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
 			e2.printStackTrace();
+		}	
+	}
+	
+	//商品の個数を選ぶコンボボックスを更新するメソッド
+	public void getCount(JComboBox codeBox, JComboBox countBox){
+		countBox.removeAllItems();
+		SQL = "SELECT Z.商品コード, 商品名, SUM(受入数量)-払出数量 AS 残高数量"
+				+ " FROM (SELECT 商品コード, SUM(仕入数) AS 受入数量 FROM 在庫マスタ GROUP BY 商品コード) Z,"
+				+ " (SELECT * FROM 商品マスタ WHERE 削除フラグ = 0) S,"
+				+ " (SELECT 商品コード, SUM(個数) AS 払出数量 FROM 売上マスタ GROUP BY 商品コード) U"
+				+ " WHERE Z.商品コード = S.商品コード AND Z.商品コード = U.商品コード"
+				+ " AND Z.商品コード = '" + codeBox.getSelectedItem() + "'"
+				+ " GROUP BY Z.商品コード;";
+		try {
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
+			if(rs.next()){
+				for(int i = 1; i <=rs.getInt("残高数量"); i++) {
+					countBox.addItem(i);
+					if(i >= 10) { //在庫残高が10個以上あるものは最大でも10個
+						break;
+					}
+				}
+			}
+			countBox.setSelectedItem(0);
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
 		}
-		
 	}
 	
 	//小計を計算するメソッド
-	public void calcSubTotal(JLabel priceLabel, JTextField textField, JLabel subTotalLabel, 
+	public void calcSubTotal(JLabel priceLabel, JComboBox countBox, JLabel subTotalLabel, 
 			JComboBox nextCodeBox, JComboBox nextNameBox) {
-		int subTotal = Integer.parseInt(priceLabel.getText()) * Integer.parseInt(textField.getText());
+		int i = Integer.parseInt(countBox.getSelectedItem().toString());
+		int subTotal = Integer.parseInt(priceLabel.getText()) * i;
 		if(subTotal > 0) {
 			nextCodeBox.setEnabled(true);
 			nextNameBox.setEnabled(true);
 		}
 		subTotalLabel.setText(Integer.toString(subTotal));
-		
 	}
 	
 	//合計、税を計算するメソッド
@@ -508,13 +531,13 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	}
 
 	//売上マスタに行を追加するメソッド
-	public void insertSQL(JComboBox box, JTextField textField, JLabel subTotalLabel) {
+	public void insertSQL(JComboBox box, JComboBox countBox, JLabel subTotalLabel) {
 		String SQL = "INSERT INTO 売上マスタ (伝票番号, 販売日時, 店員コード, 商品コード, 個数, 小計, 削除フラグ) "
 				+ "values (" + Integer.parseInt(numberLabel.getText()) + ",cast('" + yearComboBox.getSelectedItem() + 
 				"-" + monthComboBox.getSelectedItem() + "-" + dateComboBox.getSelectedItem() + " " + 
 				hourComboBox.getSelectedItem() + ":" + minuteComboBox.getSelectedItem() + "' as datetime)," + "'" + 
 				clerkCodeComboBox.getSelectedItem() + "'" + "," + "'" + box.getSelectedItem() + "'" + 
-				"," + textField.getText() + "," + subTotalLabel.getText() + ",0)";
+				"," + countBox.getSelectedItem() + "," + subTotalLabel.getText() + ",0)";
 		System.out.println(SQL + "を追加しました");
 		try {
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
@@ -534,17 +557,17 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		goodsCode1ComboBox.setSelectedItem(null);
 		goodsName1ComboBox.setSelectedItem(null);
 		price1Label.setText("0");
-		count1TextField.setText("0");
+		count1ComboBox.removeAllItems();
 		subTotal1Label.setText("0");
 		goodsCode2ComboBox.setSelectedItem(null);
 		goodsName2ComboBox.setSelectedItem(null);
 		price2Label.setText("0");
-		count2TextField.setText("0");
+		count2ComboBox.removeAllItems();
 		subTotal2Label.setText("0");
 		goodsCode3ComboBox.setSelectedItem(null);
 		goodsName3ComboBox.setSelectedItem(null);
 		price3Label.setText("0");
-		count3TextField.setText("0");
+		count3ComboBox.removeAllItems();
 		subTotal3Label.setText("0");
 		totalLabel.setText("0");
 		taxLabel.setText("0"); 
