@@ -26,8 +26,12 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	//絞り込み条件の入力欄
 	JLabel fcLabel = new JLabel("  商品コード"); //商品コードの選択欄であることを示すラベル
 	JComboBox codeComboBox = new JComboBox(); //商品コードの選択欄 
+	
 	JLabel fnLabel = new JLabel("  商品名"); //商品名の選択欄であることを示すラベル
 	JComboBox nameComboBox = new JComboBox(); //商品名の選択欄
+	
+	JLabel ffLabel = new JLabel("  削除フラグ"); //削除フラグの選択欄であることを示すラベル
+	JComboBox flagComboBox = new JComboBox(); //削除フラグの選択欄
 	
 	JButton searchButton = new JButton("絞り込み"); //検索ボタン
 	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
@@ -57,6 +61,18 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	JLabel nameLabel8 = new JLabel("", JLabel.CENTER);
 	JLabel nameLabel9 = new JLabel("", JLabel.CENTER);
 	JLabel nameLabel10 = new JLabel("", JLabel.CENTER);
+	
+	JLabel fLabel = new JLabel("削除フラグ", JLabel.CENTER); //削除フラグであることを示すラベル
+	JLabel flagLabel1 = new JLabel("", JLabel.CENTER); //削除フラグを表示するラベル
+	JLabel flagLabel2 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel3 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel4 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel5 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel6 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel7 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel8 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel9 = new JLabel("", JLabel.CENTER);
+	JLabel flagLabel10 = new JLabel("", JLabel.CENTER);
 	
 	JLabel inLabel = new JLabel("受入", JLabel.CENTER); //受入であることを示すラベル
 	
@@ -212,7 +228,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		panel1.setLayout(new FlowLayout());
 		panel2.setLayout(new FlowLayout());
 		panel3.setLayout(new FlowLayout());
-		panel4.setLayout(new GridLayout(11, 5, 0, 2));
+		panel4.setLayout(new GridLayout(11, 6, 0, 2));
 		panel4_1.setLayout(new GridLayout(2, 1, 10, 2));
 		panel4_2.setLayout(new GridLayout(1, 2, 10, 2));
 		panel4_3.setLayout(new GridLayout(2, 1, 10, 2));
@@ -287,12 +303,19 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 			e2.printStackTrace();
 		}
 		
+		//削除フラグを選択するコンボボックスに項目を追加
+		flagComboBox.addItem(null);
+		flagComboBox.addItem("0");
+		flagComboBox.addItem("1");
+		flagComboBox.setSelectedItem(null);
 		
 		panel1.add(filterLabel);
 		panel2.add(fcLabel);
 		panel2.add(codeComboBox);
 		panel2.add(fnLabel);
 		panel2.add(nameComboBox);
+		panel2.add(ffLabel);
+		panel2.add(flagComboBox);
 		panel3.add(searchButton);
 		panel3.add(releaseButton);
 		panel4_1.add(inLabel);
@@ -375,56 +398,67 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		
 		panel4.add(cLabel);
 		panel4.add(nLabel);
+		panel4.add(fLabel);
 		panel4.add(panel4_1);
 		panel4.add(panel4_3);
 		panel4.add(panel4_5);
 		panel4.add(codeLabel1);
 		panel4.add(nameLabel1);
+		panel4.add(flagLabel1);
 		panel4.add(panel4_7);
 		panel4.add(panel4_17);
 		panel4.add(panel4_27);
 		panel4.add(codeLabel2);
 		panel4.add(nameLabel2);
+		panel4.add(flagLabel2);
 		panel4.add(panel4_8);
 		panel4.add(panel4_18);
 		panel4.add(panel4_28);
 		panel4.add(codeLabel3);
 		panel4.add(nameLabel3);
+		panel4.add(flagLabel3);
 		panel4.add(panel4_9);
 		panel4.add(panel4_19);
 		panel4.add(panel4_29);
 		panel4.add(codeLabel4);
 		panel4.add(nameLabel4);
+		panel4.add(flagLabel4);
 		panel4.add(panel4_10);
 		panel4.add(panel4_20);
 		panel4.add(panel4_30);
 		panel4.add(codeLabel5);
 		panel4.add(nameLabel5);
+		panel4.add(flagLabel5);
 		panel4.add(panel4_11);
 		panel4.add(panel4_21);
 		panel4.add(panel4_31);
 		panel4.add(codeLabel6);
 		panel4.add(nameLabel6);
+		panel4.add(flagLabel6);
 		panel4.add(panel4_12);
 		panel4.add(panel4_22);
 		panel4.add(panel4_32);
 		panel4.add(codeLabel7);
 		panel4.add(nameLabel7);
+		panel4.add(flagLabel7);
 		panel4.add(panel4_13);
 		panel4.add(panel4_23);
 		panel4.add(panel4_33);
 		panel4.add(codeLabel8);
 		panel4.add(nameLabel8);
+		panel4.add(flagLabel8);
 		panel4.add(panel4_14);
 		panel4.add(panel4_24);
 		panel4.add(panel4_34);
 		panel4.add(codeLabel9);
 		panel4.add(nameLabel9);
+		panel4.add(flagLabel9);
 		panel4.add(panel4_15);
 		panel4.add(panel4_25);
 		panel4.add(panel4_35);
 		panel4.add(codeLabel10);
 		panel4.add(nameLabel10);
+		panel4.add(flagLabel10);
 		panel4.add(panel4_16);
 		panel4.add(panel4_26);
 		panel4.add(panel4_36);
@@ -461,6 +495,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		} else if(e.getSource() == releaseButton) {
 			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
+			flagComboBox.setSelectedItem(null);
 			getData();
 		} else if(e.getSource() == nextButton) {
 			result(); //検索結果を表示
@@ -561,7 +596,10 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		if(nameComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 商品名 = '" + nameComboBox.getSelectedItem() + "'";
 		}
-		String str = "SELECT 商品コード, 商品名 FROM 商品マスタ WHERE 1" + filterSQL + ";";
+		if(flagComboBox.getSelectedItem() != null) {
+			filterSQL += " AND 削除フラグ = '" + flagComboBox.getSelectedItem() + "'";
+		}
+		String str = "SELECT 商品コード, 商品名, 削除フラグ FROM 商品マスタ WHERE 1" + filterSQL + ";";
 		filterSQL = ""; //filterSQLをリセットする
 		return str;
 	}
@@ -572,83 +610,83 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	public void result() {
 		try {
 			if(rs.next()){
-				show(codeLabel1, nameLabel1, inQuantityLabel1, inPriceLabel1, outQuantityLabel1, outPriceLabel1,
-						balanceQuantityLabel1, balancePriceLabel1);
+				show(codeLabel1, nameLabel1, flagLabel1, inQuantityLabel1, inPriceLabel1, outQuantityLabel1, 
+						outPriceLabel1,balanceQuantityLabel1, balancePriceLabel1);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel1, nameLabel1, inQuantityLabel1, inPriceLabel1, outQuantityLabel1, outPriceLabel1, 
+				reset(codeLabel1, nameLabel1, flagLabel1, inQuantityLabel1, inPriceLabel1, outQuantityLabel1, outPriceLabel1, 
 						balanceQuantityLabel1, balancePriceLabel1 );
 			}
 			if(rs.next()){
-				show(codeLabel2, nameLabel2, inQuantityLabel2, inPriceLabel2, outQuantityLabel2, outPriceLabel2,
+				show(codeLabel2, nameLabel2, flagLabel2, inQuantityLabel2, inPriceLabel2, outQuantityLabel2, outPriceLabel2,
 						balanceQuantityLabel2, balancePriceLabel2);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel2, nameLabel2, inQuantityLabel2, inPriceLabel2, outQuantityLabel2, outPriceLabel2,
+				reset(codeLabel2, nameLabel2, flagLabel2, inQuantityLabel2, inPriceLabel2, outQuantityLabel2, outPriceLabel2,
 						balanceQuantityLabel2, balancePriceLabel2);
 			}
 			if(rs.next()){
-				show(codeLabel3, nameLabel3, inQuantityLabel3, inPriceLabel3, outQuantityLabel3, outPriceLabel3,
+				show(codeLabel3, nameLabel3, flagLabel3, inQuantityLabel3, inPriceLabel3, outQuantityLabel3, outPriceLabel3,
 						balanceQuantityLabel3, balancePriceLabel3);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel3, nameLabel3, inQuantityLabel3, inPriceLabel3, outQuantityLabel3, outPriceLabel3,
+				reset(codeLabel3, nameLabel3, flagLabel3, inQuantityLabel3, inPriceLabel3, outQuantityLabel3, outPriceLabel3,
 						balanceQuantityLabel3, balancePriceLabel3);
 			}
 			if(rs.next()){
-				show(codeLabel4, nameLabel4, inQuantityLabel4, inPriceLabel4, outQuantityLabel4, outPriceLabel4,
+				show(codeLabel4, nameLabel4, flagLabel4, inQuantityLabel4, inPriceLabel4, outQuantityLabel4, outPriceLabel4,
 						balanceQuantityLabel4, balancePriceLabel4);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel4, nameLabel4, inQuantityLabel4, inPriceLabel4, outQuantityLabel4, outPriceLabel4,
+				reset(codeLabel4, nameLabel4, flagLabel4, inQuantityLabel4, inPriceLabel4, outQuantityLabel4, outPriceLabel4,
 						balanceQuantityLabel4, balancePriceLabel4);
 			}
 			if(rs.next()){
-				show(codeLabel5, nameLabel5, inQuantityLabel5, inPriceLabel5, outQuantityLabel5, outPriceLabel5,
+				show(codeLabel5, nameLabel5, flagLabel5, inQuantityLabel5, inPriceLabel5, outQuantityLabel5, outPriceLabel5,
 						balanceQuantityLabel5, balancePriceLabel5);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel5, nameLabel5, inQuantityLabel5, inPriceLabel5, outQuantityLabel5, outPriceLabel5,
+				reset(codeLabel5, nameLabel5, flagLabel5, inQuantityLabel5, inPriceLabel5, outQuantityLabel5, outPriceLabel5,
 						balanceQuantityLabel5, balancePriceLabel5);
 			}
 			if(rs.next()){
-				show(codeLabel6, nameLabel6, inQuantityLabel6, inPriceLabel6, outQuantityLabel6, outPriceLabel6,
+				show(codeLabel6, nameLabel6, flagLabel6, inQuantityLabel6, inPriceLabel6, outQuantityLabel6, outPriceLabel6,
 						balanceQuantityLabel6, balancePriceLabel6);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel6, nameLabel6, inQuantityLabel6, inPriceLabel6, outQuantityLabel6, outPriceLabel6,
+				reset(codeLabel6, nameLabel6, flagLabel6, inQuantityLabel6, inPriceLabel6, outQuantityLabel6, outPriceLabel6,
 						balanceQuantityLabel6, balancePriceLabel6);
 			}
 			if(rs.next()){
-				show(codeLabel7, nameLabel7, inQuantityLabel7, inPriceLabel7, outQuantityLabel7, outPriceLabel7,
+				show(codeLabel7, nameLabel7, flagLabel7, inQuantityLabel7, inPriceLabel7, outQuantityLabel7, outPriceLabel7,
 						balanceQuantityLabel7, balancePriceLabel7);	
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel7, nameLabel7, inQuantityLabel7, inPriceLabel7, outQuantityLabel7, outPriceLabel7,
+				reset(codeLabel7, nameLabel7, flagLabel7, inQuantityLabel7, inPriceLabel7, outQuantityLabel7, outPriceLabel7,
 						balanceQuantityLabel7, balancePriceLabel7);
 			}
 			if(rs.next()){
-				show(codeLabel8, nameLabel8, inQuantityLabel8, inPriceLabel8, outQuantityLabel8, outPriceLabel8,
+				show(codeLabel8, nameLabel8, flagLabel8, inQuantityLabel8, inPriceLabel8, outQuantityLabel8, outPriceLabel8,
 						balanceQuantityLabel8, balancePriceLabel8);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel8, nameLabel8, inQuantityLabel8, inPriceLabel8, outQuantityLabel8, outPriceLabel8,
+				reset(codeLabel8, nameLabel8, flagLabel8, inQuantityLabel8, inPriceLabel8, outQuantityLabel8, outPriceLabel8,
 						balanceQuantityLabel8, balancePriceLabel8);
 			}
 			if(rs.next()){
-				show(codeLabel9, nameLabel9, inQuantityLabel9, inPriceLabel9, outQuantityLabel9, outPriceLabel9,
+				show(codeLabel9, nameLabel9, flagLabel9, inQuantityLabel9, inPriceLabel9, outQuantityLabel9, outPriceLabel9,
 						balanceQuantityLabel9, balancePriceLabel9);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel9, nameLabel9, inQuantityLabel9, inPriceLabel9, outQuantityLabel9, outPriceLabel9,
+				reset(codeLabel9, nameLabel9, flagLabel9, inQuantityLabel9, inPriceLabel9, outQuantityLabel9, outPriceLabel9,
 						balanceQuantityLabel9, balancePriceLabel9);
 			}
 			if(rs.next()){
-				show(codeLabel10, nameLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
+				show(codeLabel10, nameLabel10, flagLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
 						balanceQuantityLabel10, balancePriceLabel10);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel10, nameLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
+				reset(codeLabel10, nameLabel10, flagLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
 						balanceQuantityLabel10, balancePriceLabel10);
 			}
 		}catch(SQLException e2) {
@@ -659,12 +697,13 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullでなければラベルに内容を表示するメソッド
-	public void show(JLabel codeLabel, JLabel nameLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
+	public void show(JLabel codeLabel, JLabel nameLabel, JLabel flagLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
 			JLabel outQuantityLabel, JLabel outPriceLabel, JLabel balanceQuantityLabel, JLabel balancePriceLabel) {
 		try {
-			//まず、商品コードと商品名を表示する
+			//まず、商品コードと商品名、削除フラグを表示する
 			codeLabel.setText(rs.getString("商品コード"));
 			nameLabel.setText(rs.getString("商品名"));
+			flagLabel.setText(rs.getString("削除フラグ"));
 			//次に、表示した商品コードをもとに受入数量・金額を取得する
 			//受入がない場合は0を記す
 			SQL = "SELECT 商品コード, SUM(受入数量) AS 受入数量, SUM(受入金額) AS 受入金額"
@@ -746,10 +785,11 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド
-	public void reset(JLabel codeLabel, JLabel nameLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
+	public void reset(JLabel codeLabel, JLabel nameLabel, JLabel flagLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
 			JLabel outQuantityLabel, JLabel outPriceLabel, JLabel balanceQuantityLabel, JLabel balancePriceLabel) {
 		codeLabel.setText(null);
 		nameLabel.setText(null);
+		flagLabel.setText(null);
 		inQuantityLabel.setText(null);
 		inPriceLabel.setText(null);
 		outQuantityLabel.setText(null);
