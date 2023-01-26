@@ -292,12 +292,12 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		panel2.add(fsLabel);
 		panel2.add(sexComboBox);
 		panel2.add(fbLabel);
-		panel2.add(fyLabel);
 		panel2.add(yearComboBox);
-		panel2.add(fmLabel);
+		panel2.add(fyLabel);
 		panel2.add(monthComboBox);
-		panel2.add(fdLabel);
+		panel2.add(fmLabel);
 		panel2.add(dateComboBox);
+		panel2.add(fdLabel);
 		panel2.add(timeRangeComboBox);
 		panel2.add(ffLabel);
 		panel2.add(flagComboBox);

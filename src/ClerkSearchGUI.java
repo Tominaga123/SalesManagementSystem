@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.BoxLayout;
@@ -24,11 +23,26 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	JLabel filterLabel = new JLabel("絞り込み条件");//絞り込み条件の入力欄であることを示すラベル
 	
 	//絞り込み条件の入力欄
-	JLabel fcLabel = new JLabel("  商品コード"); //商品コードの選択欄であることを示すラベル
+	JLabel fcLabel = new JLabel("  店員コード"); //商品コードの選択欄であることを示すラベル
 	JComboBox codeComboBox = new JComboBox(); //商品コードの選択欄 
 	
-	JLabel fnLabel = new JLabel("  商品名"); //商品名の選択欄であることを示すラベル
+	JLabel fnLabel = new JLabel("  店員名"); //商品名の選択欄であることを示すラベル
 	JComboBox nameComboBox = new JComboBox(); //商品名の選択欄
+	
+	JLabel fsLabel = new JLabel("  性別"); //性別の選択欄であることを示すラベル
+	JComboBox sexComboBox = new JComboBox(); //性別の選択欄
+	
+	JLabel fbLabel = new JLabel("  生年月日"); //生年月日の選択欄であることを示すラベル
+	JLabel fyLabel = new JLabel("年 "); //単位「年」を表示するラベル
+	JComboBox yearComboBox = new JComboBox(); //[年]の選択欄
+	
+	JLabel fmLabel = new JLabel("月 "); //単位「月」を表示するラベル
+	JComboBox monthComboBox = new JComboBox(); //「月」の選択欄
+	
+	JLabel fdLabel = new JLabel("日 "); //単位「日」を表示するラベル
+	JComboBox dateComboBox = new JComboBox(); //「日」の選択欄
+	
+	JComboBox timeRangeComboBox = new JComboBox(); //選択した日時より以前か等を選択するボックス
 	
 	JLabel ffLabel = new JLabel("  削除フラグ"); //削除フラグの選択欄であることを示すラベル
 	JComboBox flagComboBox = new JComboBox(); //削除フラグの選択欄
@@ -38,8 +52,8 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	
 	//検索結果の表示場所
 	
-	JLabel cLabel = new JLabel("商品コード", JLabel.CENTER); //商品コードであることを示すラベル
-	JLabel codeLabel1 = new JLabel("", JLabel.CENTER); //商品コードを表示するラベル
+	JLabel cLabel = new JLabel("店員コード", JLabel.CENTER); //店員コードであることを示すラベル
+	JLabel codeLabel1 = new JLabel("", JLabel.CENTER); //店員コードを表示するラベル
 	JLabel codeLabel2 = new JLabel("", JLabel.CENTER);
 	JLabel codeLabel3 = new JLabel("", JLabel.CENTER);
 	JLabel codeLabel4 = new JLabel("", JLabel.CENTER);
@@ -50,8 +64,8 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	JLabel codeLabel9 = new JLabel("", JLabel.CENTER);
 	JLabel codeLabel10 = new JLabel("", JLabel.CENTER);
 	
-	JLabel nLabel = new JLabel("商品名", JLabel.CENTER); //商品名であることを示すラベル
-	JLabel nameLabel1 = new JLabel("", JLabel.CENTER); //商品名を表示するラベル
+	JLabel nLabel = new JLabel("店員名", JLabel.CENTER); //店員名であることを示すラベル
+	JLabel nameLabel1 = new JLabel("", JLabel.CENTER); //店員名を表示するラベル
 	JLabel nameLabel2 = new JLabel("", JLabel.CENTER);
 	JLabel nameLabel3 = new JLabel("", JLabel.CENTER);
 	JLabel nameLabel4 = new JLabel("", JLabel.CENTER);
@@ -61,6 +75,30 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	JLabel nameLabel8 = new JLabel("", JLabel.CENTER);
 	JLabel nameLabel9 = new JLabel("", JLabel.CENTER);
 	JLabel nameLabel10 = new JLabel("", JLabel.CENTER);
+	
+	JLabel sLabel = new JLabel("性別", JLabel.CENTER); //性別であることを示すラベル
+	JLabel sexLabel1 = new JLabel("", JLabel.CENTER); //性別を表示するラベル
+	JLabel sexLabel2 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel3 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel4 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel5 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel6 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel7 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel8 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel9 = new JLabel("", JLabel.CENTER);
+	JLabel sexLabel10 = new JLabel("", JLabel.CENTER);
+	
+	JLabel bLabel = new JLabel("生年月日", JLabel.CENTER); //生年月日であることを示すラベル
+	JLabel birthdayLabel1 = new JLabel("", JLabel.CENTER); //生年月日を表示するラベル
+	JLabel birthdayLabel2 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel3 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel4 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel5 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel6 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel7 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel8 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel9 = new JLabel("", JLabel.CENTER);
+	JLabel birthdayLabel10 = new JLabel("", JLabel.CENTER);
 	
 	JLabel fLabel = new JLabel("削除フラグ", JLabel.CENTER); //削除フラグであることを示すラベル
 	JLabel flagLabel1 = new JLabel("", JLabel.CENTER); //削除フラグを表示するラベル
@@ -74,83 +112,7 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	JLabel flagLabel9 = new JLabel("", JLabel.CENTER);
 	JLabel flagLabel10 = new JLabel("", JLabel.CENTER);
 	
-	JLabel inLabel = new JLabel("受入", JLabel.CENTER); //受入であることを示すラベル
-	
-	JLabel inqLabel = new JLabel("　合計数量　", JLabel.CENTER); //受入の合計数量であることを示すラベル
-	JLabel inQuantityLabel1 = new JLabel("", JLabel.CENTER); //受入の合計数量を表示するラベル
-	JLabel inQuantityLabel2 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel3 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel4 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel5 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel6 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel7 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel8 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel9 = new JLabel("", JLabel.CENTER);
-	JLabel inQuantityLabel10 = new JLabel("", JLabel.CENTER);
-	
-	JLabel inpLabel = new JLabel("　合計金額　"); //受入の合計金額であることを示すラベル
-	JLabel inPriceLabel1 = new JLabel("", JLabel.CENTER); //受入の合計金額を表示するラベル
-	JLabel inPriceLabel2 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel3 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel4 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel5 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel6 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel7 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel8 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel9 = new JLabel("", JLabel.CENTER);
-	JLabel inPriceLabel10 = new JLabel("", JLabel.CENTER);
-	
-	JLabel outLabel = new JLabel("払出", JLabel.CENTER); //払出であることを示すラベル
-	
-	JLabel outqLabel = new JLabel("　合計数量　", JLabel.CENTER); //払出の合計数量であることを示すラベル
-	JLabel outQuantityLabel1 = new JLabel("", JLabel.CENTER); //払出の合計数量を表示するラベル
-	JLabel outQuantityLabel2 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel3 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel4 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel5 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel6 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel7 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel8 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel9 = new JLabel("", JLabel.CENTER);
-	JLabel outQuantityLabel10 = new JLabel("", JLabel.CENTER);
-	
-	JLabel outpLabel = new JLabel("　合計金額　"); //払出の合計金額であることを示すラベル
-	JLabel outPriceLabel1 = new JLabel("", JLabel.CENTER); //払出の合計金額を表示するラベル
-	JLabel outPriceLabel2 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel3 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel4 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel5 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel6 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel7 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel8 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel9 = new JLabel("", JLabel.CENTER);
-	JLabel outPriceLabel10 = new JLabel("", JLabel.CENTER);
-	
-	JLabel balanceLabel = new JLabel("残高", JLabel.CENTER); //残高であることを示すラベル
-	
-	JLabel balanceqLabel = new JLabel("　合計数量　", JLabel.CENTER); //残高の合計数量であることを示すラベル
-	JLabel balanceQuantityLabel1 = new JLabel("", JLabel.CENTER); //残高の合計数量を表示するラベル
-	JLabel balanceQuantityLabel2 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel3 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel4 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel5 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel6 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel7 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel8 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel9 = new JLabel("", JLabel.CENTER);
-	JLabel balanceQuantityLabel10 = new JLabel("", JLabel.CENTER);
-	
-	JLabel balancepLabel = new JLabel("　合計金額　"); //残高の合計金額であることを示すラベル
-	JLabel balancePriceLabel1 = new JLabel("", JLabel.CENTER); //残高の合計金額を表示するラベル
-	JLabel balancePriceLabel2 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel3 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel4 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel5 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel6 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel7 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel8 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel9 = new JLabel("", JLabel.CENTER);
-	JLabel balancePriceLabel10 = new JLabel("", JLabel.CENTER);
+
 	
 	JLabel totalNumberLabel = new JLabel("0"); //検索結果の総件数を表示するラベル
 	JLabel tnLabel = new JLabel("件中");
@@ -167,11 +129,7 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	String PASS = "password";
 	String SQL;
 	String filterSQL = "";
-	String selectSQL = "SELECT";
-	String subSelectSQL = "SELECT *"; 
-	String timeSQL = ""; 
-	String groupBySQL = "";
-	String whereSQL = "";
+	String selectSQL = "SELECT *"; 
 	Connection conn;
 	Statement stmt;
 	ResultSet rs;
@@ -181,46 +139,10 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	JPanel panel2 = new JPanel();
 	JPanel panel3 = new JPanel();
 	JPanel panel4 = new JPanel();
-	JPanel panel4_1 = new JPanel();
-	JPanel panel4_2 = new JPanel();
-	JPanel panel4_3 = new JPanel();
-	JPanel panel4_4 = new JPanel();
-	JPanel panel4_5 = new JPanel();
-	JPanel panel4_6 = new JPanel();
-	JPanel panel4_7 = new JPanel();
-	JPanel panel4_8 = new JPanel();
-	JPanel panel4_9 = new JPanel();
-	JPanel panel4_10 = new JPanel();
-	JPanel panel4_11 = new JPanel();
-	JPanel panel4_12 = new JPanel();
-	JPanel panel4_13 = new JPanel();
-	JPanel panel4_14 = new JPanel();
-	JPanel panel4_15 = new JPanel();
-	JPanel panel4_16 = new JPanel();
-	JPanel panel4_17 = new JPanel();
-	JPanel panel4_18 = new JPanel();
-	JPanel panel4_19 = new JPanel();
-	JPanel panel4_20 = new JPanel();
-	JPanel panel4_21 = new JPanel();
-	JPanel panel4_22 = new JPanel();
-	JPanel panel4_23 = new JPanel();
-	JPanel panel4_24 = new JPanel();
-	JPanel panel4_25 = new JPanel();
-	JPanel panel4_26 = new JPanel();
-	JPanel panel4_27 = new JPanel();
-	JPanel panel4_28 = new JPanel();
-	JPanel panel4_29 = new JPanel();
-	JPanel panel4_30 = new JPanel();
-	JPanel panel4_31 = new JPanel();
-	JPanel panel4_32 = new JPanel();
-	JPanel panel4_33 = new JPanel();
-	JPanel panel4_34 = new JPanel();
-	JPanel panel4_35 = new JPanel();
-	JPanel panel4_36 = new JPanel();
 	JPanel panel5 = new JPanel();
 	
 	ClerkSearchGUI(){
-		setTitle("在庫検索");
+		setTitle("商品検索");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		//レイアウト設定
@@ -228,80 +150,59 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		panel1.setLayout(new FlowLayout());
 		panel2.setLayout(new FlowLayout());
 		panel3.setLayout(new FlowLayout());
-		panel4.setLayout(new GridLayout(11, 6, 0, 2));
-		panel4_1.setLayout(new GridLayout(2, 1, 10, 2));
-		panel4_2.setLayout(new GridLayout(1, 2, 10, 2));
-		panel4_3.setLayout(new GridLayout(2, 1, 10, 2));
-		panel4_4.setLayout(new GridLayout(1, 2, 10, 2));
-		panel4_5.setLayout(new GridLayout(2, 1, 10, 2));
-		panel4_6.setLayout(new GridLayout(1, 2, 10, 2));
-		panel4_7.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_8.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_9.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_10.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_11.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_12.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_13.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_14.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_15.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_16.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_17.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_18.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_19.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_20.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_21.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_22.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_23.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_24.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_25.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_26.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_27.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_28.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_29.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_30.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_31.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_32.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_33.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_34.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_35.setLayout(new GridLayout(1, 2, 0, 2));
-		panel4_36.setLayout(new GridLayout(1, 2, 0, 2));
+		panel4.setLayout(new GridLayout(11, 5, 0, 2));
 		panel5.setLayout(new FlowLayout());
 		
-		//商品コードを選択するコンボボックスに項目を追加
+		//店員コード、店員名を選択するコンボボックスに項目を追加
 		codeComboBox.addItem(null);
-		try {
-			SQL = "SELECT 商品コード FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(SQL);
-			while(rs.next()){
-				codeComboBox.addItem(rs.getString("商品コード"));
-
-			}
-			codeComboBox.setSelectedItem(null);
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		
-		//商品名を選択するコンボボックスに項目を追加
 		nameComboBox.addItem(null);
 		try {
-			SQL = "SELECT 商品名 FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(SQL);
+			SQL = "SELECT 店員コード, 店員名 FROM 店員マスタ;";
+			Connection conn = DriverManager.getConnection(URL, USER, PASS);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL);
 			while(rs.next()){
-				nameComboBox.addItem(rs.getString("商品名"));
-
+				codeComboBox.addItem(rs.getString("店員コード"));
+				nameComboBox.addItem(rs.getString("店員名"));
 			}
+			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
+
+		//日時を選択するコンボボックスに項目を追加
+		//現在の日時で初期化
+		//「年」
+		int y = Integer.valueOf(getYear());
+		for(int i = 1950; i <= y; i++) {
+			String s = Integer.valueOf(i).toString();
+			yearComboBox.addItem(s);
+		}
+		yearComboBox.setSelectedItem(getYear());
+		//「月」
+		for(int i = 1; i <= 12; i++) {
+		String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+		monthComboBox.addItem(s);
+		}
+		monthComboBox.setSelectedItem(getMonth());
+		//「日」
+		for(int i = 1; i <= 31; i++) {
+			String s = Integer.valueOf(i).toString();
+			if(i <= 9) {
+				s = 0 + s;
+			}
+			dateComboBox.addItem(s);
+		}
+		dateComboBox.setSelectedItem(getDate());
+		timeRangeComboBox.addItem("以前");
+		timeRangeComboBox.addItem("以後");
+		timeRangeComboBox.addItem("一致");
 		
 		//削除フラグを選択するコンボボックスに項目を追加
 		flagComboBox.addItem(null);
@@ -310,158 +211,85 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		flagComboBox.setSelectedItem(null);
 		
 		panel1.add(filterLabel);
+		
 		panel2.add(fcLabel);
 		panel2.add(codeComboBox);
 		panel2.add(fnLabel);
 		panel2.add(nameComboBox);
 		panel2.add(ffLabel);
 		panel2.add(flagComboBox);
+		panel2.add(fsLabel);
+		panel2.add(sexComboBox);
+		panel2.add(fbLabel);
+		panel2.add(yearComboBox);
+		panel2.add(fyLabel);
+		panel2.add(monthComboBox);
+		panel2.add(fmLabel);
+		panel2.add(dateComboBox);
+		panel2.add(fdLabel);
+		panel2.add(timeRangeComboBox);
+		panel2.add(ffLabel);
+		panel2.add(flagComboBox);
+
 		panel3.add(searchButton);
 		panel3.add(releaseButton);
-		panel4_1.add(inLabel);
-		panel4_2.add(inqLabel);
-		panel4_2.add(inpLabel);
-		panel4_1.add(panel4_2);
-		
-		panel4_3.add(outLabel);
-		panel4_4.add(outqLabel);
-		panel4_4.add(outpLabel);
-		panel4_3.add(panel4_4);
-		
-		panel4_5.add(balanceLabel);
-		panel4_6.add(balanceqLabel);
-		panel4_6.add(balancepLabel);
-		panel4_5.add(panel4_6);
-		
-		panel4_7.add(inQuantityLabel1);
-		panel4_7.add(inPriceLabel1);
-		panel4_8.add(inQuantityLabel2);
-		panel4_8.add(inPriceLabel2);
-		panel4_9.add(inQuantityLabel3);
-		panel4_9.add(inPriceLabel3);
-		panel4_10.add(inQuantityLabel4);
-		panel4_10.add(inPriceLabel4);
-		panel4_11.add(inQuantityLabel5);
-		panel4_11.add(inPriceLabel5);
-		panel4_12.add(inQuantityLabel6);
-		panel4_12.add(inPriceLabel6);
-		panel4_13.add(inQuantityLabel7);
-		panel4_13.add(inPriceLabel7);
-		panel4_14.add(inQuantityLabel8);
-		panel4_14.add(inPriceLabel8);
-		panel4_15.add(inQuantityLabel9);
-		panel4_15.add(inPriceLabel9);
-		panel4_16.add(inQuantityLabel10);
-		panel4_16.add(inPriceLabel10);
-		
-		panel4_17.add(outQuantityLabel1);
-		panel4_17.add(outPriceLabel1);
-		panel4_18.add(outQuantityLabel2);
-		panel4_18.add(outPriceLabel2);
-		panel4_19.add(outQuantityLabel3);
-		panel4_19.add(outPriceLabel3);
-		panel4_20.add(outQuantityLabel4);
-		panel4_20.add(outPriceLabel4);
-		panel4_21.add(outQuantityLabel5);
-		panel4_21.add(outPriceLabel5);
-		panel4_22.add(outQuantityLabel6);
-		panel4_22.add(outPriceLabel6);
-		panel4_23.add(outQuantityLabel7);
-		panel4_23.add(outPriceLabel7);
-		panel4_24.add(outQuantityLabel8);
-		panel4_24.add(outPriceLabel8);
-		panel4_25.add(outQuantityLabel9);
-		panel4_25.add(outPriceLabel9);
-		panel4_26.add(outQuantityLabel10);
-		panel4_26.add(outPriceLabel10);
-		
-		panel4_27.add(balanceQuantityLabel1);
-		panel4_27.add(balancePriceLabel1);
-		panel4_28.add(balanceQuantityLabel2);
-		panel4_28.add(balancePriceLabel2);
-		panel4_29.add(balanceQuantityLabel3);
-		panel4_29.add(balancePriceLabel3);
-		panel4_30.add(balanceQuantityLabel4);
-		panel4_30.add(balancePriceLabel4);
-		panel4_31.add(balanceQuantityLabel5);
-		panel4_31.add(balancePriceLabel5);
-		panel4_32.add(balanceQuantityLabel6);
-		panel4_32.add(balancePriceLabel6);
-		panel4_33.add(balanceQuantityLabel7);
-		panel4_33.add(balancePriceLabel7);
-		panel4_34.add(balanceQuantityLabel8);
-		panel4_34.add(balancePriceLabel8);
-		panel4_35.add(balanceQuantityLabel9);
-		panel4_35.add(balancePriceLabel9);
-		panel4_36.add(balanceQuantityLabel10);
-		panel4_36.add(balancePriceLabel10);
 		
 		panel4.add(cLabel);
 		panel4.add(nLabel);
+		panel4.add(sLabel);
+		panel4.add(sLabel);
 		panel4.add(fLabel);
-		panel4.add(panel4_1);
-		panel4.add(panel4_3);
-		panel4.add(panel4_5);
+		
 		panel4.add(codeLabel1);
 		panel4.add(nameLabel1);
+		panel4.add(sexLabel1);
+		panel4.add(birthdayLabel1);
 		panel4.add(flagLabel1);
-		panel4.add(panel4_7);
-		panel4.add(panel4_17);
-		panel4.add(panel4_27);
 		panel4.add(codeLabel2);
 		panel4.add(nameLabel2);
+		panel4.add(sexLabel2);
+		panel4.add(birthdayLabel2);
 		panel4.add(flagLabel2);
-		panel4.add(panel4_8);
-		panel4.add(panel4_18);
-		panel4.add(panel4_28);
 		panel4.add(codeLabel3);
 		panel4.add(nameLabel3);
+		panel4.add(sexLabel3);
+		panel4.add(birthdayLabel3);
 		panel4.add(flagLabel3);
-		panel4.add(panel4_9);
-		panel4.add(panel4_19);
-		panel4.add(panel4_29);
 		panel4.add(codeLabel4);
 		panel4.add(nameLabel4);
+		panel4.add(sexLabel4);
+		panel4.add(birthdayLabel4);
 		panel4.add(flagLabel4);
-		panel4.add(panel4_10);
-		panel4.add(panel4_20);
-		panel4.add(panel4_30);
 		panel4.add(codeLabel5);
 		panel4.add(nameLabel5);
+		panel4.add(sexLabel5);
+		panel4.add(birthdayLabel5);
 		panel4.add(flagLabel5);
-		panel4.add(panel4_11);
-		panel4.add(panel4_21);
-		panel4.add(panel4_31);
 		panel4.add(codeLabel6);
 		panel4.add(nameLabel6);
+		panel4.add(sexLabel6);
+		panel4.add(birthdayLabel6);
 		panel4.add(flagLabel6);
-		panel4.add(panel4_12);
-		panel4.add(panel4_22);
-		panel4.add(panel4_32);
 		panel4.add(codeLabel7);
 		panel4.add(nameLabel7);
+		panel4.add(sexLabel7);
+		panel4.add(birthdayLabel7);
 		panel4.add(flagLabel7);
-		panel4.add(panel4_13);
-		panel4.add(panel4_23);
-		panel4.add(panel4_33);
 		panel4.add(codeLabel8);
 		panel4.add(nameLabel8);
+		panel4.add(sexLabel8);
+		panel4.add(birthdayLabel8);
 		panel4.add(flagLabel8);
-		panel4.add(panel4_14);
-		panel4.add(panel4_24);
-		panel4.add(panel4_34);
 		panel4.add(codeLabel9);
 		panel4.add(nameLabel9);
+		panel4.add(sexLabel9);
+		panel4.add(birthdayLabel9);
 		panel4.add(flagLabel9);
-		panel4.add(panel4_15);
-		panel4.add(panel4_25);
-		panel4.add(panel4_35);
 		panel4.add(codeLabel10);
 		panel4.add(nameLabel10);
+		panel4.add(sexLabel10);
+		panel4.add(birthdayLabel10);
 		panel4.add(flagLabel10);
-		panel4.add(panel4_16);
-		panel4.add(panel4_26);
-		panel4.add(panel4_36);
 		
 		panel5.add(previousButton);
 		panel5.add(showNumberLabel);
@@ -495,6 +323,11 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		} else if(e.getSource() == releaseButton) {
 			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
+			sexComboBox.setSelectedItem(null);
+			yearComboBox.setSelectedItem(getYear());
+			monthComboBox.setSelectedItem(getMonth());
+			dateComboBox.setSelectedItem(getDate());
+			timeRangeComboBox.setSelectedItem("以前");
 			flagComboBox.setSelectedItem(null);
 			getData();
 		} else if(e.getSource() == nextButton) {
@@ -521,12 +354,12 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			}
 		} else if(e.getSource() == codeComboBox) {
 			try {
-				SQL = "SELECT 商品名 FROM 商品マスタ WHERE 商品コード = '" + codeComboBox.getSelectedItem() + "';";
+				SQL = "SELECT 店員名 FROM 店員マスタ WHERE 店員コード = '" + codeComboBox.getSelectedItem() + "';";
 				Connection conn = DriverManager.getConnection(URL, USER, PASS);
 				Statement stmt = conn.createStatement();
-				ResultSet goodsRs = stmt.executeQuery(SQL);
-				while(goodsRs.next()){
-					nameComboBox.setSelectedItem(goodsRs.getString("商品名"));
+				otherRs = stmt.executeQuery(SQL);
+				while(otherRs.next()){
+					nameComboBox.setSelectedItem(otherRs.getString("店員名"));
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
@@ -535,12 +368,12 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			}
 		} else if(e.getSource() == nameComboBox) {
 			try {
-				SQL = "SELECT 商品コード FROM 商品マスタ WHERE 商品名 = '" + nameComboBox.getSelectedItem() + "';";
+				SQL = "SELECT 店員コード FROM 店員マスタ WHERE 店員名 = '" + nameComboBox.getSelectedItem() + "';";
 				Connection conn = DriverManager.getConnection(URL, USER, PASS);
 				Statement stmt = conn.createStatement();
-				ResultSet goodsRs = stmt.executeQuery(SQL);
-				while(goodsRs.next()){
-					codeComboBox.setSelectedItem(goodsRs.getString("商品コード"));
+				otherRs = stmt.executeQuery(SQL);
+				while(otherRs.next()){
+					codeComboBox.setSelectedItem(otherRs.getString("店員コード"));
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
@@ -590,6 +423,7 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	
 	//検索条件を指定するSQLを作成するメソッド
 	public String createSQL(){
+
 		if(codeComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'";
 		}
@@ -599,7 +433,7 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		if(flagComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 削除フラグ = '" + flagComboBox.getSelectedItem() + "'";
 		}
-		String str = "SELECT 商品コード, 商品名, 削除フラグ FROM 商品マスタ WHERE 1" + filterSQL + ";";
+		String str = "SELECT * FROM 商品マスタ WHERE 1" + filterSQL + ";";
 		filterSQL = ""; //filterSQLをリセットする
 		return str;
 	}
@@ -610,84 +444,64 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	public void result() {
 		try {
 			if(rs.next()){
-				show(codeLabel1, nameLabel1, flagLabel1, inQuantityLabel1, inPriceLabel1, outQuantityLabel1, 
-						outPriceLabel1,balanceQuantityLabel1, balancePriceLabel1);
+				show(codeLabel1, nameLabel1, priceLabel1, flagLabel1);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel1, nameLabel1, flagLabel1, inQuantityLabel1, inPriceLabel1, outQuantityLabel1, outPriceLabel1, 
-						balanceQuantityLabel1, balancePriceLabel1 );
+				reset(codeLabel1, nameLabel1, priceLabel1, flagLabel1);
 			}
 			if(rs.next()){
-				show(codeLabel2, nameLabel2, flagLabel2, inQuantityLabel2, inPriceLabel2, outQuantityLabel2, outPriceLabel2,
-						balanceQuantityLabel2, balancePriceLabel2);
+				show(codeLabel2, nameLabel2, priceLabel2, flagLabel2);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel2, nameLabel2, flagLabel2, inQuantityLabel2, inPriceLabel2, outQuantityLabel2, outPriceLabel2,
-						balanceQuantityLabel2, balancePriceLabel2);
+				reset(codeLabel2, nameLabel2, priceLabel2, flagLabel2);
 			}
 			if(rs.next()){
-				show(codeLabel3, nameLabel3, flagLabel3, inQuantityLabel3, inPriceLabel3, outQuantityLabel3, outPriceLabel3,
-						balanceQuantityLabel3, balancePriceLabel3);
+				show(codeLabel3, nameLabel3, priceLabel3, flagLabel3);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel3, nameLabel3, flagLabel3, inQuantityLabel3, inPriceLabel3, outQuantityLabel3, outPriceLabel3,
-						balanceQuantityLabel3, balancePriceLabel3);
+				reset(codeLabel3, nameLabel3, priceLabel3, flagLabel3);
 			}
 			if(rs.next()){
-				show(codeLabel4, nameLabel4, flagLabel4, inQuantityLabel4, inPriceLabel4, outQuantityLabel4, outPriceLabel4,
-						balanceQuantityLabel4, balancePriceLabel4);
+				show(codeLabel4, nameLabel4, priceLabel4, flagLabel4);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel4, nameLabel4, flagLabel4, inQuantityLabel4, inPriceLabel4, outQuantityLabel4, outPriceLabel4,
-						balanceQuantityLabel4, balancePriceLabel4);
+				reset(codeLabel4, nameLabel4, priceLabel4, flagLabel4);
 			}
 			if(rs.next()){
-				show(codeLabel5, nameLabel5, flagLabel5, inQuantityLabel5, inPriceLabel5, outQuantityLabel5, outPriceLabel5,
-						balanceQuantityLabel5, balancePriceLabel5);
+				show(codeLabel5, nameLabel5, priceLabel5, flagLabel5);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel5, nameLabel5, flagLabel5, inQuantityLabel5, inPriceLabel5, outQuantityLabel5, outPriceLabel5,
-						balanceQuantityLabel5, balancePriceLabel5);
+				reset(codeLabel5, nameLabel5, priceLabel5, flagLabel5);
 			}
 			if(rs.next()){
-				show(codeLabel6, nameLabel6, flagLabel6, inQuantityLabel6, inPriceLabel6, outQuantityLabel6, outPriceLabel6,
-						balanceQuantityLabel6, balancePriceLabel6);
+				show(codeLabel6, nameLabel6, priceLabel6, flagLabel6);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel6, nameLabel6, flagLabel6, inQuantityLabel6, inPriceLabel6, outQuantityLabel6, outPriceLabel6,
-						balanceQuantityLabel6, balancePriceLabel6);
+				reset(codeLabel6, nameLabel6, priceLabel6, flagLabel6);
 			}
 			if(rs.next()){
-				show(codeLabel7, nameLabel7, flagLabel7, inQuantityLabel7, inPriceLabel7, outQuantityLabel7, outPriceLabel7,
-						balanceQuantityLabel7, balancePriceLabel7);	
+				show(codeLabel7, nameLabel7, priceLabel7, flagLabel7);	
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel7, nameLabel7, flagLabel7, inQuantityLabel7, inPriceLabel7, outQuantityLabel7, outPriceLabel7,
-						balanceQuantityLabel7, balancePriceLabel7);
+				reset(codeLabel7, nameLabel7, priceLabel7, flagLabel7);
 			}
 			if(rs.next()){
-				show(codeLabel8, nameLabel8, flagLabel8, inQuantityLabel8, inPriceLabel8, outQuantityLabel8, outPriceLabel8,
-						balanceQuantityLabel8, balancePriceLabel8);
+				show(codeLabel8, nameLabel8, priceLabel8, flagLabel8);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel8, nameLabel8, flagLabel8, inQuantityLabel8, inPriceLabel8, outQuantityLabel8, outPriceLabel8,
-						balanceQuantityLabel8, balancePriceLabel8);
+				reset(codeLabel8, nameLabel8, priceLabel8, flagLabel8);
 			}
 			if(rs.next()){
-				show(codeLabel9, nameLabel9, flagLabel9, inQuantityLabel9, inPriceLabel9, outQuantityLabel9, outPriceLabel9,
-						balanceQuantityLabel9, balancePriceLabel9);
+				show(codeLabel9, nameLabel9, priceLabel9, flagLabel9);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel9, nameLabel9, flagLabel9, inQuantityLabel9, inPriceLabel9, outQuantityLabel9, outPriceLabel9,
-						balanceQuantityLabel9, balancePriceLabel9);
+				reset(codeLabel9, nameLabel9, priceLabel9, flagLabel9);
 			}
 			if(rs.next()){
-				show(codeLabel10, nameLabel10, flagLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
-						balanceQuantityLabel10, balancePriceLabel10);
+				show(codeLabel10, nameLabel10, priceLabel10, flagLabel10);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel10, nameLabel10, flagLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
-						balanceQuantityLabel10, balancePriceLabel10);
+				reset(codeLabel10, nameLabel10, priceLabel10, flagLabel10);
 			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -697,86 +511,12 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullでなければラベルに内容を表示するメソッド
-	public void show(JLabel codeLabel, JLabel nameLabel, JLabel flagLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
-			JLabel outQuantityLabel, JLabel outPriceLabel, JLabel balanceQuantityLabel, JLabel balancePriceLabel) {
+	public void show(JLabel codeLabel, JLabel nameLabel, JLabel priceLabel, JLabel flagLabel) {
 		try {
-			//まず、商品コードと商品名、削除フラグを表示する
 			codeLabel.setText(rs.getString("商品コード"));
 			nameLabel.setText(rs.getString("商品名"));
+			priceLabel.setText(rs.getString("単価"));
 			flagLabel.setText(rs.getString("削除フラグ"));
-			//次に、表示した商品コードをもとに受入数量・金額を取得する
-			//受入がない場合は0を記す
-			SQL = "SELECT 商品コード, SUM(受入数量) AS 受入数量, SUM(受入金額) AS 受入金額"
-				+ " FROM (SELECT 商品コード, 仕入単価, SUM(仕入数) AS 受入数量, SUM(仕入数)*仕入単価 AS 受入金額"
-				+ " FROM 在庫マスタ GROUP BY 商品コード, 仕入単価) Z"
-				+ " WHERE 商品コード = '" + codeLabel.getText() + "' GROUP BY 商品コード;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			otherRs = stmt.executeQuery(SQL);
-			if(otherRs.next()) {
-				inQuantityLabel.setText(otherRs.getString("受入数量") + "個");
-				inPriceLabel.setText("￥" + otherRs.getString("受入金額"));
-			} else {
-				inQuantityLabel.setText("0個");
-				inPriceLabel.setText("￥0");
-			}
-			//続いて払出数量・金額を取得する
-			//まず日別の仕入数と仕入単価を配列に格納する
-			SQL = "SELECT * FROM 在庫マスタ WHERE 商品コード = '" + codeLabel.getText() + "' ORDER BY 仕入日 ASC;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			otherRs = stmt.executeQuery(SQL);
-			ArrayList<Integer> inQuantity = new ArrayList<Integer>();
-			ArrayList<Integer> inPrice = new ArrayList<Integer>();
-			//仕入がある場合
-			if(otherRs.next()) {
-				otherRs.beforeFirst();
-				while(otherRs.next()) {
-					inQuantity.add(otherRs.getInt("仕入数"));
-					inPrice.add(otherRs.getInt("仕入単価"));
-				}
-				for(int i = 0; i < inQuantity.size(); i++) {
-					System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + ", 仕入単価:" + inPrice.get(i));
-				}
-				//払出数量が日別の仕入数を超えるたびに仕入単価を更新して払出金額を計算する
-				SQL = "SELECT * FROM 売上マスタ WHERE 商品コード = '" + codeLabel.getText() + "' AND 削除フラグ = 0 ORDER BY 販売日時 ASC, 伝票番号 ASC;";
-				otherRs = stmt.executeQuery(SQL);
-				int outQuantity = 0; //払出数量の合計
-				int sum = 0; //計算に使用
-				int outPrice = 0; //払出金額の合計
-				int i = 0;
-				while(otherRs.next()) {
-					sum += otherRs.getInt("個数");
-					if(sum > inQuantity.get(i)) {
-						outQuantity += inQuantity.get(i);
-						outPrice += inQuantity.get(i) * inPrice.get(i);
-						sum -= inQuantity.get(i);
-						i++;
-					}
-				}
-				outQuantity += sum;
-				outPrice += sum * inPrice.get(i);
-				outQuantityLabel.setText(Integer.toString(outQuantity) + "個");
-				outPriceLabel.setText("￥" + Integer.toString(outPrice));
-				
-				inQuantity.clear();
-				inPrice.clear();	
-			}
-			//仕入がない場合
-			else {
-				outQuantityLabel.setText("0個");
-				outPriceLabel.setText("￥0");
-			}
-			
-			//最後に、受入数量・金額から払出数量・金額を差し引いて残高を計算する
-			int q = Integer.parseInt(inQuantityLabel.getText().replace("個", "")) - 
-						Integer.parseInt(outQuantityLabel.getText().replace("個", ""));
-			
-			int p = Integer.parseInt(inPriceLabel.getText().replace("￥", "")) - 
-						Integer.parseInt(outPriceLabel.getText().replace("￥", ""));
-			
-			balanceQuantityLabel.setText(Integer.toString(q) + "個");
-			balancePriceLabel.setText("￥" + Integer.toString(p));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
@@ -785,17 +525,11 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド
-	public void reset(JLabel codeLabel, JLabel nameLabel, JLabel flagLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
-			JLabel outQuantityLabel, JLabel outPriceLabel, JLabel balanceQuantityLabel, JLabel balancePriceLabel) {
+	public void reset(JLabel codeLabel, JLabel nameLabel, JLabel priceLabel, JLabel flagLabel) {
 		codeLabel.setText(null);
 		nameLabel.setText(null);
+		priceLabel.setText(null);
 		flagLabel.setText(null);
-		inQuantityLabel.setText(null);
-		inPriceLabel.setText(null);
-		outQuantityLabel.setText(null);
-		outPriceLabel.setText(null);
-		balanceQuantityLabel.setText(null);
-		balancePriceLabel.setText(null);
 	}
 	
 

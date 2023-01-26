@@ -8,8 +8,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -102,11 +100,7 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 	String PASS = "password";
 	String SQL;
 	String filterSQL = "";
-	String selectSQL = "SELECT";
-	String subSelectSQL = "SELECT *"; 
-	String timeSQL = ""; 
-	String groupBySQL = "";
-	String whereSQL = "";
+	String selectSQL = "SELECT *"; 
 	Connection conn;
 	Statement stmt;
 	ResultSet rs;
@@ -362,14 +356,17 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 	
 	//検索条件を指定するSQLを作成するメソッド
 	public String createSQL(){
-		if(((String)codeComboBox.getSelectedItem()).contains("群")) {
-			String str1 = "SELECT *, LEFT(商品コード, 1) AS 先頭コード FROM 商品マスタ WHERE LEFT(商品コード, 1) = 'A'";
-		}
-		
-		
-		
+
 		if(codeComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'";
+			//商品コードの選択欄が「〇群」の場合
+			if(((String)codeComboBox.getSelectedItem()).contains("群")) {
+				filterSQL += " AND LEFT(商品コード, 1) = '" + 
+						((String) codeComboBox.getSelectedItem()).replace("群","") + "'";
+			}
+			//通常の商品コードの場合
+			else {
+				filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'";
+			}
 		}
 		if(nameComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 商品名 = '" + nameComboBox.getSelectedItem() + "'";
@@ -475,34 +472,6 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 		priceLabel.setText(null);
 		flagLabel.setText(null);
 	}
-	
 
-	
-	//コンボボックスを現在の日時で初期化するメソッド
-	public String getYear() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("yyyy").format(date);
-		return str;
-	}
-	public String getMonth() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("MM").format(date);
-		return str;
-	}
-	public String getDate() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("dd").format(date);
-		return str;
-	}
-	public String getHour() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("HH").format(date);
-		return str;
-	}
-	public String getMinute() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("mm").format(date);
-		return str;
-	}
 	
 }
