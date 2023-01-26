@@ -813,8 +813,6 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel4_3.add(lastMinuteComboBox);
 		panel4_3.add(minuteUnitLabel2);
 		
-//		panel4_2.add(joshiLabel1);
-		
 		panel4_4.add(choiceLabel2);
 		panel4_4.add(choiceButton2);
 		

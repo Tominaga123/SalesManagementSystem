@@ -124,9 +124,9 @@ class searchGUI extends JFrame implements ActionListener{
 		if(e.getSource() == salesSearchButton){
 			new SalesSearchGUI();
 		}else if(e.getSource() == clerkSearchButton){
-			
+			new ClerkSearchGUI();
 		}else if(e.getSource() == goodsSearchButton){
-			
+			new GoodsSearchGUI();
 		}else if(e.getSource() == stockSearchButton){
 			new StockSearchGUI();
 		}
