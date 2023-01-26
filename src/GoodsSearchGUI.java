@@ -119,7 +119,7 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 	JPanel panel5 = new JPanel();
 	
 	GoodsSearchGUI(){
-		setTitle("在庫検索");
+		setTitle("商品検索");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		//レイアウト設定
