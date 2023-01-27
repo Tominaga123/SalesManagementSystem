@@ -36,6 +36,8 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	JButton searchButton = new JButton("絞り込み"); //検索ボタン
 	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
 	
+	JButton changeButton = new JButton("商品有高帳に切り替え"); //「商品ごとにをまとめて表示」と「商品有高長」の切り替え
+	
 	//検索結果の表示場所
 	
 	JLabel cLabel = new JLabel("商品コード", JLabel.CENTER); //商品コードであることを示すラベル
@@ -176,6 +178,11 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	Statement stmt;
 	ResultSet rs;
 	ResultSet otherRs;
+	int a;
+	int b;
+	int c;
+	int d;
+	int SUM;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel();
@@ -310,14 +317,18 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		flagComboBox.setSelectedItem(null);
 		
 		panel1.add(filterLabel);
+		
 		panel2.add(fcLabel);
 		panel2.add(codeComboBox);
 		panel2.add(fnLabel);
 		panel2.add(nameComboBox);
 		panel2.add(ffLabel);
 		panel2.add(flagComboBox);
+		
 		panel3.add(searchButton);
 		panel3.add(releaseButton);
+		panel3.add(changeButton);
+		
 		panel4_1.add(inLabel);
 		panel4_2.add(inqLabel);
 		panel4_2.add(inpLabel);
@@ -539,6 +550,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		nameComboBox.addActionListener(this);
 		searchButton.addActionListener(this);
 		releaseButton.addActionListener(this);
+		changeButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
 		nextButton.setEnabled(false);
@@ -606,6 +618,26 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 			}catch(Exception e2) {
 				e2.printStackTrace();
 			}
+		} else if(e.getSource() == changeButton) {
+			if(changeButton.getText().contains("商品有高帳")) {
+				changeButton.setText("商品ごとにまとめて表示");
+				searchButton.setText("表示");
+				fLabel.setText("日付");
+				flagComboBox.setSelectedItem(null);
+				flagComboBox.setEnabled(false);
+				releaseButton.setEnabled(false);
+				getData();
+			}else {
+				changeButton.setText("商品有高帳");
+				searchButton.setText("絞り込み");
+				fLabel.setText("削除フラグ");
+				codeComboBox.setSelectedItem(null);
+				nameComboBox.setSelectedItem(null);
+				flagComboBox.setSelectedItem(null);
+				flagComboBox.setEnabled(true);
+				releaseButton.setEnabled(true);
+				getData();
+			}
 		}
 	}
 	
@@ -621,7 +653,11 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	
 	//検索条件からデータを取得するメソッド
 	public void getData(){
-		SQL = createSQL();
+		if(searchButton.getText().equals("絞り込み")) {
+			SQL = createSQL();
+		}else {
+			SQL = createSQL2();
+		}
 		System.out.println(SQL + " で検索します");
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASS);
@@ -663,6 +699,28 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		return str;
 	}
 
+	//商品有高帳のSQLを作成するメソッド
+	public String createSQL2(){
+		a = 0;
+		b = 0;
+		c = 0;
+		d = 0;
+		SUM = 0;
+		if(codeComboBox.getSelectedItem() == null && nameComboBox.getSelectedItem() == null) {
+			filterSQL += " AND 商品コード = 'AAAA'";
+		}
+		if(codeComboBox.getSelectedItem() != null) {
+			filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'";
+		}
+		String str = "SELECT 仕入日 AS 日付, 商品コード, CONCAT(仕入数,'受') AS 個数"
+				+ " FROM 在庫マスタ WHERE 1" + filterSQL
+				+ " UNION ALL"
+				+ " SELECT DATE_FORMAT(販売日時, '%Y-%m-%d') AS 日付, 商品コード, CONCAT(個数,'払') AS 個数"
+				+ " FROM 売上マスタ WHERE 1" + filterSQL + " AND 削除フラグ = 0"
+				+ " ORDER BY 日付;";
+		filterSQL = ""; //filterSQLをリセットする
+		return str;
+	}
 	
 	
 	//それぞれのラベルに検索結果を表示するメソッド
@@ -759,83 +817,157 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	public void show(JLabel codeLabel, JLabel nameLabel, JLabel flagLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
 			JLabel outQuantityLabel, JLabel outPriceLabel, JLabel balanceQuantityLabel, JLabel balancePriceLabel) {
 		try {
-			//まず、商品コードと商品名、削除フラグを表示する
-			codeLabel.setText(rs.getString("商品コード"));
-			nameLabel.setText(rs.getString("商品名"));
-			flagLabel.setText(rs.getString("削除フラグ"));
-			//次に、表示した商品コードをもとに受入数量・金額を取得する
-			//受入がない場合は0を記す
-			SQL = "SELECT 商品コード, SUM(受入数量) AS 受入数量, SUM(受入金額) AS 受入金額"
-				+ " FROM (SELECT 商品コード, 仕入単価, SUM(仕入数) AS 受入数量, SUM(仕入数)*仕入単価 AS 受入金額"
-				+ " FROM 在庫マスタ GROUP BY 商品コード, 仕入単価) Z"
-				+ " WHERE 商品コード = '" + codeLabel.getText() + "' GROUP BY 商品コード;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			otherRs = stmt.executeQuery(SQL);
-			if(otherRs.next()) {
-				inQuantityLabel.setText(otherRs.getString("受入数量") + "個");
-				inPriceLabel.setText("￥" + otherRs.getString("受入金額"));
-			} else {
-				inQuantityLabel.setText("0個");
-				inPriceLabel.setText("￥0");
-			}
-			//続いて払出数量・金額を取得する
-			//まず日別の仕入数と仕入単価を配列に格納する
-			SQL = "SELECT * FROM 在庫マスタ WHERE 商品コード = '" + codeLabel.getText() + "' ORDER BY 仕入日 ASC;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-			otherRs = stmt.executeQuery(SQL);
-			ArrayList<Integer> inQuantity = new ArrayList<Integer>();
-			ArrayList<Integer> inPrice = new ArrayList<Integer>();
-			//仕入がある場合
-			if(otherRs.next()) {
-				otherRs.beforeFirst();
-				while(otherRs.next()) {
-					inQuantity.add(otherRs.getInt("仕入数"));
-					inPrice.add(otherRs.getInt("仕入単価"));
-				}
-				for(int i = 0; i < inQuantity.size(); i++) {
-					System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + ", 仕入単価:" + inPrice.get(i));
-				}
-				//払出数量が日別の仕入数を超えるたびに仕入単価を更新して払出金額を計算する
-				SQL = "SELECT * FROM 売上マスタ WHERE 商品コード = '" + codeLabel.getText() + "' AND 削除フラグ = 0 ORDER BY 販売日時 ASC, 伝票番号 ASC;";
+			//商品ごとにまとめて表示の場合のshow
+			if(searchButton.getText().equals("絞り込み")) {
+			
+				//まず、商品コードと商品名、削除フラグを表示する
+				codeLabel.setText(rs.getString("商品コード"));
+				nameLabel.setText(rs.getString("商品名"));
+				flagLabel.setText(rs.getString("削除フラグ"));
+				//次に、表示した商品コードをもとに受入数量・金額を取得する
+				//受入がない場合は0を記す
+				SQL = "SELECT 商品コード, SUM(受入数量) AS 受入数量, SUM(受入金額) AS 受入金額"
+					+ " FROM (SELECT 商品コード, 仕入単価, SUM(仕入数) AS 受入数量, SUM(仕入数)*仕入単価 AS 受入金額"
+					+ " FROM 在庫マスタ GROUP BY 商品コード, 仕入単価) Z"
+					+ " WHERE 商品コード = '" + codeLabel.getText() + "' GROUP BY 商品コード;";
+				conn = DriverManager.getConnection(URL, USER, PASS);
+				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 				otherRs = stmt.executeQuery(SQL);
-				int outQuantity = 0; //払出数量の合計
-				int sum = 0; //計算に使用
-				int outPrice = 0; //払出金額の合計
-				int i = 0;
-				while(otherRs.next()) {
-					sum += otherRs.getInt("個数");
-					if(sum > inQuantity.get(i)) {
-						outQuantity += inQuantity.get(i);
-						outPrice += inQuantity.get(i) * inPrice.get(i);
-						sum -= inQuantity.get(i);
-						i++;
-					}
+				if(otherRs.next()) {
+					inQuantityLabel.setText(otherRs.getString("受入数量") + "個");
+					inPriceLabel.setText("￥" + otherRs.getString("受入金額"));
+				} else {
+					inQuantityLabel.setText("0個");
+					inPriceLabel.setText("￥0");
 				}
-				outQuantity += sum;
-				outPrice += sum * inPrice.get(i);
-				outQuantityLabel.setText(Integer.toString(outQuantity) + "個");
-				outPriceLabel.setText("￥" + Integer.toString(outPrice));
+				//続いて払出数量・金額を取得する
+				//まず日別の仕入数と仕入単価を配列に格納する
+				SQL = "SELECT * FROM 在庫マスタ WHERE 商品コード = '" + codeLabel.getText() + "' ORDER BY 仕入日 ASC;";
+				conn = DriverManager.getConnection(URL, USER, PASS);
+				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				otherRs = stmt.executeQuery(SQL);
+				ArrayList<Integer> inQuantity = new ArrayList<Integer>();
+				ArrayList<Integer> inPrice = new ArrayList<Integer>();
+				//仕入がある場合
+				if(otherRs.next()) {
+					otherRs.beforeFirst();
+					while(otherRs.next()) {
+						inQuantity.add(otherRs.getInt("仕入数"));
+						inPrice.add(otherRs.getInt("仕入単価"));
+					}
+					for(int i = 0; i < inQuantity.size(); i++) {
+						System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + ", 仕入単価:" + inPrice.get(i));
+					}
+					//払出数量が日別の仕入数を超えるたびに仕入単価を更新して払出金額を計算する
+					SQL = "SELECT * FROM 売上マスタ WHERE 商品コード = '" + codeLabel.getText() + "' AND 削除フラグ = 0 ORDER BY 販売日時 ASC, 伝票番号 ASC;";
+					otherRs = stmt.executeQuery(SQL);
+					int outQuantity = 0; //払出数量の合計
+					int sum = 0; //計算に使用
+					int outPrice = 0; //払出金額の合計
+					int i = 0;
+					while(otherRs.next()) {
+						sum += otherRs.getInt("個数");
+						if(sum > inQuantity.get(i)) {
+							outQuantity += inQuantity.get(i);
+							outPrice += inQuantity.get(i) * inPrice.get(i);
+							sum -= inQuantity.get(i);
+							i++;
+						}
+					}
+					outQuantity += sum;
+					outPrice += sum * inPrice.get(i);
+					outQuantityLabel.setText(Integer.toString(outQuantity) + "個");
+					outPriceLabel.setText("￥" + Integer.toString(outPrice));
+					
+					inQuantity.clear();
+					inPrice.clear();	
+				}
+				//仕入がない場合
+				else {
+					outQuantityLabel.setText("0個");
+					outPriceLabel.setText("￥0");
+				}
 				
-				inQuantity.clear();
-				inPrice.clear();	
+				//最後に、受入数量・金額から払出数量・金額を差し引いて残高を計算する
+				int q = Integer.parseInt(inQuantityLabel.getText().replace("個", "")) - 
+							Integer.parseInt(outQuantityLabel.getText().replace("個", ""));
+				
+				int p = Integer.parseInt(inPriceLabel.getText().replace("￥", "")) - 
+							Integer.parseInt(outPriceLabel.getText().replace("￥", ""));
+				
+				balanceQuantityLabel.setText(Integer.toString(q) + "個");
+				balancePriceLabel.setText("￥" + Integer.toString(p));
 			}
-			//仕入がない場合
+			//商品有高帳の場合のshow
 			else {
-				outQuantityLabel.setText("0個");
-				outPriceLabel.setText("￥0");
+				//まず商品コードと日付を表示する
+				codeLabel.setText(rs.getString("商品コード"));
+				flagLabel.setText(rs.getString("日付"));
+				//次に日別の仕入数と仕入単価を配列に格納する
+				SQL = "SELECT * FROM 在庫マスタ WHERE 商品コード = '" + codeLabel.getText() + "' ORDER BY 仕入日 ASC;";
+				conn = DriverManager.getConnection(URL, USER, PASS);
+				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				otherRs = stmt.executeQuery(SQL);
+				ArrayList<Integer> inQuantity = new ArrayList<Integer>();
+				ArrayList<Integer> inPrice = new ArrayList<Integer>();
+				//仕入がある場合
+				if(otherRs.next()) {
+					otherRs.beforeFirst();
+					while(otherRs.next()) {
+						inQuantity.add(otherRs.getInt("仕入数"));
+						inPrice.add(otherRs.getInt("仕入単価"));
+					}
+					for(int i = 0; i < inQuantity.size(); i++) {
+						System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + ", 仕入単価:" + inPrice.get(i));
+					}
+					
+					//受入の場合
+					if(rs.getString("個数").contains("受")) {
+						inQuantityLabel.setText(rs.getString("個数").replace("受", "個"));
+						inPriceLabel.setText(Integer.toString(inQuantity.get(a) * inPrice.get(a)));
+						c += inQuantity.get(a); //cは数量の残高
+						d += inQuantity.get(a) * inPrice.get(a); //dは金額の残高
+						a++; //次の仕入に移す
+						balanceQuantityLabel.setText(c + "個");
+						balancePriceLabel.setText("￥" + d);
+						
+					}
+					//払出の場合
+					else {
+						outQuantityLabel.setText(rs.getString("個数").replace("払", "個"));
+						SUM += Integer.parseInt(rs.getString("個数").replace("払", ""));
+						
+						if(SUM > inQuantity.get(b)) {
+							//b+1回目の仕入の値段で計算
+							int price1 = (Integer.parseInt(rs.getString("個数").replace("払", "")) - (SUM - inQuantity.get(b)) * inPrice.get(b)) ;
+							SUM -= inQuantity.get(b);
+							b++;//次の仕入に移す
+							//b+2回目の仕入の値段で計算
+							int price2 = SUM * inPrice.get(b);
+							outPriceLabel.setText(Integer.toString(price1 + price2));
+						}else {
+							outPriceLabel.setText(Integer.toString(Integer.parseInt(rs.getString("個数").replace("払", "")) * inPrice.get(b)));
+						}
+						c -= Integer.parseInt(outQuantityLabel.getText().replace("個", "")); //cは数量の残高
+						d -= Integer.parseInt(outPriceLabel.getText().replace("￥", "")); //dは金額の残高
+						balanceQuantityLabel.setText(c + "個");
+						balancePriceLabel.setText("￥" + d);
+					}
+					
+					inQuantity.clear();
+					inPrice.clear();	
+				}
+				//仕入がない場合
+				else {
+					outQuantityLabel.setText("0個");
+					outPriceLabel.setText("￥0");
+				}
+				
+				
+				
+				
+				
 			}
-			
-			//最後に、受入数量・金額から払出数量・金額を差し引いて残高を計算する
-			int q = Integer.parseInt(inQuantityLabel.getText().replace("個", "")) - 
-						Integer.parseInt(outQuantityLabel.getText().replace("個", ""));
-			
-			int p = Integer.parseInt(inPriceLabel.getText().replace("￥", "")) - 
-						Integer.parseInt(outPriceLabel.getText().replace("￥", ""));
-			
-			balanceQuantityLabel.setText(Integer.toString(q) + "個");
-			balancePriceLabel.setText("￥" + Integer.toString(p));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {

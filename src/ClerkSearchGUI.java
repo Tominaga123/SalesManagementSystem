@@ -157,13 +157,13 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		codeComboBox.addItem(null);
 		nameComboBox.addItem(null);
 		try {
-			SQL = "SELECT 店員コード, 店員名 FROM 店員マスタ;";
+			SQL = "SELECT 店員コード, 氏名 FROM 店員マスタ;";
 			Connection conn = DriverManager.getConnection(URL, USER, PASS);
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				codeComboBox.addItem(rs.getString("店員コード"));
-				nameComboBox.addItem(rs.getString("店員名"));
+				nameComboBox.addItem(rs.getString("氏名"));
 			}
 			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
@@ -237,7 +237,7 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		panel4.add(cLabel);
 		panel4.add(nLabel);
 		panel4.add(sLabel);
-		panel4.add(sLabel);
+		panel4.add(bLabel);
 		panel4.add(fLabel);
 		
 		panel4.add(codeLabel1);
@@ -304,6 +304,38 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		getContentPane().add(panel4);
 		getContentPane().add(panel5);
 		
+		setColor1(cLabel);
+		setColor1(nLabel);
+		setColor1(sLabel);
+		setColor1(bLabel);
+		setColor1(fLabel);
+		
+		setColor2(codeLabel2);
+		setColor2(nameLabel2);
+		setColor2(sexLabel2);
+		setColor2(birthdayLabel2);
+		setColor2(flagLabel2);
+		setColor2(codeLabel4);
+		setColor2(nameLabel4);
+		setColor2(sexLabel4);
+		setColor2(birthdayLabel4);
+		setColor2(flagLabel4);
+		setColor2(codeLabel6);
+		setColor2(nameLabel6);
+		setColor2(sexLabel6);
+		setColor2(birthdayLabel6);
+		setColor2(flagLabel6);
+		setColor2(codeLabel8);
+		setColor2(nameLabel8);
+		setColor2(sexLabel8);
+		setColor2(birthdayLabel8);
+		setColor2(flagLabel8);
+		setColor2(codeLabel10);
+		setColor2(nameLabel10);
+		setColor2(sexLabel10);
+		setColor2(birthdayLabel10);
+		setColor2(flagLabel10);
+		
 		codeComboBox.addActionListener(this);
 		nameComboBox.addActionListener(this);
 		searchButton.addActionListener(this);
@@ -354,12 +386,12 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			}
 		} else if(e.getSource() == codeComboBox) {
 			try {
-				SQL = "SELECT 店員名 FROM 店員マスタ WHERE 店員コード = '" + codeComboBox.getSelectedItem() + "';";
+				SQL = "SELECT 氏名 FROM 店員マスタ WHERE 店員コード = '" + codeComboBox.getSelectedItem() + "';";
 				Connection conn = DriverManager.getConnection(URL, USER, PASS);
 				Statement stmt = conn.createStatement();
 				otherRs = stmt.executeQuery(SQL);
 				while(otherRs.next()){
-					nameComboBox.setSelectedItem(otherRs.getString("店員名"));
+					nameComboBox.setSelectedItem(otherRs.getString("氏名"));
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
@@ -368,7 +400,7 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			}
 		} else if(e.getSource() == nameComboBox) {
 			try {
-				SQL = "SELECT 店員コード FROM 店員マスタ WHERE 店員名 = '" + nameComboBox.getSelectedItem() + "';";
+				SQL = "SELECT 店員コード FROM 店員マスタ WHERE 氏名 = '" + nameComboBox.getSelectedItem() + "';";
 				Connection conn = DriverManager.getConnection(URL, USER, PASS);
 				Statement stmt = conn.createStatement();
 				otherRs = stmt.executeQuery(SQL);
@@ -430,10 +462,23 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		if(nameComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 商品名 = '" + nameComboBox.getSelectedItem() + "'";
 		}
+		if(sexComboBox.getSelectedItem() != null) {
+			filterSQL += " AND 性別 = '" + sexComboBox.getSelectedItem() + "'"; 
+		}
+		if(timeRangeComboBox.getSelectedItem().equals("以前")) {
+			filterSQL += " AND 生年月日 <= '" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() +
+					"-" + dateComboBox.getSelectedItem() + "'";
+		}else if(timeRangeComboBox.getSelectedItem().equals("以後")) {
+			filterSQL += " AND 生年月日 >= '" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() +
+					"-" + dateComboBox.getSelectedItem() + "'";
+		}else if(timeRangeComboBox.getSelectedItem().equals("一致")) {
+			filterSQL += " AND 生年月日 = '" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + 
+					"-" + dateComboBox.getSelectedItem() + "'";
+		}
 		if(flagComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 削除フラグ = '" + flagComboBox.getSelectedItem() + "'";
 		}
-		String str = "SELECT * FROM 商品マスタ WHERE 1" + filterSQL + ";";
+		String str = "SELECT * FROM 店員マスタ WHERE 1" + filterSQL + ";";
 		filterSQL = ""; //filterSQLをリセットする
 		return str;
 	}
@@ -444,64 +489,64 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	public void result() {
 		try {
 			if(rs.next()){
-				show(codeLabel1, nameLabel1, priceLabel1, flagLabel1);
+				show(codeLabel1, nameLabel1, sexLabel1, birthdayLabel1, flagLabel1);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel1, nameLabel1, priceLabel1, flagLabel1);
+				reset(codeLabel1, nameLabel1, sexLabel1, birthdayLabel1, flagLabel1);
 			}
 			if(rs.next()){
-				show(codeLabel2, nameLabel2, priceLabel2, flagLabel2);
+				show(codeLabel2, nameLabel2, sexLabel2, birthdayLabel2, flagLabel2);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel2, nameLabel2, priceLabel2, flagLabel2);
+				reset(codeLabel2, nameLabel2, sexLabel2, birthdayLabel2, flagLabel2);
 			}
 			if(rs.next()){
-				show(codeLabel3, nameLabel3, priceLabel3, flagLabel3);
+				show(codeLabel3, nameLabel3,sexLabel3, birthdayLabel3, flagLabel3);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel3, nameLabel3, priceLabel3, flagLabel3);
+				reset(codeLabel3, nameLabel3, sexLabel3, birthdayLabel3, flagLabel3);
 			}
 			if(rs.next()){
-				show(codeLabel4, nameLabel4, priceLabel4, flagLabel4);
+				show(codeLabel4, nameLabel4, sexLabel4, birthdayLabel4, flagLabel4);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel4, nameLabel4, priceLabel4, flagLabel4);
+				reset(codeLabel4, nameLabel4, sexLabel4, birthdayLabel4, flagLabel4);
 			}
 			if(rs.next()){
-				show(codeLabel5, nameLabel5, priceLabel5, flagLabel5);
+				show(codeLabel5, nameLabel5, sexLabel5, birthdayLabel5, flagLabel5);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel5, nameLabel5, priceLabel5, flagLabel5);
+				reset(codeLabel5, nameLabel5, sexLabel5, birthdayLabel5, flagLabel5);
 			}
 			if(rs.next()){
-				show(codeLabel6, nameLabel6, priceLabel6, flagLabel6);
+				show(codeLabel6, nameLabel6, sexLabel6, birthdayLabel6, flagLabel6);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel6, nameLabel6, priceLabel6, flagLabel6);
+				reset(codeLabel6, nameLabel6, sexLabel6, birthdayLabel6, flagLabel6);
 			}
 			if(rs.next()){
-				show(codeLabel7, nameLabel7, priceLabel7, flagLabel7);	
+				show(codeLabel7, nameLabel7, sexLabel7, birthdayLabel7, flagLabel7);	
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel7, nameLabel7, priceLabel7, flagLabel7);
+				reset(codeLabel7, nameLabel7, sexLabel7, birthdayLabel7, flagLabel7);
 			}
 			if(rs.next()){
-				show(codeLabel8, nameLabel8, priceLabel8, flagLabel8);
+				show(codeLabel8, nameLabel8, sexLabel8, birthdayLabel8, flagLabel8);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel8, nameLabel8, priceLabel8, flagLabel8);
+				reset(codeLabel8, nameLabel8, sexLabel8, birthdayLabel8, flagLabel8);
 			}
 			if(rs.next()){
-				show(codeLabel9, nameLabel9, priceLabel9, flagLabel9);
+				show(codeLabel9, nameLabel9, sexLabel9, birthdayLabel9, flagLabel9);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel9, nameLabel9, priceLabel9, flagLabel9);
+				reset(codeLabel9, nameLabel9, sexLabel9, birthdayLabel9, flagLabel9);
 			}
 			if(rs.next()){
-				show(codeLabel10, nameLabel10, priceLabel10, flagLabel10);
+				show(codeLabel10, nameLabel10,sexLabel10, birthdayLabel10, flagLabel10);
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeLabel10, nameLabel10, priceLabel10, flagLabel10);
+				reset(codeLabel10, nameLabel10, sexLabel10, birthdayLabel10, flagLabel10);
 			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -511,11 +556,12 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullでなければラベルに内容を表示するメソッド
-	public void show(JLabel codeLabel, JLabel nameLabel, JLabel priceLabel, JLabel flagLabel) {
+	public void show(JLabel codeLabel, JLabel nameLabel, JLabel sexLabel, JLabel birthdayLabel, JLabel flagLabel) {
 		try {
-			codeLabel.setText(rs.getString("商品コード"));
-			nameLabel.setText(rs.getString("商品名"));
-			priceLabel.setText(rs.getString("単価"));
+			codeLabel.setText(rs.getString("店員コード"));
+			nameLabel.setText(rs.getString("氏名"));
+			sexLabel.setText(rs.getString("性別"));
+			birthdayLabel.setText(rs.getString("生年月日"));
 			flagLabel.setText(rs.getString("削除フラグ"));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -525,10 +571,11 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド
-	public void reset(JLabel codeLabel, JLabel nameLabel, JLabel priceLabel, JLabel flagLabel) {
+	public void reset(JLabel codeLabel, JLabel nameLabel, JLabel sexLabel, JLabel birthdayLabel, JLabel flagLabel) {
 		codeLabel.setText(null);
 		nameLabel.setText(null);
-		priceLabel.setText(null);
+		sexLabel.setText(null);
+		birthdayLabel.setText(null);
 		flagLabel.setText(null);
 	}
 	

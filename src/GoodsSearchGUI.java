@@ -242,6 +242,32 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 		getContentPane().add(panel4);
 		getContentPane().add(panel5);
 		
+		setColor1(cLabel);
+		setColor1(nLabel);
+		setColor1(pLabel);
+		setColor1(fLabel);
+		
+		setColor2(codeLabel2);
+		setColor2(nameLabel2);
+		setColor2(priceLabel2);
+		setColor2(flagLabel2);
+		setColor2(codeLabel4);
+		setColor2(nameLabel4);
+		setColor2(priceLabel4);
+		setColor2(flagLabel4);
+		setColor2(codeLabel6);
+		setColor2(nameLabel6);
+		setColor2(priceLabel6);
+		setColor2(flagLabel6);
+		setColor2(codeLabel8);
+		setColor2(nameLabel8);
+		setColor2(priceLabel8);
+		setColor2(flagLabel8);
+		setColor2(codeLabel10);
+		setColor2(nameLabel10);
+		setColor2(priceLabel10);
+		setColor2(flagLabel10);
+		
 		codeComboBox.addActionListener(this);
 		nameComboBox.addActionListener(this);
 		searchButton.addActionListener(this);
