@@ -166,11 +166,11 @@ class editGUI extends JFrame implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == clerkEditButton){
-			new clerkEditGUI();
+			new ClerkEditGUI();
 		}else if(e.getSource() == goodsEditButton){
-			new goodsEditGUI();
+			new GoodsEditGUI();
 		}else if(e.getSource() == stockEditButton){
-			new stockEditGUI();
+			new StockEditGUI();
 		}
 	}
 }

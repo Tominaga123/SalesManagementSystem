@@ -7,8 +7,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -18,31 +16,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class clerkEditGUI extends JFrame implements ActionListener{
+public class GoodsEditGUI extends JFrame implements ActionListener{
 	
 	JLabel filterLabel = new JLabel("絞り込み条件");//絞り込み条件の入力欄であることを示すラベル
 	
 	//絞り込み条件の入力欄
-	JLabel fcLabel = new JLabel("店員コード"); //店員コードの選択欄であることを示すラベル
-	JComboBox codeComboBox = new JComboBox(); //店員コードの選択欄
+	JLabel fcLabel = new JLabel("商品コード"); //商品コードの選択欄であることを示すラベル
+	JComboBox codeComboBox = new JComboBox(); //商品コードの選択欄
 	
-	JLabel fnLabel = new JLabel("  店員名"); //店員名の選択欄であることを示すラベル
-	JComboBox nameComboBox = new JComboBox(); //店員名の選択欄
+	JLabel fnLabel = new JLabel("  商品名"); //商品名の選択欄であることを示すラベル
+	JComboBox nameComboBox = new JComboBox(); //商品名の選択欄
 	
-	JLabel fsLabel = new JLabel("  性別"); //性別の選択欄であることを示すラベル
-	JComboBox sexComboBox = new JComboBox(); //性別の選択欄
+	JLabel fpLabel = new JLabel("  単価"); //単価の選択欄であることを示すラベル
+	JTextField priceTextField = new JTextField("0", 6); //単価の入力欄
 	
-	JLabel fbLabel = new JLabel("  生年月日"); //生年月日の選択欄であることを示すラベル
-	JLabel fyLabel = new JLabel("年 "); //単位「年」を表示するラベル
-	JComboBox yearComboBox = new JComboBox(); //[年]の選択欄
-	
-	JLabel fmLabel = new JLabel("月 "); //単位「月」を表示するラベル
-	JComboBox monthComboBox = new JComboBox(); //「月」の選択欄
-	
-	JLabel fdLabel = new JLabel("日 "); //単位「日」を表示するラベル
-	JComboBox dateComboBox = new JComboBox(); //「日」の選択欄
-	
-	JComboBox timeRangeComboBox = new JComboBox(); //選択した日時より以前か等を選択するボックス
+	JComboBox priceRangeComboBox = new JComboBox(); //入力した単価より高いか等を選択するボックス
 	
 	JLabel ffLabel = new JLabel("  削除フラグ"); //削除フラグの選択欄であることを示すラベル
 	JComboBox flagComboBox = new JComboBox(); //削除フラグの選択欄
@@ -53,9 +41,8 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	JButton searchButton = new JButton("絞り込み"); //検索ボタン
 	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
 	
-	
-	JLabel cLabel = new JLabel("店員コード", JLabel.CENTER); //店員コードであることを示すラベル
-	JTextField codeTextField1 = new JTextField(); //店員コードを編集するテキストフィールド
+	JLabel cLabel = new JLabel("商品コード", JLabel.CENTER); //商品コードであることを示すラベル
+	JTextField codeTextField1 = new JTextField(); //商品コードを編集するテキストフィールド
 	JTextField codeTextField2 = new JTextField();
 	JTextField codeTextField3 = new JTextField();
 	JTextField codeTextField4 = new JTextField();
@@ -66,8 +53,8 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	JTextField codeTextField9 = new JTextField();
 	JTextField codeTextField10 = new JTextField();
 	
-	JLabel nLabel = new JLabel("店員名", JLabel.CENTER); //店員名であることを示すラベル
-	JTextField nameTextField1 = new JTextField(); //店員名を編集するテキストフィールド
+	JLabel nLabel = new JLabel("商品名", JLabel.CENTER); //商品名であることを示すラベル
+	JTextField nameTextField1 = new JTextField(); //商品名を編集するテキストフィールド
 	JTextField nameTextField2 = new JTextField();
 	JTextField nameTextField3 = new JTextField();
 	JTextField nameTextField4 = new JTextField();
@@ -78,30 +65,17 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	JTextField nameTextField9 = new JTextField();
 	JTextField nameTextField10 = new JTextField();
 	
-	JLabel sLabel = new JLabel("性別", JLabel.CENTER); //性別であることを示すラベル
-	JComboBox sexComboBox1 = new JComboBox(); //性別を選択するコンボボックス
-	JComboBox sexComboBox2 = new JComboBox();
-	JComboBox sexComboBox3 = new JComboBox();
-	JComboBox sexComboBox4 = new JComboBox();
-	JComboBox sexComboBox5 = new JComboBox();
-	JComboBox sexComboBox6 = new JComboBox();
-	JComboBox sexComboBox7 = new JComboBox();
-	JComboBox sexComboBox8 = new JComboBox();
-	JComboBox sexComboBox9 = new JComboBox();
-	JComboBox sexComboBox10 = new JComboBox();
-	
-	JLabel bLabel = new JLabel("生年月日", JLabel.CENTER); //生年月日であることを示すラベル
-	JTextField birthdayTextField1 = new JTextField(); //生年月日を編集するテキストフィールド
-	JTextField birthdayTextField2 = new JTextField();
-	JTextField birthdayTextField3 = new JTextField();
-	JTextField birthdayTextField4 = new JTextField();
-	JTextField birthdayTextField5 = new JTextField();
-	JTextField birthdayTextField6 = new JTextField();
-	JTextField birthdayTextField7 = new JTextField();
-	JTextField birthdayTextField8 = new JTextField();
-	JTextField birthdayTextField9 = new JTextField();
-	JTextField birthdayTextField10 = new JTextField();
-	
+	JLabel pLabel = new JLabel("単価", JLabel.CENTER); //単価であることを示すラベル
+	JTextField priceTextField1 = new JTextField(); //単価を入力するテキストフィールド
+	JTextField priceTextField2 = new JTextField();
+	JTextField priceTextField3 = new JTextField();
+	JTextField priceTextField4 = new JTextField();
+	JTextField priceTextField5 = new JTextField();
+	JTextField priceTextField6 = new JTextField();
+	JTextField priceTextField7 = new JTextField();
+	JTextField priceTextField8 = new JTextField();
+	JTextField priceTextField9 = new JTextField();
+	JTextField priceTextField10 = new JTextField();
 	
 	JLabel fLabel = new JLabel("削除フラグ", JLabel.CENTER); //削除フラグであることを示すラベル
 	JComboBox flagComboBox1 = new JComboBox(); //削除フラグを選択するコンボボックス
@@ -170,8 +144,8 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	
 	
 	
-	clerkEditGUI(){
-		setTitle("店員マスタ編集");
+	GoodsEditGUI(){
+		setTitle("商品マスタ編集");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		//レイアウト設定
@@ -179,19 +153,19 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		panel1.setLayout(new FlowLayout());
 		panel2.setLayout(new FlowLayout());
 		panel3.setLayout(new FlowLayout());
-		panel4.setLayout(new GridLayout(11, 7, 0, 5));
+		panel4.setLayout(new GridLayout(11, 6, 0, 5));
 		panel15.setLayout(new FlowLayout());
 		
 		//絞り込みをする際の条件を設定するコンポーネントの設定
-		//店員コードを選択するコンボボックスに項目を追加
+		//商品コードを選択するコンボボックスに項目を追加
 		codeComboBox.addItem(null);
 		try {
-			SQL = "SELECT 店員コード FROM 店員マスタ;";
+			SQL = "SELECT 商品コード FROM 商品マスタ;";
 			conn = DriverManager.getConnection(URL, USER, PASS);
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
-				codeComboBox.addItem(rs.getString("店員コード"));
+				codeComboBox.addItem(rs.getString("商品コード"));
 			}
 			codeComboBox.setSelectedItem(null);
 		}catch(SQLException e2) {
@@ -199,15 +173,15 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
-		//店員名を選択するコンボボックスに項目を追加
+		//商品名を選択するコンボボックスに項目を追加
 		nameComboBox.addItem(null);
 		try {
-			SQL = "SELECT 氏名 FROM 店員マスタ;";
+			SQL = "SELECT 商品名 FROM 商品マスタ;";
 			conn = DriverManager.getConnection(URL, USER, PASS);
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
-				nameComboBox.addItem(rs.getString("氏名"));
+				nameComboBox.addItem(rs.getString("商品名"));
 			}
 			nameComboBox.setSelectedItem(null);
 		}catch(SQLException e2) {
@@ -215,62 +189,17 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		}catch(Exception e2) {
 			e2.printStackTrace();
 		}
-		//性別を選択するコンボボックスに項目を追加
-		sexComboBox.addItem(null);
-		sexComboBox.addItem("男性");
-		sexComboBox.addItem("女性");
-		codeComboBox.setSelectedItem(null);
-		//日時を選択するコンボボックスに項目を追加
-		//現在の日時で初期化
-		//「年」
-		int y = Integer.valueOf(getYear());
-		for(int i = 1950; i <= y; i++) {
-			String s = Integer.valueOf(i).toString();
-			yearComboBox.addItem(s);
-		}
-		yearComboBox.setSelectedItem(getYear());
-		//「月」
-		for(int i = 1; i <= 12; i++) {
-		String s = Integer.valueOf(i).toString();
-			if(i <= 9) {
-				s = 0 + s;
-			}
-		monthComboBox.addItem(s);
-			if(s.equals(getMonth())){
-				monthComboBox.setSelectedIndex(i-1);
-			}
-		}
-		//「日」
-		for(int i = 1; i <= 31; i++) {
-			String s = Integer.valueOf(i).toString();
-			if(i <= 9) {
-				s = 0 + s;
-			}
-			dateComboBox.addItem(s);
-			if(s.equals(getDate())){
-				dateComboBox.setSelectedIndex(i-1);
-			}
-		}
-		timeRangeComboBox.addItem("以前");
-		timeRangeComboBox.addItem("以後");
-		timeRangeComboBox.addItem("一致");
+		//単価の範囲を選択するコンボボックスに項目を追加
+		priceRangeComboBox.addItem("以上");
+		priceRangeComboBox.addItem("以下");
+		priceRangeComboBox.addItem("一致");
 		//削除フラグを選択するコンボボックスに項目を追加
 		flagComboBox.addItem(null);
 		flagComboBox.addItem("0");
 		flagComboBox.addItem("1");
 		flagComboBox.setSelectedItem(null);
 		
-		//編集で使用する性別と削除フラグのコンボボックスに項目を追加
-		sexItem(sexComboBox1);
-		sexItem(sexComboBox2);
-		sexItem(sexComboBox3);
-		sexItem(sexComboBox4);
-		sexItem(sexComboBox5);
-		sexItem(sexComboBox6);
-		sexItem(sexComboBox7);
-		sexItem(sexComboBox8);
-		sexItem(sexComboBox9);
-		sexItem(sexComboBox10);
+		//編集で使用する削除フラグのコンボボックスに項目を追加
 	
 		flagItem(flagComboBox1);
 		flagItem(flagComboBox2);
@@ -289,16 +218,9 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		panel2.add(codeComboBox);
 		panel2.add(fnLabel);
 		panel2.add(nameComboBox);
-		panel2.add(fsLabel);
-		panel2.add(sexComboBox);
-		panel2.add(fbLabel);
-		panel2.add(yearComboBox);
-		panel2.add(fyLabel);
-		panel2.add(monthComboBox);
-		panel2.add(fmLabel);
-		panel2.add(dateComboBox);
-		panel2.add(fdLabel);
-		panel2.add(timeRangeComboBox);
+		panel2.add(fpLabel);
+		panel2.add(priceTextField);
+		panel2.add(priceRangeComboBox);
 		panel2.add(ffLabel);
 		panel2.add(flagComboBox);
 		
@@ -307,88 +229,77 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 		
 		panel4.add(cLabel);
 		panel4.add(nLabel);
-		panel4.add(sLabel);
-		panel4.add(bLabel);
+		panel4.add(pLabel);
 		panel4.add(fLabel);
 		panel4.add(voidLabel1);
 		panel4.add(voidLabel2);
 
 		panel4.add(codeTextField1);
 		panel4.add(nameTextField1);
-		panel4.add(sexComboBox1);
-		panel4.add(birthdayTextField1);
+		panel4.add(priceTextField1);
 		panel4.add(flagComboBox1);
 		panel4.add(updateButton1);
 		panel4.add(editButton1);
 
 		panel4.add(codeTextField2);
 		panel4.add(nameTextField2);
-		panel4.add(sexComboBox2);
-		panel4.add(birthdayTextField2);
+		panel4.add(priceTextField2);
 		panel4.add(flagComboBox2);
 		panel4.add(updateButton2);
 		panel4.add(editButton2);
 
 		panel4.add(codeTextField3);
 		panel4.add(nameTextField3);
-		panel4.add(sexComboBox3);
-		panel4.add(birthdayTextField3);
+		panel4.add(priceTextField3);
 		panel4.add(flagComboBox3);
 		panel4.add(updateButton3);
 		panel4.add(editButton3);
 		
 		panel4.add(codeTextField4);
 		panel4.add(nameTextField4);
-		panel4.add(sexComboBox4);
-		panel4.add(birthdayTextField4);
+		panel4.add(priceTextField4);
 		panel4.add(flagComboBox4);
 		panel4.add(updateButton4);
 		panel4.add(editButton4);
 		
 		panel4.add(codeTextField5);
 		panel4.add(nameTextField5);
-		panel4.add(sexComboBox5);
-		panel4.add(birthdayTextField5);
+		panel4.add(priceTextField5);
 		panel4.add(flagComboBox5);
 		panel4.add(updateButton5);
 		panel4.add(editButton5);
 		
 		panel4.add(codeTextField6);
 		panel4.add(nameTextField6);
-		panel4.add(sexComboBox6);
-		panel4.add(birthdayTextField6);
+		panel4.add(priceTextField6);
 		panel4.add(flagComboBox6);
 		panel4.add(updateButton6);
 		panel4.add(editButton6);
 		
 		panel4.add(codeTextField7);
 		panel4.add(nameTextField7);
-		panel4.add(sexComboBox7);
-		panel4.add(birthdayTextField7);
+		panel4.add(priceTextField7);
 		panel4.add(flagComboBox7);
 		panel4.add(updateButton7);
 		panel4.add(editButton7);
 		
 		panel4.add(codeTextField8);
 		panel4.add(nameTextField8);
-		panel4.add(sexComboBox8);
-		panel4.add(birthdayTextField8);
+		panel4.add(priceTextField8);
 		panel4.add(flagComboBox8);
 		panel4.add(updateButton8);
 		panel4.add(editButton8);
 		
 		panel4.add(codeTextField9);
 		panel4.add(nameTextField9);
-		panel4.add(sexComboBox9);
-		panel4.add(birthdayTextField9);
+		panel4.add(priceTextField9);
 		panel4.add(flagComboBox9);
 		panel4.add(updateButton9);
 		panel4.add(editButton9);
 		
 		panel4.add(codeTextField10);
 		panel4.add(nameTextField10);
-		panel4.add(sexComboBox10);
-		panel4.add(birthdayTextField10);
+		panel4.add(priceTextField10);
 		panel4.add(flagComboBox10);
 		panel4.add(updateButton10);
 		panel4.add(editButton10);
@@ -454,14 +365,11 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 			//絞り込み条件をリセット
 			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
-			sexComboBox.setSelectedItem(null);
-			yearComboBox.setSelectedItem(getYear());
-			monthComboBox.setSelectedItem(getMonth());
-			dateComboBox.setSelectedItem(getDate());
-			timeRangeComboBox.setSelectedItem("以前");
+			priceTextField.setText("0");
+			priceRangeComboBox.setSelectedItem("以上");
 			flagComboBox.setSelectedItem(null);
 			allShow();
-		}  else if(e.getSource() == nextButton) { //「次へ」ボタンを押した場合
+		}   else if(e.getSource() == nextButton) { //「次へ」ボタンを押した場合
 				result(); //検索結果を表示
 				previousButton.setEnabled(true);
 		} else if(e.getSource() == previousButton) { //「前へ」ボタンを押した場合
@@ -485,7 +393,7 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 			} catch(Exception e3) {
 				e3.printStackTrace();
 			}
-		} 
+		}
 		//「最初へ」ボタンを押した場合
 		else if(e.getSource() == firstButton) { 
 			try {
@@ -505,90 +413,90 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-		}else if(e.getSource() == updateButton1) {
-			update(codeTextField1, nameTextField1, sexComboBox1, birthdayTextField1, flagComboBox1, 1);
+		} else if(e.getSource() == updateButton1) {
+			update(codeTextField1, nameTextField1, priceTextField1, flagComboBox1, 1);
 		} else if(e.getSource() == updateButton2) {
-			update(codeTextField2, nameTextField2, sexComboBox2, birthdayTextField2, flagComboBox2, 2);
+			update(codeTextField2, nameTextField2, priceTextField2, flagComboBox2, 2);
 		} else if(e.getSource() == updateButton3) {
-			update(codeTextField3, nameTextField3, sexComboBox3, birthdayTextField3, flagComboBox3, 3);
+			update(codeTextField3, nameTextField3, priceTextField3, flagComboBox3, 3);
 		} else if(e.getSource() == updateButton4) {
-			update(codeTextField4, nameTextField4, sexComboBox4, birthdayTextField4, flagComboBox4, 4);
+			update(codeTextField4, nameTextField4, priceTextField4, flagComboBox4, 4);
 		} else if(e.getSource() == updateButton5) {
-			update(codeTextField5, nameTextField5, sexComboBox5, birthdayTextField5, flagComboBox5, 5);
+			update(codeTextField5, nameTextField5, priceTextField5, flagComboBox5, 5);
 		} else if(e.getSource() == updateButton6) {
-			update(codeTextField6, nameTextField6, sexComboBox6, birthdayTextField6, flagComboBox6, 6);
+			update(codeTextField6, nameTextField6, priceTextField6, flagComboBox6, 6);
 		} else if(e.getSource() == updateButton7) {
-			update(codeTextField7, nameTextField7, sexComboBox7, birthdayTextField7, flagComboBox7, 7);
+			update(codeTextField7, nameTextField7, priceTextField7, flagComboBox7, 7);
 		} else if(e.getSource() == updateButton8) {
-			update(codeTextField8, nameTextField8, sexComboBox8, birthdayTextField8, flagComboBox8, 8);
+			update(codeTextField8, nameTextField8, priceTextField8, flagComboBox8, 8);
 		} else if(e.getSource() == updateButton9) {
-			update(codeTextField9, nameTextField9, sexComboBox9, birthdayTextField9, flagComboBox9, 9);
+			update(codeTextField9, nameTextField9, priceTextField9, flagComboBox9, 9);
 		} else if(e.getSource() == updateButton10) {
-			update(codeTextField10, nameTextField10, sexComboBox10, birthdayTextField10, flagComboBox10, 10);
+			update(codeTextField10, nameTextField10, priceTextField10, flagComboBox10, 10);
 		} else if(e.getSource() == editButton1) {
 			if(editButton1.getText().equals("追加")) {
-				insert(codeTextField1, nameTextField1, sexComboBox1, birthdayTextField1, flagComboBox1);
+				insert(codeTextField1, nameTextField1, priceTextField1, flagComboBox1);
 			} else if(editButton1.getText().equals("消去")) {
-				delete(codeTextField1, nameTextField1, sexComboBox1, birthdayTextField1, flagComboBox1);
+				delete(codeTextField1, nameTextField1, priceTextField1, flagComboBox1);
 			}
 		} else if(e.getSource() == editButton2) {
 			if(editButton2.getText().equals("追加")) {
-				insert(codeTextField2, nameTextField2, sexComboBox2, birthdayTextField2, flagComboBox2);
+				insert(codeTextField2, nameTextField2, priceTextField2, flagComboBox2);
 			} else if(editButton2.getText().equals("消去")) {
-				delete(codeTextField2, nameTextField2, sexComboBox2, birthdayTextField2, flagComboBox2);
+				delete(codeTextField2, nameTextField2, priceTextField2, flagComboBox2);
 			}
 		} else if(e.getSource() == editButton3) {
 			if(editButton3.getText().equals("追加")) {
-				insert(codeTextField3, nameTextField3, sexComboBox3, birthdayTextField3, flagComboBox3);
+				insert(codeTextField3, nameTextField3, priceTextField3, flagComboBox3);
 			} else if(editButton3.getText().equals("消去")) {
-				delete(codeTextField3, nameTextField3, sexComboBox3, birthdayTextField3, flagComboBox3);
+				delete(codeTextField3, nameTextField3, priceTextField3, flagComboBox3);
 			}
 		} else if(e.getSource() == editButton4) {
 			if(editButton4.getText().equals("追加")) {
-				insert(codeTextField4, nameTextField4, sexComboBox4, birthdayTextField4, flagComboBox4);
+				insert(codeTextField4, nameTextField4, priceTextField4, flagComboBox4);
 			} else if(editButton4.getText().equals("消去")) {
-				delete(codeTextField4, nameTextField4, sexComboBox4, birthdayTextField4, flagComboBox4);
+				delete(codeTextField4, nameTextField4, priceTextField4, flagComboBox4);
 			}
 		} else if(e.getSource() == editButton5) {
 			if(editButton5.getText().equals("追加")) {
-				insert(codeTextField5, nameTextField5, sexComboBox5, birthdayTextField5, flagComboBox5);
+				insert(codeTextField5, nameTextField5, priceTextField5, flagComboBox5);
 			} else if(editButton5.getText().equals("消去")) {
-				delete(codeTextField5, nameTextField5, sexComboBox5, birthdayTextField5, flagComboBox5);
+				delete(codeTextField5, nameTextField5, priceTextField5, flagComboBox5);
 			}
 		} else if(e.getSource() == editButton6) {
 			if(editButton6.getText().equals("追加")) {
-				insert(codeTextField6, nameTextField6, sexComboBox6, birthdayTextField6, flagComboBox6);
+				insert(codeTextField6, nameTextField6, priceTextField6, flagComboBox6);
 			} else if(editButton6.getText().equals("消去")) {
-				delete(codeTextField6, nameTextField6, sexComboBox6, birthdayTextField6, flagComboBox6);
+				delete(codeTextField6, nameTextField6, priceTextField6, flagComboBox6);
 			}
 		} else if(e.getSource() == editButton7) {
 			if(editButton7.getText().equals("追加")) {
-				insert(codeTextField7, nameTextField7, sexComboBox7, birthdayTextField7, flagComboBox7);
+				insert(codeTextField7, nameTextField7, priceTextField7, flagComboBox7);
 			} else if(editButton7.getText().equals("消去")) {
-				delete(codeTextField7, nameTextField7, sexComboBox7, birthdayTextField7, flagComboBox7);
+				delete(codeTextField7, nameTextField7, priceTextField7, flagComboBox7);
 			}
 		} else if(e.getSource() == editButton8) {
 			if(editButton8.getText().equals("追加")) {
-				insert(codeTextField8, nameTextField8, sexComboBox8, birthdayTextField8, flagComboBox8);
+				insert(codeTextField8, nameTextField8, priceTextField8, flagComboBox8);
 			} else if(editButton8.getText().equals("消去")) {
-				delete(codeTextField8, nameTextField8, sexComboBox8, birthdayTextField8, flagComboBox8);
+				delete(codeTextField8, nameTextField8, priceTextField8, flagComboBox8);
 			}
 		} else if(e.getSource() == editButton9) {
 			if(editButton9.getText().equals("追加")) {
-				insert(codeTextField9, nameTextField9, sexComboBox9, birthdayTextField9, flagComboBox9);
+				insert(codeTextField9, nameTextField9, priceTextField9, flagComboBox9);
 			} else if(editButton9.getText().equals("消去")) {
-				delete(codeTextField9, nameTextField9, sexComboBox9, birthdayTextField9, flagComboBox9);
+				delete(codeTextField9, nameTextField9, priceTextField9, flagComboBox9);
 			}
 		} else if(e.getSource() == editButton10) {
 			if(editButton10.getText().equals("追加")) {
-				insert(codeTextField10, nameTextField10, sexComboBox10, birthdayTextField10, flagComboBox10);
+				insert(codeTextField10, nameTextField10, priceTextField10, flagComboBox10);
 			} else if(editButton10.getText().equals("消去")) {
-				delete(codeTextField10, nameTextField10, sexComboBox10, birthdayTextField10, flagComboBox10);
+				delete(codeTextField10, nameTextField10, priceTextField10, flagComboBox10);
 			}
 		} 
 	}
 
-	//最初とデータの編集（更新、追加、削除）をした際に検索結果を更新するメソッド
+	//最初とデータの編集（更新、追加、消去）をした際に検索結果を更新するメソッド
 	public void allShow() {
 		SQL = createSQL();
 		System.out.println(SQL + " で表示します");
@@ -612,31 +520,27 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	//検索条件を指定するSQLを作成するメソッド
 	public String createSQL(){
 		if(codeComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 店員コード = '" + codeComboBox.getSelectedItem() + "'"; 
+			filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'"; 
 		}
 		if(nameComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 氏名 = '" + nameComboBox.getSelectedItem() + "'"; 
+			filterSQL += " AND 商品名 = '" + nameComboBox.getSelectedItem() + "'"; 
 		}
-		if(sexComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 性別 = '" + sexComboBox.getSelectedItem() + "'"; 
-		}
-		if(timeRangeComboBox.getSelectedItem().equals("以前")) {
-			filterSQL += " AND 生年月日 <= '" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() +
-					"-" + dateComboBox.getSelectedItem() + "'";
-		}else if(timeRangeComboBox.getSelectedItem().equals("以後")) {
-			filterSQL += " AND 生年月日 >= '" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() +
-					"-" + dateComboBox.getSelectedItem() + "'";
-		}else if(timeRangeComboBox.getSelectedItem().equals("一致")) {
-			filterSQL += " AND 生年月日 = '" + yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + 
-					"-" + dateComboBox.getSelectedItem() + "'";
+		if(!priceTextField.getText().equals("")) {
+			if(priceRangeComboBox.getSelectedItem().equals("以上")) {
+				filterSQL += " AND 単価 >= '" + priceTextField.getText() + "'";
+			}else if(priceRangeComboBox.getSelectedItem().equals("以下")) {
+				filterSQL += " AND 単価 <= '" + priceTextField.getText() + "'";
+			}else if(priceRangeComboBox.getSelectedItem().equals("一致")) {
+				filterSQL += " AND 単価 = '" + priceTextField.getText() + "'";
+			}
 		}
 		if(flagComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 削除フラグ = " + flagComboBox.getSelectedItem(); 
 		}
 		String str = "SELECT * "
-				+ "FROM 店員マスタ "
+				+ "FROM 商品マスタ "
 				+ "WHERE 1" + filterSQL + 
-				" ORDER BY 店員コード ASC;";
+				" ORDER BY 商品コード ASC;";
 		filterSQL = ""; //filterSQLをリセットする
 		return str;
 	}
@@ -645,67 +549,67 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	public void result() {
 		try {
 			if(rs.next()){
-				show(codeTextField1, nameTextField1, sexComboBox1, birthdayTextField1, flagComboBox1, updateButton1, editButton1); //検索結果表示
+				show(codeTextField1, nameTextField1, priceTextField1, flagComboBox1, updateButton1, editButton1); //検索結果表示
 				now = rs.getRow(); //現在の行番号を取得
 			}else {
-				reset(codeTextField1, nameTextField1, sexComboBox1, birthdayTextField1, flagComboBox1, updateButton1, editButton1); //白紙にする
-				//更新または追加されたデータの店員コードと同じものがないまま一行目が空欄になればページ送りをストップ
+				reset(codeTextField1, nameTextField1, priceTextField1, flagComboBox1, updateButton1, editButton1); //白紙にする
+				//更新または追加されたデータの商品コードと同じものがないまま一行目が空欄になればページ送りをストップ
 				stopFlag = 1;
 			}
 			if(rs.next()){
-				show(codeTextField2, nameTextField2, sexComboBox2, birthdayTextField2, flagComboBox2, updateButton2, editButton2);
+				show(codeTextField2, nameTextField2, priceTextField2, flagComboBox2, updateButton2, editButton2);
 				now = rs.getRow();
 			}else {
-				reset(codeTextField2, nameTextField2, sexComboBox2, birthdayTextField2, flagComboBox2, updateButton2, editButton2);
+				reset(codeTextField2, nameTextField2, priceTextField2, flagComboBox2, updateButton2, editButton2);
 			}
 			if(rs.next()){
-				show(codeTextField3, nameTextField3, sexComboBox3, birthdayTextField3, flagComboBox3, updateButton3, editButton3);
+				show(codeTextField3, nameTextField3, priceTextField3, flagComboBox3, updateButton3, editButton3);
 				now = rs.getRow();
 			}else {
-				reset(codeTextField3, nameTextField3, sexComboBox3, birthdayTextField3, flagComboBox3, updateButton3, editButton3);
+				reset(codeTextField3, nameTextField3, priceTextField3, flagComboBox3, updateButton3, editButton3);
 			}
 			if(rs.next()){
-				show(codeTextField4, nameTextField4, sexComboBox4, birthdayTextField4, flagComboBox4, updateButton4, editButton4);
+				show(codeTextField4, nameTextField4, priceTextField4, flagComboBox4, updateButton4, editButton4);
 				now = rs.getRow();
 			}else {
-				reset(codeTextField4, nameTextField4, sexComboBox4, birthdayTextField4, flagComboBox4, updateButton4, editButton4);
+				reset(codeTextField4, nameTextField4, priceTextField4, flagComboBox4, updateButton4, editButton4);
 			}
 			if(rs.next()){
-				show(codeTextField5, nameTextField5, sexComboBox5, birthdayTextField5, flagComboBox5, updateButton5, editButton5);
+				show(codeTextField5, nameTextField5, priceTextField5, flagComboBox5, updateButton5, editButton5);
 				now = rs.getRow();
 			}else {
-				reset(codeTextField5, nameTextField5, sexComboBox5, birthdayTextField5, flagComboBox5, updateButton5, editButton5);
+				reset(codeTextField5, nameTextField5, priceTextField5, flagComboBox5, updateButton5, editButton5);
 			}
 			if(rs.next()){
-				show(codeTextField6, nameTextField6, sexComboBox6, birthdayTextField6, flagComboBox6, updateButton6, editButton6);
+				show(codeTextField6, nameTextField6, priceTextField6, flagComboBox6, updateButton6, editButton6);
 				now = rs.getRow();
 			}else {
-				reset(codeTextField6, nameTextField6, sexComboBox6, birthdayTextField6, flagComboBox6, updateButton6, editButton6);
+				reset(codeTextField6, nameTextField6, priceTextField6, flagComboBox6, updateButton6, editButton6);
 			}
 			if(rs.next()){
-				show(codeTextField7, nameTextField7, sexComboBox7, birthdayTextField7, flagComboBox7, updateButton7, editButton7);	
+				show(codeTextField7, nameTextField7, priceTextField7, flagComboBox7, updateButton7, editButton7);	
 				now = rs.getRow();
 			}else {
-				reset(codeTextField7, nameTextField7, sexComboBox7, birthdayTextField7, flagComboBox7, updateButton7, editButton7);
+				reset(codeTextField7, nameTextField7, priceTextField7, flagComboBox7, updateButton7, editButton7);
 			}
 			if(rs.next()){
-				show(codeTextField8, nameTextField8, sexComboBox8, birthdayTextField8, flagComboBox8, updateButton8, editButton8);
+				show(codeTextField8, nameTextField8, priceTextField8, flagComboBox8, updateButton8, editButton8);
 				now = rs.getRow();
 			}else {
-				reset(codeTextField8, nameTextField8, sexComboBox8, birthdayTextField8, flagComboBox8, updateButton8, editButton8);
+				reset(codeTextField8, nameTextField8, priceTextField8, flagComboBox8, updateButton8, editButton8);
 			}
 			if(rs.next()){
-				show(codeTextField9, nameTextField9, sexComboBox9, birthdayTextField9, flagComboBox9, updateButton9, editButton9);
+				show(codeTextField9, nameTextField9, priceTextField9, flagComboBox9, updateButton9, editButton9);
 				now = rs.getRow();
 			}else {
-				reset(codeTextField9, nameTextField9, sexComboBox9, birthdayTextField9, flagComboBox9, updateButton9, editButton9);
+				reset(codeTextField9, nameTextField9, priceTextField9, flagComboBox9, updateButton9, editButton9);
 			}
 			if(rs.next()){
-				show(codeTextField10, nameTextField10, sexComboBox10, birthdayTextField10, flagComboBox10, updateButton10, editButton10);
+				show(codeTextField10, nameTextField10, priceTextField10, flagComboBox10, updateButton10, editButton10);
 				now = rs.getRow();
 				nextButton.setEnabled(true); //一番下の行にデータがあれば「次へ」ボタンをtrueにする
 			}else {
-				reset(codeTextField10, nameTextField10, sexComboBox10, birthdayTextField10, flagComboBox10, updateButton10, editButton10);
+				reset(codeTextField10, nameTextField10, priceTextField10, flagComboBox10, updateButton10, editButton10);
 				nextButton.setEnabled(false); //一番下の行が白紙なら「次へ」ボタンをfalseにする
 			}
 			System.out.println("nowは" + now);
@@ -721,17 +625,16 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullでなければラベルに内容を表示するメソッド
-	public void show(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
-			JComboBox flagBox, JButton updateButton, JButton editButton) {
+	public void show(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox,
+			JButton updateButton, JButton editButton) {
 		try {
-			codeText.setText(rs.getString("店員コード"));
+			codeText.setText(rs.getString("商品コード"));
 			//更新または追加されたデータの店員コードと同じであればページ送りをストップ
-			if(rs.getString("店員コード").equals(newCode)) { 
+			if(rs.getString("商品コード").equals(newCode)) {
 				stopFlag = 1;
 			}
-			nameText.setText(rs.getString("氏名"));
-			sexBox.setSelectedItem(rs.getString("性別"));
-			birthdayText.setText(rs.getString("生年月日"));
+			nameText.setText(rs.getString("商品名"));
+			priceText.setText(rs.getString("単価"));
 			flagBox.setSelectedItem(rs.getString("削除フラグ"));
 			updateButton.setEnabled(true);
 			editButton.setText("消去");
@@ -743,37 +646,33 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	}
 	
 	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド
-	public void reset(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
-			JComboBox flagBox, JButton updateButton, JButton editButton) {
+	public void reset(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox,
+			JButton updateButton, JButton editButton) {
 		codeText.setText("");
 		nameText.setText("");
-		sexBox.setSelectedItem(null);
-		birthdayText.setText("");
+		priceText.setText(null);
 		flagBox.setSelectedItem(null);
 		updateButton.setEnabled(false);
 		editButton.setText("追加");
 	}
 	
 	//データを更新するメソッド
-	public void update(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
-			JComboBox flagBox, int x) {
+	public void update(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox, int x) {
 		//すべての入力欄に空欄がなければデータを更新する
-		if(!codeText.getText().equals("") && !nameText.getText().equals("") && sexBox.getSelectedItem() != null && 
-				!birthdayText.getText().equals("") && flagBox.getSelectedItem() != null ) { 
+		if(!codeText.getText().equals("") && !nameText.getText().equals("") && !priceText.getText().equals("") && 
+				flagBox.getSelectedItem() != null ) { 
 			int row = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) * 10 + x;
 			System.out.println(row);
 			try {
 				rs.absolute(row);
-				rs.updateString("店員コード", codeText.getText());
-				rs.updateString("氏名", nameText.getText());
-				rs.updateString("性別", (String)sexBox.getSelectedItem());
-				rs.updateString("生年月日", birthdayText.getText());
+				rs.updateString("商品コード", codeText.getText());
+				rs.updateString("商品名", nameText.getText());
+				rs.updateString("単価", priceText.getText());
 				rs.updateString("削除フラグ", (String)flagBox.getSelectedItem());
 				rs.updateRow();
 				newCode = codeText.getText();
-				System.out.println("店員コード:" + codeText.getText() + " 氏名:" + nameText.getText() +
-						" 性別:" + sexBox.getSelectedItem() + " 生年月日" + birthdayText.getText() + 
-						" 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
+				System.out.println("商品コード:" + codeText.getText() + " 商品名:" + nameText.getText() +
+						" 生年月日" + priceText.getText() + " 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
 				//データを更新したのち、表を再取得して更新したデータがあるページへ飛ぶ
 				allShow();
 				try {
@@ -788,7 +687,7 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 			}catch(SQLException e2) {
 				e2.printStackTrace();
 				System.out.println("データを更新できませんでした" + "\r" + "データが正しく入力されているか確認してください" +
-				"\r" + "例：店員コードまたは店員名が長すぎる" + "\r" + "例：生年月日が形式通りに入力されていない");
+				"\r" + "例：商品コードまたは商品名が長すぎる");
 			}catch(Exception e2) {
 				e2.printStackTrace();
 			}
@@ -798,14 +697,13 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	}
 	
 	//データを追加するメソッド
-	public void insert(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
-			JComboBox flagBox) {
+	public void insert(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox) {
 		//すべての入力欄に空欄がなければデータを追加する
-		if(!codeText.getText().equals("") && !nameText.getText().equals("") && sexBox.getSelectedItem() != null && 
-				!birthdayText.getText().equals("") && flagBox.getSelectedItem() != null ) { 
-			String SQL = "INSERT INTO 店員マスタ (店員コード, 氏名, 性別, 生年月日, 削除フラグ) values ('" + 
-					codeText.getText() + "', '" + nameText.getText() + "', '" + sexBox.getSelectedItem() + 
-					"', cast('" + birthdayText.getText() + "' as date), " + flagBox.getSelectedItem() + ");";
+		if(!codeText.getText().equals("") && !nameText.getText().equals("") && !priceText.getText().equals("") && 
+				flagBox.getSelectedItem() != null ) { 
+			String SQL = "INSERT INTO 商品マスタ (商品コード, 商品名, 単価, 削除フラグ) values ('" + 
+					codeText.getText() + "', '" + nameText.getText() + "', " + priceText.getText() + 
+					", " + flagBox.getSelectedItem() + ");";
 			try {
 				Connection conn = DriverManager.getConnection(URL, USER, PASS);
 				Statement stmt = conn.createStatement();
@@ -826,7 +724,7 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 			}catch(SQLException e2) {
 				e2.printStackTrace();
 				System.out.println("データを追加できませんでした" + "\r" + "データが正しく入力されているか確認してください" +
-				"\r" + "例：店員コードまたは店員名が長すぎる" + "\r" + "例：生年月日が形式通りに入力されていない");
+				"\r" + "例：商品コードまたは商品名が長すぎる");
 			}catch(Exception e2) {
 				e2.printStackTrace();
 			}
@@ -836,11 +734,10 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 	}
 	
 	//データを消去するメソッド
-	public void delete(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
-			JComboBox flagBox) {
-		//店員コードが空欄でなければデータを消去する
+	public void delete(JTextField codeText, JTextField nameText, JTextField priceText, JComboBox flagBox) {
+		//商品コードが空欄でなければデータを消去する
 		if(!codeText.getText().equals("")) { 
-			String SQL = "delete from 店員マスタ where 店員コード = '" + codeText.getText() + "';";
+			String SQL = "delete from 商品マスタ where 商品コード = '" + codeText.getText() + "';";
 			try {
 				Connection conn = DriverManager.getConnection(URL, USER, PASS);
 				Statement stmt = conn.createStatement();
@@ -867,34 +764,10 @@ public class clerkEditGUI extends JFrame implements ActionListener{
 				e2.printStackTrace();
 			}
 		} else {
-			System.out.println("店員コードが空欄のため消去できませんでした");
+			System.out.println("商品コードが空欄のため消去できませんでした");
 		}
 	}
-	
-	//「年」「月」「日」のコンボボックスを現在の日時で初期化するメソッド
-	public String getYear() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("yyyy").format(date);
-		return str;
-	}
-	public String getMonth() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("MM").format(date);
-		return str;
-	}
-	public String getDate() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("dd").format(date);
-		return str;
-	}
-	
-	//性別のコンボボックスに項目を追加するメソッド
-	public void sexItem(JComboBox sexBox) {
-		sexBox.addItem(null);
-		sexBox.addItem("男性");
-		sexBox.addItem("女性");
-		sexBox.setSelectedItem(null);
-	}
+
 	//削除フラグのコンボボックスに項目を追加するメソッド
 	public void flagItem(JComboBox flagBox) {
 		flagBox.addItem("0");

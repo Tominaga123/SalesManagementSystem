@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class stockEditGUI extends JFrame implements ActionListener{
+public class StockEditGUI extends JFrame implements ActionListener{
 	
 	JLabel filterLabel = new JLabel("絞り込み条件");//絞り込み条件の入力欄であることを示すラベル
 	
@@ -173,7 +173,7 @@ public class stockEditGUI extends JFrame implements ActionListener{
 	JPanel panel4 = new JPanel();
 	JPanel panel5 = new JPanel();
 	
-	stockEditGUI(){
+	StockEditGUI(){
 		setTitle("在庫マスタ編集");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
