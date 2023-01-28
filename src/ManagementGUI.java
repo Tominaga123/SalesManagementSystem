@@ -15,6 +15,7 @@ public class ManagementGUI extends JFrame implements ActionListener{
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel(); //コンポーネントを置くパネル
+	JPanel panel3 = new JPanel(); //コンポーネントを置くパネル
 
 	ManagementGUI(){
 		setTitle("販売管理システム");
@@ -22,24 +23,24 @@ public class ManagementGUI extends JFrame implements ActionListener{
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		panel1.setLayout(new FlowLayout());
 		panel2.setLayout(new FlowLayout());
+		panel3.setLayout(new FlowLayout());
 		
 		panel1.add(salesManagementButton);
 		panel2.add(searchButton);
-		panel2.add(editButton);
+		panel3.add(editButton);
 		
 		getContentPane().add(panel1);
 		getContentPane().add(panel2);
-		
+		getContentPane().add(panel3);
+
 		salesManagementButton.addActionListener(this);
 		searchButton.addActionListener(this);
 		editButton.addActionListener(this);
-		setSize(350,120);
+		if(LoginGUI.USER.equals("店員2")) {
+			editButton.setEnabled(false);
+		}
+		setSize(350,150);
 		setVisible(true);
-	}
-	
-	
-	public static void main(String[] args) {
-		new ManagementGUI();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -61,22 +62,24 @@ class salesManagementGUI extends JFrame implements ActionListener{
 	JButton salesSearchButton = new JButton("売上検索・集計"); //売上検索・集計画面を開くボタン
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
-
+	JPanel panel2 = new JPanel(); 
 	
 	salesManagementGUI(){
 		setTitle("売上管理");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		panel1.setLayout(new FlowLayout());
+		panel2.setLayout(new FlowLayout());
 		
 		panel1.add(salesInputButton);
-		panel1.add(salesSearchButton);
+		panel2.add(salesSearchButton);
 		
 		getContentPane().add(panel1);
+		getContentPane().add(panel2);
 
 		salesInputButton.addActionListener(this);
 		salesSearchButton.addActionListener(this);
-		setSize(350,100);
+		setSize(350,120);
 		setVisible(true);
 	}
 
@@ -98,25 +101,34 @@ class searchGUI extends JFrame implements ActionListener{
 	JButton stockSearchButton = new JButton("在庫検索"); //在庫検索画面を開くボタン
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
+	JPanel panel2 = new JPanel();
+	JPanel panel3 = new JPanel();
+	JPanel panel4 = new JPanel();
 	
 	searchGUI(){
 		setTitle("データ検索");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		panel1.setLayout(new FlowLayout());
+		panel2.setLayout(new FlowLayout());
+		panel3.setLayout(new FlowLayout());
+		panel4.setLayout(new FlowLayout());
 		
 		panel1.add(salesSearchButton);
-		panel1.add(clerkSearchButton);
-		panel1.add(goodsSearchButton);
-		panel1.add(stockSearchButton);
+		panel2.add(clerkSearchButton);
+		panel3.add(goodsSearchButton);
+		panel4.add(stockSearchButton);
 		
 		getContentPane().add(panel1);
-
+		getContentPane().add(panel2);
+		getContentPane().add(panel3);
+		getContentPane().add(panel4);
+		
 		salesSearchButton.addActionListener(this);
 		clerkSearchButton.addActionListener(this);
 		goodsSearchButton.addActionListener(this);
 		stockSearchButton.addActionListener(this);
-		setSize(350,120);
+		setSize(350,180);
 		setVisible(true);
 	}
 
@@ -143,24 +155,29 @@ class editGUI extends JFrame implements ActionListener{
 	JButton stockEditButton = new JButton("在庫マスタ編集"); //在庫マスタ編集システムを開くボタン
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
-
+	JPanel panel2 = new JPanel();
+	JPanel panel3 = new JPanel();
 	
 	editGUI(){
 		setTitle("データベース編集");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		panel1.setLayout(new FlowLayout());
+		panel2.setLayout(new FlowLayout());
+		panel3.setLayout(new FlowLayout());
 		
 		panel1.add(clerkEditButton);
-		panel1.add(goodsEditButton);
-		panel1.add(stockEditButton);
+		panel2.add(goodsEditButton);
+		panel3.add(stockEditButton);
 		
 		getContentPane().add(panel1);
-
+		getContentPane().add(panel2);
+		getContentPane().add(panel3);
+		
 		clerkEditButton.addActionListener(this);
 		goodsEditButton.addActionListener(this);
 		stockEditButton.addActionListener(this);
-		setSize(350,120);
+		setSize(350,150);
 		setVisible(true);
 	}
 
