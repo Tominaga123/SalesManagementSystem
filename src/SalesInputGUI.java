@@ -279,7 +279,8 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		//余計な処理が走らないようactionFlagが1のときのみ処理を実行する
 		if(actionFlag == 1) {	
-				
+			//余計な処理が走らないようactionFlagを0にし、疑似的にアクションリスナーをオフにする
+			actionFlag = 0;
 			System.out.println("アクションイベント");
 			//店員コードを選択したとき、店員マスタから店員名を取得する
 			if(e.getSource() == clerkCodeComboBox){ 
@@ -383,10 +384,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	//商品コードを選択したとき、商品マスタから商品名、単価を取得し、個数の選択欄、小計、合計を更新するメソッド
 	public void selectGoodsCodeSQL(JComboBox codeBox, JComboBox nameBox, JLabel priceLabel, JComboBox countBox, 
 			JLabel subTotalLabel, JComboBox nextCodeBox, JComboBox nextNameBox) {
-		
-		//余計な処理が走らないようactionFlagを0にし、疑似的にアクションリスナーをオフにする
-		actionFlag = 0;
-		
+
 		//商品名、単価を取得
 		try {
 			SQL = "SELECT * FROM 商品マスタ WHERE 商品コード = '" + codeBox.getSelectedItem() + "';";
@@ -414,9 +412,6 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 	//商品名を選択したとき、商品マスタから商品コード、単価を取得し、個数の選択欄、小計、合計を更新するメソッド
 	public void selectGoodsNameSQL(JComboBox codeBox, JComboBox nameBox, JLabel priceLabel, JComboBox countBox, 
 			JLabel subTotalLabel, JComboBox nextCodeBox, JComboBox nextNameBox) {
-		
-		//余計な処理が走らないようactionFlagを0にし、疑似的にアクションリスナーをオフにする
-		actionFlag = 0;
 		
 		//商品コード、単価を取得
 		try {
