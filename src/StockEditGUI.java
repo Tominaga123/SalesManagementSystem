@@ -846,7 +846,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 				System.out.println("仕入日:" + timeText.getText() + " 商品コード:" + codeBox.getSelectedItem() +
 						" 仕入数" + quantityText.getText() + " 仕入単価:" + priceText.getText() + "で更新しました");
 				//データを更新したのち、表を再取得して更新したデータがあるページへ飛ぶ
-				allShow();
+				getData();
 				try {
 					rs.beforeFirst();
 				} catch (SQLException e) {
@@ -906,7 +906,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 				newCode = (String) codeBox.getSelectedItem();
 				System.out.println(SQL + "で追加しました");
 				//データを追加したのち、表を再取得して追加したデータがあるページへ飛ぶ
-				allShow();
+				getData();
 				try {
 					rs.beforeFirst();
 				} catch (SQLException e) {
@@ -964,7 +964,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 				System.out.println(SQL + "で削除しました");
 				//データを消去したのち、表を再取得して消去したデータがあったページへ飛ぶ
 				int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
-				allShow();
+				getData();
 				rs.beforeFirst();
 				for(int i = 1; i <= n; i++) {
 					result();
