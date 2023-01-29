@@ -433,7 +433,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 		previousButton.setEnabled(false);
 		
 		//初めは全件表示した状態にする
-		allShow();
+		getData();
 		
 		this.pack();
 		setVisible(true);
@@ -442,7 +442,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		//「絞り込み」ボタンを押した場合
 		if(e.getSource() == searchButton) {
-			allShow();
+			getData();
 		} 
 		//「絞り込み解除」ボタンを押した場合
 		else if(e.getSource() == releaseButton) {
@@ -453,7 +453,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 			timeRangeComboBox.setSelectedItem("以前");
 			fCodeComboBox.setSelectedItem(null);
 			fNameComboBox.setSelectedItem(null);
-			allShow();
+			getData();
 		} 
 		//絞り込み条件で商品コードを選んだ場合
 		else if(e.getSource() == fCodeComboBox) { 
@@ -641,7 +641,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 	}
 
 	//最初とデータの編集（更新、追加、消去）をした際に検索結果を更新するメソッド
-	public void allShow() {
+	public void getData(){
 		SQL = createSQL();
 		System.out.println(SQL + " で表示します");
 		try {

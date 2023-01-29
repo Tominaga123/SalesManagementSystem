@@ -3,14 +3,10 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -36,7 +32,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	JButton searchButton = new JButton("絞り込み"); //検索ボタン
 	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
 	
-	JButton changeButton = new JButton("商品有高帳に切り替え"); //「商品ごとにをまとめて表示」と「商品有高長」の切り替え
+	JButton changeButton = new JButton("詳細表示"); //「全体表示」と「詳細表示」の切り替え
 	
 	//検索結果の表示場所
 	
@@ -161,12 +157,12 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	
 	JButton nextButton = new JButton("次へ"); //ページをめくるボタン
 	JButton previousButton = new JButton("前へ"); 
+	JButton firstButton = new JButton("最初へ");
+	JButton lastButton = new JButton("最後へ"); 
 	
 	int now, last; //ページをめくる際に使用
 	
-	String URL = "jdbc:mysql://127.0.0.1:3306/販売管理"; //SQLで使用
-	String USER = "店員1";
-	String PASS = "password";
+	//データベースからデータを取得する際に使用
 	String SQL;
 	String filterSQL = "";
 	String selectSQL = "SELECT";
@@ -174,14 +170,15 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	String timeSQL = ""; 
 	String groupBySQL = "";
 	String whereSQL = "";
-	Connection conn;
-	Statement stmt;
-	ResultSet rs;
+	Statement stmt; 
+	ResultSet rs; 
+	Statement otherStmt; 
 	ResultSet otherRs;
-	int a;
-	int b;
-	int c;
-	int d;
+	//在庫数量の計算で使用
+	int index1;
+	int index2;
+	int sumQuantity;
+	int sumPrice;
 	int SUM;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
@@ -274,36 +271,17 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		panel4_36.setLayout(new GridLayout(1, 2, 0, 2));
 		panel5.setLayout(new FlowLayout());
 		
-		//商品コードを選択するコンボボックスに項目を追加
+		//商品コード、商品名を選択するコンボボックスに項目を追加
 		codeComboBox.addItem(null);
+		nameComboBox.addItem(null);
 		try {
-			SQL = "SELECT 商品コード FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
+			SQL = "SELECT 商品コード, 商品名 FROM 商品マスタ;";
+			stmt = LoginGUI.conn.createStatement();
 			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				codeComboBox.addItem(rs.getString("商品コード"));
-
-			}
-			codeComboBox.setSelectedItem(null);
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		
-		//商品名を選択するコンボボックスに項目を追加
-		nameComboBox.addItem(null);
-		try {
-			SQL = "SELECT 商品名 FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(SQL);
-			while(rs.next()){
 				nameComboBox.addItem(rs.getString("商品名"));
-
 			}
-			nameComboBox.setSelectedItem(null);
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
@@ -314,7 +292,6 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		flagComboBox.addItem(null);
 		flagComboBox.addItem("0");
 		flagComboBox.addItem("1");
-		flagComboBox.setSelectedItem(null);
 		
 		panel1.add(filterLabel);
 		
@@ -474,12 +451,14 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		panel4.add(panel4_26);
 		panel4.add(panel4_36);
 		
+		panel5.add(firstButton);
 		panel5.add(previousButton);
 		panel5.add(showNumberLabel);
 		panel5.add(snLabel);
 		panel5.add(totalNumberLabel);
 		panel5.add(tnLabel);
 		panel5.add(nextButton);
+		panel5.add(lastButton);
 		
 		getContentPane().add(panel1);
 		getContentPane().add(panel2);
@@ -553,6 +532,8 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		changeButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
+		firstButton.addActionListener(this);
+		lastButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
 		this.pack();
@@ -561,74 +542,111 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		//「絞り込み」ボタンを押したとき
 		if(e.getSource() == searchButton) {
 			getData();
-		} else if(e.getSource() == releaseButton) {
+		}
+		//「絞り込み解除」ボタンを押したとき
+		else if(e.getSource() == releaseButton) {
 			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
 			flagComboBox.setSelectedItem(null);
 			getData();
-		} else if(e.getSource() == nextButton) {
+		}
+		//「次へ」ボタンを押したとき
+		else if(e.getSource() == nextButton) {
 			result(); //検索結果を表示
-			showNumberLabel.setText(Integer.toString(now));
-			previousButton.setEnabled(true);
-			if(now == last) { //最後の行を表示している場合は「次へ」ボタンをfalseにする
-				nextButton.setEnabled(false);
-				}
-		} else if(e.getSource() == previousButton) {
+		}
+		//「前へ」ボタンを押したとき
+		else if(e.getSource() == previousButton) {
 			now = 10 * (int)Math.floor((now-1)/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
 			try {
 				rs.absolute(now);
 				result(); //検索結果を表示
-				showNumberLabel.setText(Integer.toString(now));
-				nextButton.setEnabled(true);
-				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
-					previousButton.setEnabled(false);
-				}
 			} catch (SQLException e3) {
 				e3.printStackTrace();
 			} catch(Exception e3) {
 				e3.printStackTrace();
 			}
-		} else if(e.getSource() == codeComboBox) {
+		}
+		//「最初へ」ボタンを押した場合
+		else if(e.getSource() == firstButton) { 
 			try {
-				SQL = "SELECT 商品名 FROM 商品マスタ WHERE 商品コード = '" + codeComboBox.getSelectedItem() + "';";
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
-				ResultSet goodsRs = stmt.executeQuery(SQL);
-				while(goodsRs.next()){
-					nameComboBox.setSelectedItem(goodsRs.getString("商品名"));
-				}
-			}catch(SQLException e2) {
-				e2.printStackTrace();
-			}catch(Exception e2) {
-				e2.printStackTrace();
+				rs.beforeFirst(); //先頭行のひとつ前まで戻る
+				result(); //1件目から表示
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
-		} else if(e.getSource() == nameComboBox) {
+		} 
+		//「最後へ」ボタンを押した場合
+		else if(e.getSource() == lastButton) { 
+			now = 10 * (int)Math.floor((last-1)/10); //現在行を最終ページのひとつ前に戻す
 			try {
-				SQL = "SELECT 商品コード FROM 商品マスタ WHERE 商品名 = '" + nameComboBox.getSelectedItem() + "';";
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
-				ResultSet goodsRs = stmt.executeQuery(SQL);
-				while(goodsRs.next()){
-					codeComboBox.setSelectedItem(goodsRs.getString("商品コード"));
-				}
-			}catch(SQLException e2) {
-				e2.printStackTrace();
-			}catch(Exception e2) {
-				e2.printStackTrace();
+				rs.absolute(now);
+				result();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
-		} else if(e.getSource() == changeButton) {
-			if(changeButton.getText().contains("商品有高帳")) {
-				changeButton.setText("商品ごとにまとめて表示");
+		}
+		//商品コードを選択した場合
+		else if(e.getSource() == codeComboBox) {
+			//商品コードがnullでなければ商品マスタから商品名を取得する
+			if(codeComboBox.getSelectedItem() != null) {
+				try {
+					SQL = "SELECT 商品名 FROM 商品マスタ WHERE 商品コード = '" + codeComboBox.getSelectedItem() + "';";
+					otherStmt = LoginGUI.conn.createStatement();
+					otherRs = otherStmt.executeQuery(SQL);
+					while(otherRs.next()){
+						nameComboBox.setSelectedItem(otherRs.getString("商品名"));
+					}
+				}catch(SQLException e2) {
+					e2.printStackTrace();
+				}catch(Exception e2) {
+					e2.printStackTrace();
+				}
+			}
+			//商品コードがnullならば商品名もnullにする
+			else {
+				nameComboBox.setSelectedItem(null);
+			}
+		}
+		//商品名を選択した場合
+		else if(e.getSource() == nameComboBox) {
+			//商品名がnullでなければ商品マスタから商品コードを取得する
+			if(nameComboBox.getSelectedItem() != null) {
+				try {
+					SQL = "SELECT 商品コード FROM 商品マスタ WHERE 商品名 = '" + nameComboBox.getSelectedItem() + "';";
+					otherStmt = LoginGUI.conn.createStatement();
+					otherRs = otherStmt.executeQuery(SQL);
+					while(otherRs.next()){
+						codeComboBox.setSelectedItem(otherRs.getString("商品コード"));
+					}
+				}catch(SQLException e2) {
+					e2.printStackTrace();
+				}catch(Exception e2) {
+					e2.printStackTrace();
+				}
+			}
+			//商品名がnullならば商品コードもnullにする
+			else {
+				codeComboBox.setSelectedItem(null);
+			}
+		}
+		//「詳細表示」または「全体表示」ボタンが押された場合
+		else if(e.getSource() == changeButton) {
+			//「詳細表示」ボタンが押された場合
+			if(changeButton.getText().contains("詳細表示")) {
+				changeButton.setText("全体表示");
 				searchButton.setText("表示");
 				fLabel.setText("日付");
 				flagComboBox.setSelectedItem(null);
 				flagComboBox.setEnabled(false);
 				releaseButton.setEnabled(false);
 				getData();
-			}else {
-				changeButton.setText("商品有高帳");
+			}
+			//「全体表示」ボタンが押された場合
+			else {
+				changeButton.setText("詳細表示");
 				searchButton.setText("絞り込み");
 				fLabel.setText("削除フラグ");
 				codeComboBox.setSelectedItem(null);
@@ -660,22 +678,14 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		}
 		System.out.println(SQL + " で検索します");
 		try {
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			stmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(SQL);
-			result(); //検索結果を表示
-			this.pack(); //フレームのサイズ調整
 			rs.last(); //最後の行に移動し、行番号を取得
 			last = rs.getRow();
-			rs.absolute(now); //元の行に戻る
+			rs.beforeFirst(); //初めの行に戻る
+			result(); //検索結果を表示
+			this.pack(); //フレームのサイズ調整
 			totalNumberLabel.setText(Integer.toString(last));
-			showNumberLabel.setText(Integer.toString(now));
-			if(last > 10) { //取得件数が11件以上ならページをめくるボタンをture、そうでないならfalseにする
-				nextButton.setEnabled(true);
-			} else {
-				nextButton.setEnabled(false);
-				previousButton.setEnabled(false);
-			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
@@ -683,7 +693,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		}
 	}
 	
-	//検索条件を指定するSQLを作成するメソッド
+	//「全体表示」のSQLを作成するメソッド
 	public String createSQL(){
 		if(codeComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'";
@@ -699,15 +709,15 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		return str;
 	}
 
-	//商品有高帳のSQLを作成するメソッド
+	//「詳細表示」のSQLを作成するメソッド
 	public String createSQL2(){
-		a = 0;
-		b = 0;
-		c = 0;
-		d = 0;
+		index1 = 0;
+		index2 = 0;
+		sumQuantity = 0;
+		sumPrice = 0;
 		SUM = 0;
 		if(codeComboBox.getSelectedItem() == null && nameComboBox.getSelectedItem() == null) {
-			filterSQL += " AND 商品コード = 'AAAA'";
+			filterSQL += " AND 商品コード = 'AAAA'"; //存在しない商品コードで何も取得しない
 		}
 		if(codeComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'";
@@ -802,10 +812,25 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 				show(codeLabel10, nameLabel10, flagLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
 						balanceQuantityLabel10, balancePriceLabel10);
 				now = rs.getRow(); //現在の行番号を取得
+				nextButton.setEnabled(true); //一番下の行にデータがあれば「次へ」ボタンをtrueにする
 			}else {
 				reset(codeLabel10, nameLabel10, flagLabel10, inQuantityLabel10, inPriceLabel10, outQuantityLabel10, outPriceLabel10,
 						balanceQuantityLabel10, balancePriceLabel10);
+				nextButton.setEnabled(false); //一番下の行が白紙なら「次へ」ボタンをfalseにする
 			}
+			//現在行が最後の行のとき、「次へ」ボタンをfalseにする
+			if(now == last) {
+				nextButton.setEnabled(false);
+			}
+			//11件目以降を表示している場合は「前へ」ボタンをtrueにする
+			if(now > 10) {
+				previousButton.setEnabled(true);
+			}
+			//初めの10件目までを表示している場合は「前へ」ボタンをfalseにする
+			else { 
+				previousButton.setEnabled(false);
+			}
+			showNumberLabel.setText(Integer.toString(now));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
@@ -817,7 +842,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 	public void show(JLabel codeLabel, JLabel nameLabel, JLabel flagLabel, JLabel inQuantityLabel, JLabel inPriceLabel, 
 			JLabel outQuantityLabel, JLabel outPriceLabel, JLabel balanceQuantityLabel, JLabel balancePriceLabel) {
 		try {
-			//商品ごとにまとめて表示の場合のshow
+			//全体表示の場合
 			if(searchButton.getText().equals("絞り込み")) {
 			
 				//まず、商品コードと商品名、削除フラグを表示する
@@ -830,9 +855,8 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 					+ " FROM (SELECT 商品コード, 仕入単価, SUM(仕入数) AS 受入数量, SUM(仕入数)*仕入単価 AS 受入金額"
 					+ " FROM 在庫マスタ GROUP BY 商品コード, 仕入単価) Z"
 					+ " WHERE 商品コード = '" + codeLabel.getText() + "' GROUP BY 商品コード;";
-				conn = DriverManager.getConnection(URL, USER, PASS);
-				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-				otherRs = stmt.executeQuery(SQL);
+				otherStmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				otherRs = otherStmt.executeQuery(SQL);
 				if(otherRs.next()) {
 					inQuantityLabel.setText(otherRs.getString("受入数量") + "個");
 					inPriceLabel.setText("￥" + otherRs.getString("受入金額"));
@@ -843,30 +867,34 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 				//続いて払出数量・金額を取得する
 				//まず日別の仕入数と仕入単価を配列に格納する
 				SQL = "SELECT * FROM 在庫マスタ WHERE 商品コード = '" + codeLabel.getText() + "' ORDER BY 仕入日 ASC;";
-				conn = DriverManager.getConnection(URL, USER, PASS);
-				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-				otherRs = stmt.executeQuery(SQL);
+				otherStmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				otherRs = otherStmt.executeQuery(SQL);
 				ArrayList<Integer> inQuantity = new ArrayList<Integer>();
 				ArrayList<Integer> inPrice = new ArrayList<Integer>();
 				//仕入がある場合
 				if(otherRs.next()) {
 					otherRs.beforeFirst();
 					while(otherRs.next()) {
+						//配列に仕入数と仕入単価を格納
 						inQuantity.add(otherRs.getInt("仕入数"));
 						inPrice.add(otherRs.getInt("仕入単価"));
 					}
 					for(int i = 0; i < inQuantity.size(); i++) {
-						System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + ", 仕入単価:" + inPrice.get(i));
+						System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + 
+								", 仕入単価:" + inPrice.get(i));
 					}
 					//払出数量が日別の仕入数を超えるたびに仕入単価を更新して払出金額を計算する
-					SQL = "SELECT * FROM 売上マスタ WHERE 商品コード = '" + codeLabel.getText() + "' AND 削除フラグ = 0 ORDER BY 販売日時 ASC, 伝票番号 ASC;";
-					otherRs = stmt.executeQuery(SQL);
-					int outQuantity = 0; //払出数量の合計
-					int sum = 0; //計算に使用
+					SQL = "SELECT * FROM 売上マスタ"
+							+ " WHERE 商品コード = '" + codeLabel.getText() + "' AND 削除フラグ = 0"
+							+ " ORDER BY 販売日時 ASC, 伝票番号 ASC;";
+					otherRs = otherStmt.executeQuery(SQL);
+					int outQuantity = 0; //払出数量の合計（最終的な計算結果を格納する際に使用）
+					int sum = 0; //払出数量の合計（計算途中の数値を格納する際に使用）
 					int outPrice = 0; //払出金額の合計
 					int i = 0;
 					while(otherRs.next()) {
 						sum += otherRs.getInt("個数");
+						//払出数量の合計が日別の仕入数を超えるたびに仕入単価を次の仕入のものに更新
 						if(sum > inQuantity.get(i)) {
 							outQuantity += inQuantity.get(i);
 							outPrice += inQuantity.get(i) * inPrice.get(i);
@@ -878,7 +906,7 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 					outPrice += sum * inPrice.get(i);
 					outQuantityLabel.setText(Integer.toString(outQuantity) + "個");
 					outPriceLabel.setText("￥" + Integer.toString(outPrice));
-					
+					//配列をクリア
 					inQuantity.clear();
 					inPrice.clear();	
 				}
@@ -898,62 +926,65 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 				balanceQuantityLabel.setText(Integer.toString(q) + "個");
 				balancePriceLabel.setText("￥" + Integer.toString(p));
 			}
-			//商品有高帳の場合のshow
+			//「詳細表示」の場合
 			else {
-				//まず商品コードと日付を表示する
+				//まず、取得した商品コードと日付（仕入または払出のあった日）を表示する
 				codeLabel.setText(rs.getString("商品コード"));
 				flagLabel.setText(rs.getString("日付"));
 				//次に日別の仕入数と仕入単価を配列に格納する
 				SQL = "SELECT * FROM 在庫マスタ WHERE 商品コード = '" + codeLabel.getText() + "' ORDER BY 仕入日 ASC;";
-				conn = DriverManager.getConnection(URL, USER, PASS);
-				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-				otherRs = stmt.executeQuery(SQL);
+				otherStmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				otherRs = otherStmt.executeQuery(SQL);
 				ArrayList<Integer> inQuantity = new ArrayList<Integer>();
 				ArrayList<Integer> inPrice = new ArrayList<Integer>();
 				//仕入がある場合
 				if(otherRs.next()) {
 					otherRs.beforeFirst();
 					while(otherRs.next()) {
+						//配列に仕入数と仕入単価を格納
 						inQuantity.add(otherRs.getInt("仕入数"));
 						inPrice.add(otherRs.getInt("仕入単価"));
 					}
 					for(int i = 0; i < inQuantity.size(); i++) {
-						System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + ", 仕入単価:" + inPrice.get(i));
+						System.out.println("商品名:" + nameLabel.getText() + ", 仕入数:" + inQuantity.get(i) + 
+								", 仕入単価:" + inPrice.get(i));
 					}
 					
-					//受入の場合
+					//取得した「個数」が受入の場合
 					if(rs.getString("個数").contains("受")) {
 						inQuantityLabel.setText(rs.getString("個数").replace("受", "個"));
-						inPriceLabel.setText(Integer.toString(inQuantity.get(a) * inPrice.get(a)));
-						c += inQuantity.get(a); //cは数量の残高
-						d += inQuantity.get(a) * inPrice.get(a); //dは金額の残高
-						a++; //次の仕入に移す
-						balanceQuantityLabel.setText(c + "個");
-						balancePriceLabel.setText("￥" + d);
+						inPriceLabel.setText(Integer.toString(inQuantity.get(index1) * inPrice.get(index1)));
+						sumQuantity += inQuantity.get(index1); //数量の残高
+						sumPrice += inQuantity.get(index1) * inPrice.get(index1); //金額の残高
+						index1++; //次の仕入に移す
+						balanceQuantityLabel.setText(sumQuantity + "個");
+						balancePriceLabel.setText("￥" + sumPrice);
 						
 					}
-					//払出の場合
+					//取得した「個数」が払出の場合
 					else {
 						outQuantityLabel.setText(rs.getString("個数").replace("払", "個"));
 						SUM += Integer.parseInt(rs.getString("個数").replace("払", ""));
 						
-						if(SUM > inQuantity.get(b)) {
-							//b+1回目の仕入の値段で計算
-							int price1 = (Integer.parseInt(rs.getString("個数").replace("払", "")) - (SUM - inQuantity.get(b)) * inPrice.get(b)) ;
-							SUM -= inQuantity.get(b);
-							b++;//次の仕入に移す
-							//b+2回目の仕入の値段で計算
-							int price2 = SUM * inPrice.get(b);
+						if(SUM > inQuantity.get(index2)) {
+							//(index2 + 1)回目の仕入の値段で計算
+							int price1 = (Integer.parseInt(rs.getString("個数").replace("払", "")) - 
+									(SUM - inQuantity.get(index2)) * inPrice.get(index2));
+							SUM -= inQuantity.get(index2);
+							index2++;//次の仕入に移す
+							//(index2 + 2)回目の仕入の値段で計算
+							int price2 = SUM * inPrice.get(index2);
 							outPriceLabel.setText(Integer.toString(price1 + price2));
 						}else {
-							outPriceLabel.setText(Integer.toString(Integer.parseInt(rs.getString("個数").replace("払", "")) * inPrice.get(b)));
+							outPriceLabel.setText(Integer.toString(Integer.parseInt(rs.getString("個数").replace("払", ""))
+									* inPrice.get(index2)));
 						}
-						c -= Integer.parseInt(outQuantityLabel.getText().replace("個", "")); //cは数量の残高
-						d -= Integer.parseInt(outPriceLabel.getText().replace("￥", "")); //dは金額の残高
-						balanceQuantityLabel.setText(c + "個");
-						balancePriceLabel.setText("￥" + d);
+						sumQuantity -= Integer.parseInt(outQuantityLabel.getText().replace("個", "")); //数量の残高
+						sumPrice -= Integer.parseInt(outPriceLabel.getText().replace("￥", "")); //金額の残高
+						balanceQuantityLabel.setText(sumQuantity + "個");
+						balancePriceLabel.setText("￥" + sumPrice);
 					}
-					
+					//配列をクリア
 					inQuantity.clear();
 					inPrice.clear();	
 				}
@@ -962,11 +993,6 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 					outQuantityLabel.setText("0個");
 					outPriceLabel.setText("￥0");
 				}
-				
-				
-				
-				
-				
 			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -988,34 +1014,4 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 		balanceQuantityLabel.setText(null);
 		balancePriceLabel.setText(null);
 	}
-	
-
-	
-	//コンボボックスを現在の日時で初期化するメソッド
-	public String getYear() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("yyyy").format(date);
-		return str;
-	}
-	public String getMonth() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("MM").format(date);
-		return str;
-	}
-	public String getDate() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("dd").format(date);
-		return str;
-	}
-	public String getHour() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("HH").format(date);
-		return str;
-	}
-	public String getMinute() {
-		Date date = new Date();
-		String str = new SimpleDateFormat("mm").format(date);
-		return str;
-	}
-	
 }

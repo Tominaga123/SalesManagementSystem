@@ -462,13 +462,6 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			result(); //検索結果を表示
 			this.pack(); //フレームのサイズ調整
 			totalNumberLabel.setText(Integer.toString(last));
-			showNumberLabel.setText(Integer.toString(now));
-			if(last > 10) { //取得件数が11件以上ならページをめくるボタンをture、そうでないならfalseにする
-				nextButton.setEnabled(true);
-			} else {
-				nextButton.setEnabled(false);
-				previousButton.setEnabled(false);
-			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {

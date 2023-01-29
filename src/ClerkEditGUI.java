@@ -418,7 +418,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 		previousButton.setEnabled(false);
 		
 		//初めは全件表示した状態にする
-		allShow();
+		getData();
 		
 		this.pack();
 		setVisible(true);
@@ -427,7 +427,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		//「絞り込み」ボタンを押した場合
 		if(e.getSource() == searchButton) { 
-			allShow();
+			getData();
 		}
 		//「絞り込み解除」ボタンを押した場合
 		else if(e.getSource() == releaseButton) { 
@@ -440,7 +440,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 			dateComboBox.setSelectedItem(getDate());
 			timeRangeComboBox.setSelectedItem("以前");
 			flagComboBox.setSelectedItem(null);
-			allShow();
+			getData();
 		}
 		//「次へ」ボタンを押した場合
 		else if(e.getSource() == nextButton) { 
@@ -574,7 +574,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 	}
 
 	//最初とデータの編集（更新、追加、削除）をした際に検索結果を更新するメソッド
-	public void allShow() {
+	public void getData() {
 		SQL = createSQL();
 		System.out.println(SQL + " で表示します");
 		try {
@@ -767,7 +767,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 						" 性別:" + sexBox.getSelectedItem() + " 生年月日" + birthdayText.getText() + 
 						" 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
 				//データを更新したのち、表を再取得して更新したデータがあるページへ飛ぶ
-				allShow();					
+				getData();				
 				rs.beforeFirst();
 				stopFlag = 0;
 				while(stopFlag == 0) {
@@ -822,7 +822,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 				newCode = codeText.getText();
 				System.out.println(SQL + "で追加しました");
 				//データを追加したのち、表を再取得して追加したデータがあるページへ飛ぶ
-				allShow();
+				getData();
 				try {
 					rs.beforeFirst();
 				} catch (SQLException e) {
@@ -878,7 +878,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 				System.out.println(SQL + "で削除しました");
 				//データを消去したのち、表を再取得して消去したデータがあったページへ飛ぶ
 				int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
-				allShow();
+				getData();
 				try {
 					rs.beforeFirst();
 				} catch (SQLException e) {

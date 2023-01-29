@@ -331,7 +331,7 @@ public class GoodsEditGUI extends JFrame implements ActionListener{
 		previousButton.setEnabled(false);
 		
 		//初めは全件表示した状態にする
-		allShow();
+		getData();
 		
 		this.pack();
 		setVisible(true);
@@ -340,7 +340,7 @@ public class GoodsEditGUI extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		//「絞り込み」ボタンを押した場合
 		if(e.getSource() == searchButton) {
-			allShow();
+			getData();
 		}
 		//「絞り込み解除」ボタンを押した場合
 		else if(e.getSource() == releaseButton) { 
@@ -350,7 +350,7 @@ public class GoodsEditGUI extends JFrame implements ActionListener{
 			priceTextField.setText("0");
 			priceRangeComboBox.setSelectedItem("以上");
 			flagComboBox.setSelectedItem(null);
-			allShow();
+			getData();
 		}
 		//「次へ」ボタンを押した場合
 		else if(e.getSource() == nextButton) { 
@@ -484,7 +484,7 @@ public class GoodsEditGUI extends JFrame implements ActionListener{
 	}
 
 	//最初とデータの編集（更新、追加、消去）をした際に検索結果を更新するメソッド
-	public void allShow() {
+	public void getData(){
 		SQL = createSQL();
 		System.out.println(SQL + " で表示します");
 		try {
@@ -667,7 +667,7 @@ public class GoodsEditGUI extends JFrame implements ActionListener{
 				System.out.println("商品コード:" + codeText.getText() + " 商品名:" + nameText.getText() +
 						" 生年月日" + priceText.getText() + " 削除フラグ:" + flagBox.getSelectedItem() + "で更新しました");
 				//データを更新したのち、表を再取得して更新したデータがあるページへ飛ぶ
-				allShow();
+				getData();
 				rs.beforeFirst();
 				stopFlag = 0;
 				while(stopFlag == 0) {
@@ -721,7 +721,7 @@ public class GoodsEditGUI extends JFrame implements ActionListener{
 				newCode = codeText.getText();
 				System.out.println(SQL + "で追加しました");
 				//データを追加したのち、表を再取得して追加したデータがあるページへ飛ぶ
-				allShow();
+				getData();
 				rs.beforeFirst();
 				stopFlag = 0;
 				while(stopFlag == 0) {
@@ -772,7 +772,7 @@ public class GoodsEditGUI extends JFrame implements ActionListener{
 				System.out.println(SQL + "で削除しました");
 				//データを消去したのち、表を再取得して消去したデータがあったページへ飛ぶ
 				int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
-				allShow();
+				getData();
 				rs.beforeFirst();
 				for(int i = 1; i <= n; i++) {
 					result();
