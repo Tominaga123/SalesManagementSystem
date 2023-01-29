@@ -90,6 +90,8 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 	
 	JButton nextButton = new JButton("次へ"); //ページをめくるボタン
 	JButton previousButton = new JButton("前へ"); 
+	JButton firstButton = new JButton("最初へ");
+	JButton lastButton = new JButton("最後へ"); 
 	
 	int now, last; //ページをめくる際に使用
 	
@@ -221,12 +223,14 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 		panel4.add(priceLabel10);
 		panel4.add(flagLabel10);
 		
+		panel5.add(firstButton);
 		panel5.add(previousButton);
 		panel5.add(showNumberLabel);
 		panel5.add(snLabel);
 		panel5.add(totalNumberLabel);
 		panel5.add(tnLabel);
 		panel5.add(nextButton);
+		panel5.add(lastButton);
 		
 		getContentPane().add(panel1);
 		getContentPane().add(panel2);
@@ -266,6 +270,8 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 		releaseButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
+		firstButton.addActionListener(this);
+		lastButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
 		this.pack();
@@ -299,6 +305,25 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 				e3.printStackTrace();
 			} catch(Exception e3) {
 				e3.printStackTrace();
+			}
+		}
+		//「最初へ」ボタンを押した場合
+		else if(e.getSource() == firstButton) { 
+			try {
+				rs.beforeFirst(); //先頭行のひとつ前まで戻る
+				result(); //1件目から表示
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} 
+		//「最後へ」ボタンを押した場合
+		else if(e.getSource() == lastButton) { 
+			now = 10 * (int)Math.floor((last-1)/10); //現在行を最終ページのひとつ前に戻す
+			try {
+				rs.absolute(now);
+				result();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
 		}
 		//商品コードを選択したとき、商品マスタから商品名を取得する

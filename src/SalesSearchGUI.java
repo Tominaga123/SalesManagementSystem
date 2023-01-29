@@ -257,6 +257,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	JButton nextButton = new JButton("次へ"); //ページをめくるボタン
 	JButton previousButton = new JButton("前へ"); 
+	JButton firstButton = new JButton("最初へ");
+	JButton lastButton = new JButton("最後へ"); 
 	
 	int now, last; //ページをめくる際に使用
 	
@@ -931,12 +933,14 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(subTotalLabel10);
 		panel5.add(flagLabel10);
 		
+		panel6.add(firstButton);
 		panel6.add(previousButton);
 		panel6.add(showNumberLabel);
 		panel6.add(snLabel);
 		panel6.add(totalNumberLabel);
 		panel6.add(tnLabel);
 		panel6.add(nextButton);
+		panel6.add(lastButton);
 		
 		getContentPane().add(panel1);
 		getContentPane().add(panel2);
@@ -952,6 +956,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		previousButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
+		firstButton.addActionListener(this);
+		lastButton.addActionListener(this);
 		
 		choiceButton1.addActionListener(this);
 		choiceButton2.addActionListener(this);
@@ -1010,6 +1016,26 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				e1.printStackTrace();
 			}
 		} 
+		//「最初へ」ボタンを押した場合
+		else if(e.getSource() == firstButton) { 
+			try {
+				rs.beforeFirst(); //先頭行のひとつ前まで戻る
+				result(); //1件目から表示
+				previousButton.setEnabled(false);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} 
+		//「最後へ」ボタンを押した場合
+		else if(e.getSource() == lastButton) { 
+			now = 10 * (int)Math.floor((last-1)/10); //現在行を最終ページのひとつ前に戻す
+			try {
+				rs.absolute(now);
+				result();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
 		//「ある期間のみ集計」を選択したとき
 		else if(e.getSource() == choiceButton1) {
 			if(choiceButton1.getText().equals("選択")) {

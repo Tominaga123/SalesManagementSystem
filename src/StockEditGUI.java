@@ -2,8 +2,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -157,15 +155,13 @@ public class StockEditGUI extends JFrame implements ActionListener{
 	String newTime; //同上
 	int stopFlag; //同上。stopFlagが1になるまでページを表示し続ける
 	
-	String URL = "jdbc:mysql://127.0.0.1:3306/販売管理"; //SQLで使用
-	String USER = "店員1";
-	String PASS = "password";
+	//データベースからデータを取得する際に使用
 	String SQL;
 	String filterSQL = "";
-	Connection conn;
-	Statement stmt;
-	ResultSet rs;
-	ResultSet goodsRs;
+	Statement stmt; 
+	ResultSet rs; 
+	Statement otherStmt; 
+	ResultSet otherRs;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel();
@@ -516,7 +512,6 @@ public class StockEditGUI extends JFrame implements ActionListener{
 		//「次へ」ボタンを押した場合
 		else if(e.getSource() == nextButton) { 
 				result(); //検索結果を表示
-				previousButton.setEnabled(true);
 		} 
 		//「前へ」ボタンを押した場合
 		else if(e.getSource() == previousButton) { 
@@ -531,10 +526,6 @@ public class StockEditGUI extends JFrame implements ActionListener{
 			try {
 				rs.absolute(now);
 				result(); //検索結果を表示
-				nextButton.setEnabled(true);
-				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
-					previousButton.setEnabled(false);
-				}
 			} catch (SQLException e3) {
 				e3.printStackTrace();
 			} catch(Exception e3) {
@@ -546,7 +537,6 @@ public class StockEditGUI extends JFrame implements ActionListener{
 			try {
 				rs.beforeFirst(); //先頭行のひとつ前まで戻る
 				result(); //1件目から表示
-				previousButton.setEnabled(false);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
@@ -564,84 +554,87 @@ public class StockEditGUI extends JFrame implements ActionListener{
 		//「更新」ボタンが押された場合
 		else if(e.getSource() == updateButton1) {
 			update(timeTextField1, codeComboBox1, quantityTextField1, priceTextField1, 1);
-		} else if(e.getSource() == updateButton2) {
+		}else if(e.getSource() == updateButton2) {
 			update(timeTextField2, codeComboBox2, quantityTextField2, priceTextField2, 2);
-		} else if(e.getSource() == updateButton3) {
+		}else if(e.getSource() == updateButton3) {
 			update(timeTextField3, codeComboBox3, quantityTextField3, priceTextField3, 3);
-		} else if(e.getSource() == updateButton4) {
+		}else if(e.getSource() == updateButton4) {
 			update(timeTextField4, codeComboBox4, quantityTextField4, priceTextField4, 4);
-		} else if(e.getSource() == updateButton5) {
+		}else if(e.getSource() == updateButton5) {
 			update(timeTextField5, codeComboBox5, quantityTextField5, priceTextField5, 5);
-		} else if(e.getSource() == updateButton6) {
+		}else if(e.getSource() == updateButton6) {
 			update(timeTextField6, codeComboBox6, quantityTextField6, priceTextField6, 6);
-		} else if(e.getSource() == updateButton7) {
+		}else if(e.getSource() == updateButton7) {
 			update(timeTextField7, codeComboBox7, quantityTextField7, priceTextField7, 7);
-		} else if(e.getSource() == updateButton8) {
+		}else if(e.getSource() == updateButton8) {
 			update(timeTextField8, codeComboBox8, quantityTextField8, priceTextField8, 8);
-		} else if(e.getSource() == updateButton9) {
+		}else if(e.getSource() == updateButton9) {
 			update(timeTextField9, codeComboBox9, quantityTextField9, priceTextField9, 9);
-		} else if(e.getSource() == updateButton10) {
+		}else if(e.getSource() == updateButton10) {
 			update(timeTextField10, codeComboBox10, quantityTextField10, priceTextField10, 10);
 		} 
 		//「追加」または「消去」ボタンが押された場合
 		else if(e.getSource() == editButton1) {
+			 //「追加」ボタンが押された場合
 			if(editButton1.getText().equals("追加")) {
 				insert(timeTextField1, codeComboBox1, quantityTextField1, priceTextField1);
-			} else if(editButton1.getText().equals("消去")) {
+			}
+			 //「消去」ボタンが押された場合
+			else if(editButton1.getText().equals("消去")) {
 				delete(timeTextField1, codeComboBox1, quantityTextField1, priceTextField1);
 			}
-		} else if(e.getSource() == editButton2) {
+		}else if(e.getSource() == editButton2) {
 			if(editButton2.getText().equals("追加")) {
 				insert(timeTextField2, codeComboBox2, quantityTextField2, priceTextField2);
-			} else if(editButton2.getText().equals("消去")) {
+			}else if(editButton2.getText().equals("消去")) {
 				delete(timeTextField2, codeComboBox2, quantityTextField2, priceTextField2);
 			}
-		} else if(e.getSource() == editButton3) {
+		}else if(e.getSource() == editButton3) {
 			if(editButton3.getText().equals("追加")) {
 				insert(timeTextField3, codeComboBox3, quantityTextField3, priceTextField3);
-			} else if(editButton3.getText().equals("消去")) {
+			}else if(editButton3.getText().equals("消去")) {
 				delete(timeTextField3, codeComboBox3, quantityTextField3, priceTextField3);
 			}
-		} else if(e.getSource() == editButton4) {
+		}else if(e.getSource() == editButton4) {
 			if(editButton4.getText().equals("追加")) {
 				insert(timeTextField4, codeComboBox4, quantityTextField4, priceTextField4);
-			} else if(editButton4.getText().equals("消去")) {
+			}else if(editButton4.getText().equals("消去")) {
 				delete(timeTextField4, codeComboBox4, quantityTextField4, priceTextField4);
 			}
-		} else if(e.getSource() == editButton5) {
+		}else if(e.getSource() == editButton5) {
 			if(editButton5.getText().equals("追加")) {
 				insert(timeTextField5, codeComboBox5, quantityTextField5, priceTextField5);
-			} else if(editButton5.getText().equals("消去")) {
+			}else if(editButton5.getText().equals("消去")) {
 				delete(timeTextField5, codeComboBox5, quantityTextField5, priceTextField5);
 			}
-		} else if(e.getSource() == editButton6) {
+		}else if(e.getSource() == editButton6) {
 			if(editButton6.getText().equals("追加")) {
 				insert(timeTextField6, codeComboBox6, quantityTextField6, priceTextField6);
-			} else if(editButton6.getText().equals("消去")) {
+			}else if(editButton6.getText().equals("消去")) {
 				delete(timeTextField6, codeComboBox6, quantityTextField6, priceTextField6);
 			}
-		} else if(e.getSource() == editButton7) {
+		}else if(e.getSource() == editButton7) {
 			if(editButton7.getText().equals("追加")) {
 				insert(timeTextField7, codeComboBox7, quantityTextField7, priceTextField7);
-			} else if(editButton7.getText().equals("消去")) {
+			}else if(editButton7.getText().equals("消去")) {
 				delete(timeTextField7, codeComboBox7, quantityTextField7, priceTextField7);
 			}
-		} else if(e.getSource() == editButton8) {
+		}else if(e.getSource() == editButton8) {
 			if(editButton8.getText().equals("追加")) {
 				insert(timeTextField8, codeComboBox8, quantityTextField8, priceTextField8);
-			} else if(editButton8.getText().equals("消去")) {
+			}else if(editButton8.getText().equals("消去")) {
 				delete(timeTextField8, codeComboBox8, quantityTextField8, priceTextField8);
 			}
-		} else if(e.getSource() == editButton9) {
+		}else if(e.getSource() == editButton9) {
 			if(editButton9.getText().equals("追加")) {
 				insert(timeTextField9, codeComboBox9, quantityTextField9, priceTextField9);
-			} else if(editButton9.getText().equals("消去")) {
+			}else if(editButton9.getText().equals("消去")) {
 				delete(timeTextField9, codeComboBox9, quantityTextField9, priceTextField9);
 			}
-		} else if(e.getSource() == editButton10) {
+		}else if(e.getSource() == editButton10) {
 			if(editButton10.getText().equals("追加")) {
 				insert(timeTextField10, codeComboBox10, quantityTextField10, priceTextField10);
-			} else if(editButton10.getText().equals("消去")) {
+			}else if(editButton10.getText().equals("消去")) {
 				delete(timeTextField10, codeComboBox10, quantityTextField10, priceTextField10);
 			}
 		} 
@@ -652,8 +645,7 @@ public class StockEditGUI extends JFrame implements ActionListener{
 		SQL = createSQL();
 		System.out.println(SQL + " で表示します");
 		try {
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+			stmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
 			rs = stmt.executeQuery(SQL);
 			result(); //検索結果を表示
 			rs.last(); //最後の行に移動し、行番号を取得
@@ -701,8 +693,10 @@ public class StockEditGUI extends JFrame implements ActionListener{
 			}else {
 				reset(timeTextField1, codeComboBox1, nameComboBox1, quantityTextField1, priceTextField1, totalPriceLabel1, 
 						updateButton1, editButton1); //白紙にする
-				//更新または追加されたデータの仕入日と商品コードが同じものがないまま一行目が空欄になればページ送りをストップ
-				stopFlag = 1;
+				//更新または追加されたデータの店員コードと同じものがないまま一行目が空欄になればページ送りをストップ
+				//このときページを一つ戻す必要がある
+				//よって、stopFlagが2のとき、一ページを戻す処理をするようにする
+				stopFlag = 2;
 			}
 			if(rs.next()){
 				show(timeTextField2, codeComboBox2, quantityTextField2, priceTextField2, totalPriceLabel2, 
@@ -779,8 +773,13 @@ public class StockEditGUI extends JFrame implements ActionListener{
 				nextButton.setEnabled(false); //一番下の行が白紙なら「次へ」ボタンをfalseにする
 			}
 			System.out.println("nowは" + now);
+			//11件目以降を表示している場合は「前へ」ボタンをtrueにする
 			if(now > 10) {
 				previousButton.setEnabled(true);
+			}
+			//初めの10件目までを表示している場合は「前へ」ボタンをfalseにする
+			else { 
+				previousButton.setEnabled(false);
 			}
 			showNumberLabel.setText(Integer.toString(now));
 		}catch(SQLException e2) {
@@ -857,6 +856,28 @@ public class StockEditGUI extends JFrame implements ActionListener{
 				while(stopFlag == 0) {
 					result();
 				}
+				//更新されたデータの店員コードと同じものがないままページ送りをストップした場合
+				//このときページを一つ戻す必要がある
+				if(stopFlag == 2) {
+					System.out.println("2の処理");
+					//nowが10で割り切れるとき
+					if(now%10 == 0) {
+						// 現在行を前ページの先頭に戻す
+						now -= 10; 
+					} 
+					//nowが10で割り切れないとき
+					else {
+						// 現在行を前ページの先頭のひとつ前に戻す
+						now = 10 * (int)Math.floor((now-1)/10) - 10; 
+					}
+					//nowが0未満になったとき
+					if(now < 0) {
+						//nowを0にする
+						now = 0;
+					}
+					rs.absolute(now);
+					result(); //検索結果を表示
+				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
 				System.out.println("データを更新できませんでした" + "\r" + "データが正しく入力されているか確認してください" +
@@ -879,12 +900,11 @@ public class StockEditGUI extends JFrame implements ActionListener{
 					timeText.getText() + "', '" + codeBox.getSelectedItem() + "', " + quantityText.getText() + 
 					", " + priceText.getText() + ");";
 			try {
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
+				stmt = LoginGUI.conn.createStatement();
 				stmt.execute(SQL);
 				newTime = timeText.getText();
 				newCode = (String) codeBox.getSelectedItem();
-				System.out.println(SQL + "を追加しました");
+				System.out.println(SQL + "で追加しました");
 				//データを追加したのち、表を再取得して追加したデータがあるページへ飛ぶ
 				allShow();
 				try {
@@ -895,6 +915,28 @@ public class StockEditGUI extends JFrame implements ActionListener{
 				stopFlag = 0;
 				while(stopFlag == 0) {
 					result();
+				}
+				//更新されたデータの店員コードと同じものがないままページ送りをストップした場合
+				//このときページを一つ戻す必要がある
+				if(stopFlag == 2) {
+					System.out.println("2の処理");
+					//nowが10で割り切れるとき
+					if(now%10 == 0) {
+						// 現在行を前ページの先頭に戻す
+						now -= 10; 
+					} 
+					//nowが10で割り切れないとき
+					else {
+						// 現在行を前ページの先頭のひとつ前に戻す
+						now = 10 * (int)Math.floor((now-1)/10) - 10; 
+					}
+					//nowが0未満になったとき
+					if(now < 0) {
+						//nowを0にする
+						now = 0;
+					}
+					rs.absolute(now);
+					result(); //検索結果を表示
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
@@ -917,24 +959,15 @@ public class StockEditGUI extends JFrame implements ActionListener{
 					"' AND 商品コード = '" + codeBox.getSelectedItem() + "';";
 			
 			try {
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
+				stmt = LoginGUI.conn.createStatement();
 				stmt.execute(SQL);
-				System.out.println(SQL + "を削除しました");
+				System.out.println(SQL + "で削除しました");
 				//データを消去したのち、表を再取得して消去したデータがあったページへ飛ぶ
 				int n = (int)Math.floor((Integer.parseInt(showNumberLabel.getText()) - 1) / 10) + 1 ;
-				System.out.println(n);
 				allShow();
-				try {
-					rs.beforeFirst();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				rs.beforeFirst();
 				for(int i = 1; i <= n; i++) {
 					result();
-				}
-				if(now >= 10) {
-					previousButton.setEnabled(true);
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
@@ -970,13 +1003,11 @@ public class StockEditGUI extends JFrame implements ActionListener{
 		codeBox.addItem(null);
 		try {
 			SQL = "SELECT 商品コード FROM 商品マスタ WHERE 削除フラグ = 0;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
-			goodsRs = stmt.executeQuery(SQL);
-			while(goodsRs.next()){
-				codeBox.addItem(goodsRs.getString("商品コード"));
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				codeBox.addItem(rs.getString("商品コード"));
 			}
-			codeBox.setSelectedItem(null);
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
@@ -988,13 +1019,11 @@ public class StockEditGUI extends JFrame implements ActionListener{
 		nameBox.addItem(null);
 		try {
 			SQL = "SELECT 商品名 FROM 商品マスタ WHERE 削除フラグ = 0;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
-			goodsRs = stmt.executeQuery(SQL);
-			while(goodsRs.next()){
-				nameBox.addItem(goodsRs.getString("商品名"));
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
+			while(rs.next()){
+				nameBox.addItem(rs.getString("商品名"));
 			}
-			nameBox.setSelectedItem(null);
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
@@ -1006,11 +1035,10 @@ public class StockEditGUI extends JFrame implements ActionListener{
 	public void setName(JComboBox codeBox, JComboBox nameBox) {
 		SQL = "SELECT 商品名 FROM 商品マスタ WHERE 商品コード ='" + codeBox.getSelectedItem() + "';";
 		try {
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-			goodsRs = stmt.executeQuery(SQL);
-			while(goodsRs.next()){
-				nameBox.setSelectedItem(goodsRs.getString("商品名"));
+			otherStmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+			otherRs = otherStmt.executeQuery(SQL);
+			while(otherRs.next()){
+				nameBox.setSelectedItem(otherRs.getString("商品名"));
 			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -1022,11 +1050,10 @@ public class StockEditGUI extends JFrame implements ActionListener{
 	public void setCode(JComboBox codeBox, JComboBox nameBox) {
 		SQL = "SELECT 商品コード FROM 商品マスタ WHERE 商品名 ='" + nameBox.getSelectedItem() + "';";
 		try {
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-			goodsRs = stmt.executeQuery(SQL);
-			while(goodsRs.next()){
-				codeBox.setSelectedItem(goodsRs.getString("商品コード"));
+			otherStmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
+			otherRs = otherStmt.executeQuery(SQL);
+			while(otherRs.next()){
+				codeBox.setSelectedItem(otherRs.getString("商品コード"));
 			}
 		}catch(SQLException e2) {
 			e2.printStackTrace();
