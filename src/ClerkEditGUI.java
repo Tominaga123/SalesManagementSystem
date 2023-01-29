@@ -477,7 +477,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 				rs.absolute(now);
 				result(); //検索結果を表示
 				nextButton.setEnabled(true);
-				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
+				if(now <= 10) { //初めの10件目までを表示している場合は「前へ」ボタンをfalseにする
 					previousButton.setEnabled(false);
 				}
 			} catch (SQLException e3) {

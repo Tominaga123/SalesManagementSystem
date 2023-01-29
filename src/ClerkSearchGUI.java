@@ -3,8 +3,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,11 +21,11 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	JLabel filterLabel = new JLabel("絞り込み条件");//絞り込み条件の入力欄であることを示すラベル
 	
 	//絞り込み条件の入力欄
-	JLabel fcLabel = new JLabel("  店員コード"); //商品コードの選択欄であることを示すラベル
-	JComboBox codeComboBox = new JComboBox(); //商品コードの選択欄 
+	JLabel fcLabel = new JLabel("  店員コード"); //店員コードの選択欄であることを示すラベル
+	JComboBox codeComboBox = new JComboBox(); //店員コードの選択欄 
 	
-	JLabel fnLabel = new JLabel("  店員名"); //商品名の選択欄であることを示すラベル
-	JComboBox nameComboBox = new JComboBox(); //商品名の選択欄
+	JLabel fnLabel = new JLabel("  店員名"); //店員名の選択欄であることを示すラベル
+	JComboBox nameComboBox = new JComboBox(); //店員名の選択欄
 	
 	JLabel fsLabel = new JLabel("  性別"); //性別の選択欄であることを示すラベル
 	JComboBox sexComboBox = new JComboBox(); //性別の選択欄
@@ -124,15 +122,13 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	
 	int now, last; //ページをめくる際に使用
 	
-	String URL = "jdbc:mysql://127.0.0.1:3306/販売管理"; //SQLで使用
-	String USER = "店員1";
-	String PASS = "password";
+	//データベースからデータを取得する際に使用
 	String SQL;
 	String filterSQL = "";
 	String selectSQL = "SELECT *"; 
-	Connection conn;
-	Statement stmt;
-	ResultSet rs;
+	Statement stmt; 
+	ResultSet rs; 
+	Statement otherStmt; 
 	ResultSet otherRs;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
@@ -142,7 +138,7 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	JPanel panel5 = new JPanel();
 	
 	ClerkSearchGUI(){
-		setTitle("商品検索");
+		setTitle("店員検索");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		//レイアウト設定
@@ -158,9 +154,8 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		nameComboBox.addItem(null);
 		try {
 			SQL = "SELECT 店員コード, 氏名 FROM 店員マスタ;";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				codeComboBox.addItem(rs.getString("店員コード"));
 				nameComboBox.addItem(rs.getString("氏名"));
@@ -173,7 +168,12 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			e2.printStackTrace();
 		}
 
-		//日時を選択するコンボボックスに項目を追加
+		//性別を選択するコンボボックスに項目を追加
+		sexComboBox.addItem(null);
+		sexComboBox.addItem("男性");
+		sexComboBox.addItem("女性");
+		
+		//生年月日を選択するコンボボックスに項目を追加
 		//現在の日時で初期化
 		//「年」
 		int y = Integer.valueOf(getYear());
@@ -350,9 +350,12 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		//「絞り込み」ボタンを押したとき
 		if(e.getSource() == searchButton) {
 			getData();
-		} else if(e.getSource() == releaseButton) {
+		} 
+		//「絞り込み解除」ボタンを押したとき
+		else if(e.getSource() == releaseButton) {
 			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
 			sexComboBox.setSelectedItem(null);
@@ -362,34 +365,29 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			timeRangeComboBox.setSelectedItem("以前");
 			flagComboBox.setSelectedItem(null);
 			getData();
-		} else if(e.getSource() == nextButton) {
+		}
+		//「次へ」ボタンを押したとき
+		else if(e.getSource() == nextButton) {
 			result(); //検索結果を表示
-			showNumberLabel.setText(Integer.toString(now));
-			previousButton.setEnabled(true);
-			if(now == last) { //最後の行を表示している場合は「次へ」ボタンをfalseにする
-				nextButton.setEnabled(false);
-				}
-		} else if(e.getSource() == previousButton) {
+		}
+		//「前へ」ボタンを押したとき
+		else if(e.getSource() == previousButton) {
 			now = 10 * (int)Math.floor((now-1)/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
 			try {
 				rs.absolute(now);
 				result(); //検索結果を表示
-				showNumberLabel.setText(Integer.toString(now));
-				nextButton.setEnabled(true);
-				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
-					previousButton.setEnabled(false);
-				}
 			} catch (SQLException e3) {
 				e3.printStackTrace();
 			} catch(Exception e3) {
 				e3.printStackTrace();
 			}
-		} else if(e.getSource() == codeComboBox) {
+		} 
+		//店員コードを選択したとき、店員マスタから店員名を取得する
+		else if(e.getSource() == codeComboBox) {
 			try {
 				SQL = "SELECT 氏名 FROM 店員マスタ WHERE 店員コード = '" + codeComboBox.getSelectedItem() + "';";
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
-				otherRs = stmt.executeQuery(SQL);
+				otherStmt = LoginGUI.conn.createStatement();
+				otherRs = otherStmt.executeQuery(SQL);
 				while(otherRs.next()){
 					nameComboBox.setSelectedItem(otherRs.getString("氏名"));
 				}
@@ -398,12 +396,13 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			}catch(Exception e2) {
 				e2.printStackTrace();
 			}
-		} else if(e.getSource() == nameComboBox) {
+		}
+		//店員名を選択したとき、店員コードを取得する
+		else if(e.getSource() == nameComboBox) {
 			try {
 				SQL = "SELECT 店員コード FROM 店員マスタ WHERE 氏名 = '" + nameComboBox.getSelectedItem() + "';";
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
-				otherRs = stmt.executeQuery(SQL);
+				otherStmt = LoginGUI.conn.createStatement();
+				otherRs = otherStmt.executeQuery(SQL);
 				while(otherRs.next()){
 					codeComboBox.setSelectedItem(otherRs.getString("店員コード"));
 				}
@@ -430,14 +429,13 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 		SQL = createSQL();
 		System.out.println(SQL + " で検索します");
 		try {
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			stmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(SQL);
-			result(); //検索結果を表示
-			this.pack(); //フレームのサイズ調整
 			rs.last(); //最後の行に移動し、行番号を取得
 			last = rs.getRow();
-			rs.absolute(now); //元の行に戻る
+			rs.beforeFirst(); //初めの行に戻る
+			result(); //検索結果を表示
+			this.pack(); //フレームのサイズ調整
 			totalNumberLabel.setText(Integer.toString(last));
 			showNumberLabel.setText(Integer.toString(now));
 			if(last > 10) { //取得件数が11件以上ならページをめくるボタンをture、そうでないならfalseにする
@@ -457,10 +455,10 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 	public String createSQL(){
 
 		if(codeComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 商品コード = '" + codeComboBox.getSelectedItem() + "'";
+			filterSQL += " AND 店員コード = '" + codeComboBox.getSelectedItem() + "'";
 		}
 		if(nameComboBox.getSelectedItem() != null) {
-			filterSQL += " AND 商品名 = '" + nameComboBox.getSelectedItem() + "'";
+			filterSQL += " AND 氏名 = '" + nameComboBox.getSelectedItem() + "'";
 		}
 		if(sexComboBox.getSelectedItem() != null) {
 			filterSQL += " AND 性別 = '" + sexComboBox.getSelectedItem() + "'"; 
@@ -545,9 +543,24 @@ public class ClerkSearchGUI extends JFrame implements ActionListener{
 			if(rs.next()){
 				show(codeLabel10, nameLabel10,sexLabel10, birthdayLabel10, flagLabel10);
 				now = rs.getRow(); //現在の行番号を取得
+				nextButton.setEnabled(true); //一番下の行にデータがあれば「次へ」ボタンをtrueにする
 			}else {
 				reset(codeLabel10, nameLabel10, sexLabel10, birthdayLabel10, flagLabel10);
+				nextButton.setEnabled(false); //一番下の行が白紙なら「次へ」ボタンをfalseにする
 			}
+			//現在行が最後の行のとき、「次へ」ボタンをfalseにする
+			if(now == last) {
+				nextButton.setEnabled(false);
+			}
+			//11件目以降を表示している場合は「前へ」ボタンをtrueにする
+			if(now > 10) {
+				previousButton.setEnabled(true);
+			}
+			//初めの10件目までを表示している場合は「前へ」ボタンをfalseにする
+			else { 
+				previousButton.setEnabled(false);
+			}
+			showNumberLabel.setText(Integer.toString(now));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {

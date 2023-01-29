@@ -119,9 +119,9 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		
 		//日時を選択するコンボボックスに項目を追加し、現在の日時で初期化
 		for(int i = 2020; i <= Integer.parseInt(getYear()); i++) {
-			yearComboBox.addItem(i);	
+			yearComboBox.addItem(i);
 		}
-		yearComboBox.setSelectedItem(getYear());
+		yearComboBox.setSelectedItem(Integer.parseInt(getYear()));
 		for(int i = 1; i <= 12; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
@@ -155,7 +155,7 @@ public class SalesInputGUI extends JFrame implements ActionListener{
 		}
 		minuteComboBox.setSelectedItem(getMinute());
 		
-		//店員コードを選択するコンボボックスに項目を追加
+		//店員コード、店員名を選択するコンボボックスに項目を追加
 		try {
 			SQL = "SELECT 店員コード, 氏名 FROM 店員マスタ WHERE 削除フラグ = 0;";
 			stmt = LoginGUI.conn.createStatement();

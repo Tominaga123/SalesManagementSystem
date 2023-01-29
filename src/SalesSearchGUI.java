@@ -3,8 +3,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -57,7 +55,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JLabel ffLabel = new JLabel("  削除フラグ"); //削除フラグの選択欄であることを示すラベル
 	JComboBox flagComboBox = new JComboBox(); //削除フラグの選択欄
 	
-	JButton searchButton = new JButton("検索"); //検索ボタン
+	JButton searchButton = new JButton("絞り込み"); //絞り込みボタン
+	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
 	
 	//集計の条件の入力欄
 	JLabel vacantLabel1 = new JLabel(" "); //検索と集計の間に空白を設けるためのラベル
@@ -261,9 +260,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	
 	int now, last; //ページをめくる際に使用
 	
-	String URL = "jdbc:mysql://127.0.0.1:3306/販売管理"; //SQLで使用
-	String USER = "店員1";
-	String PASS = "password";
+	//データベースからデータを取得する際に使用
 	String SQL;
 	String filterSQL = "";
 	String selectSQL = "SELECT";
@@ -271,9 +268,10 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	String timeSQL = ""; 
 	String groupBySQL = "";
 	String whereSQL = "";
-	Connection conn;
-	Statement stmt;
-	ResultSet rs;
+	Statement stmt; 
+	ResultSet rs; 
+	Statement otherStmt; 
+	ResultSet otherRs;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel();
@@ -289,7 +287,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 	JPanel panel4_6 = new JPanel();
 	JPanel panel4_7 = new JPanel();
 	JPanel panel5 = new JPanel();
-	JPanel panel15 = new JPanel();
+	JPanel panel6 = new JPanel();
 	
 	SalesSearchGUI(){
 		setTitle("売上検索、集計");
@@ -311,83 +309,61 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel4_6.setLayout(new FlowLayout());
 		panel4_7.setLayout(new FlowLayout());
 		panel5.setLayout(new GridLayout(11, 9, 0, 2));
-		panel15.setLayout(new FlowLayout());
+		panel6.setLayout(new FlowLayout());
 		
 		
 		//日時を選択するコンボボックスに項目を追加
 		//現在の日時で初期化
-		yearComboBox.addItem(getYear());
+		for(int i = 2020; i <= Integer.parseInt(getYear()); i++) {
+			yearComboBox.addItem(i);	
+		}
+		yearComboBox.setSelectedItem(Integer.parseInt(getYear()));
 		for(int i = 1; i <= 12; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
 			monthComboBox.addItem(s);
-			if(s.equals(getMonth())){
-				monthComboBox.setSelectedIndex(i-1);
-			}
 		}
+		monthComboBox.setSelectedItem(getMonth());
 		for(int i = 1; i <= 31; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
 			dateComboBox.addItem(s);
-			if(s.equals(getDate())){
-				dateComboBox.setSelectedIndex(i-1);
-			}
 		}
+		dateComboBox.setSelectedItem(getDate());
 		for(int i = 0; i <= 23; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
 			hourComboBox.addItem(s);
-			if(s.equals(getHour())){
-				hourComboBox.setSelectedIndex(i);
-			}
 		}
+		hourComboBox.setSelectedItem(getHour());
 		for(int i = 0; i <= 59; i++) {
 			String s = Integer.valueOf(i).toString();
 			if(i <= 9) {
 				s = 0 + s;
 			}
 			minuteComboBox.addItem(s);
-			if(s.equals(getMinute())){
-				minuteComboBox.setSelectedIndex(i);
-			}
 		}
+		minuteComboBox.setSelectedItem(getMinute());
 		timeRangeComboBox.addItem("以前");
 		timeRangeComboBox.addItem("以後");
 		timeRangeComboBox.addItem("一致");
 		
-		//店員コードを選択するコンボボックスに項目を追加
-		clerkCodeComboBox.addItem(null);
+		//店員コード、店員名を選択するコンボボックスに項目を追加
 		try {
-			SQL = "SELECT 店員コード FROM 店員マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
+			SQL = "SELECT 店員コード, 氏名 FROM 店員マスタ WHERE 削除フラグ = 0;";
+			stmt = LoginGUI.conn.createStatement();
 			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				clerkCodeComboBox.addItem(rs.getString("店員コード"));
-			}
-			clerkCodeComboBox.setSelectedItem(null);
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		
-		//店員名を選択するコンボボックスに項目を追加
-		clerkNameComboBox.addItem(null);
-		try {
-			SQL = "SELECT 氏名 FROM 店員マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(SQL);
-			while(rs.next()){
 				clerkNameComboBox.addItem(rs.getString("氏名"));
 			}
+			clerkCodeComboBox.setSelectedItem(null);
 			clerkNameComboBox.setSelectedItem(null);
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -395,35 +371,18 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			e2.printStackTrace();
 		}
 		
-		//商品コードを選択するコンボボックスに項目を追加
+		//商品コード、商品名を選択するコンボボックスに項目を追加
 		goodsCodeComboBox.addItem(null);
+		goodsNameComboBox.addItem(null);
 		try {
-			SQL = "SELECT 商品コード FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
+			SQL = "SELECT 商品コード, 商品名 FROM 商品マスタ;";
+			stmt = LoginGUI.conn.createStatement();
 			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				goodsCodeComboBox.addItem(rs.getString("商品コード"));
-
+				goodsNameComboBox.addItem(rs.getString("商品名"));
 			}
 			goodsCodeComboBox.setSelectedItem(null);
-		}catch(SQLException e2) {
-			e2.printStackTrace();
-		}catch(Exception e2) {
-			e2.printStackTrace();
-		}
-		
-		//商品名を選択するコンボボックスに項目を追加
-		goodsNameComboBox.addItem(null);
-		try {
-			SQL = "SELECT 商品名 FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(SQL);
-			while(rs.next()){
-				goodsNameComboBox.addItem(rs.getString("商品名"));
-
-			}
 			goodsNameComboBox.setSelectedItem(null);
 		}catch(SQLException e2) {
 			e2.printStackTrace();
@@ -444,9 +403,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		//firstYearComboBoxに項目を追加
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				firstYearComboBox.addItem(rs.getString("時間"));
 			} 
@@ -459,9 +417,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		//lastYearComboBoxに項目を追加
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				lastYearComboBox.addItem(rs.getString("時間"));
 			} 
@@ -548,9 +505,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		RfirstYearComboBox.addItem("指定なし");
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				RfirstYearComboBox.addItem(rs.getString("時間"));
 			} 
@@ -564,9 +520,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		RlastYearComboBox.addItem("指定なし");
 		try {
 			SQL = "SELECT DATE_FORMAT(販売日時, '%Y') AS 時間 FROM 売上マスタ GROUP BY DATE_FORMAT(販売日時, '%Y');";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				RlastYearComboBox.addItem(rs.getString("時間"));
 			} 
@@ -661,9 +616,8 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		rangeComboBox.addItem("すべて");
 		try {
 			SQL = "SELECT CONCAT(LEFT(商品コード, 1), '群') AS 先頭コード FROM 商品マスタ GROUP BY 先頭コード;";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				rangeComboBox.addItem(rs.getString("先頭コード"));
 			} 
@@ -783,6 +737,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel2.add(panel2_2);
 
 		panel3.add(searchButton);
+		panel3.add(releaseButton);
 		
 		panel4_1.add(aggregateLabel);
 		
@@ -976,22 +931,23 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		panel5.add(subTotalLabel10);
 		panel5.add(flagLabel10);
 		
-		panel15.add(previousButton);
-		panel15.add(showNumberLabel);
-		panel15.add(snLabel);
-		panel15.add(totalNumberLabel);
-		panel15.add(tnLabel);
-		panel15.add(nextButton);
+		panel6.add(previousButton);
+		panel6.add(showNumberLabel);
+		panel6.add(snLabel);
+		panel6.add(totalNumberLabel);
+		panel6.add(tnLabel);
+		panel6.add(nextButton);
 		
 		getContentPane().add(panel1);
 		getContentPane().add(panel2);
 		getContentPane().add(panel3);
 		getContentPane().add(panel5);
-		getContentPane().add(panel15);
+		getContentPane().add(panel6);
 		getContentPane().add(vacantLabel1);
 		getContentPane().add(panel4);
 		
 		searchButton.addActionListener(this);
+		releaseButton.addActionListener(this);
 		nextButton.addActionListener(this);
 		previousButton.addActionListener(this);
 		nextButton.setEnabled(false);
@@ -1016,89 +972,73 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		aggregateButton.addActionListener(this);
 		this.pack();
 		setVisible(true);
+		getData();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		//「絞り込み」ボタンを押したとき
 		if(e.getSource() == searchButton) {
-			SQL = createSQL();
-			System.out.println(SQL + " で検索します");
-			try {
-				conn = DriverManager.getConnection(URL, USER, PASS);
-				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-				rs = stmt.executeQuery(SQL);
-				result(); //検索結果を表示
-				rs.last(); //最後の行に移動し、行番号を取得
-				last = rs.getRow();
-				totalNumberLabel.setText(Integer.toString(last));
-				showNumberLabel.setText(Integer.toString(now));
-				this.pack(); //フレームのサイズ調整
-				if(last > 10) { //取得件数が11件以上ならページをめくるボタンをture、そうでないならfalseにする
-					nextButton.setEnabled(true);
-				} else {
-					nextButton.setEnabled(false);
-					previousButton.setEnabled(false);
-				}
-			}catch(SQLException e2) {
-				e2.printStackTrace();
-			}catch(Exception e2) {
-				e2.printStackTrace();
-			}
-		} else if(e.getSource() == nextButton) {
-			try {
-				rs.absolute(now);
-				result(); //検索結果を表示
-				showNumberLabel.setText(Integer.toString(now));
-				previousButton.setEnabled(true);
-				if(now == last) { //最後の行を表示している場合は「次へ」ボタンをfalseにする
-					nextButton.setEnabled(false);
-				}
-			} catch (SQLException e3) {
-				e3.printStackTrace();
-			} catch(Exception e3) {
-				e3.printStackTrace();
-			}
-			
-		} else if(e.getSource() == previousButton) {
+			getData();
+		} 
+		//「絞り込み解除」ボタンを押したとき
+		else if(e.getSource() == releaseButton) {
+			numberTextField.setText(null);
+			yearComboBox.setSelectedItem(getYear());
+			monthComboBox.setSelectedItem(getMonth());
+			dateComboBox.setSelectedItem(getDate());
+			timeRangeComboBox.setSelectedItem("以前");
+			clerkCodeComboBox.setSelectedItem(null);
+			clerkNameComboBox.setSelectedItem(null);
+			goodsCodeComboBox.setSelectedItem(null);
+			goodsNameComboBox.setSelectedItem(null);
+			totalTextField.setText("0");
+			totalRangeComboBox.setSelectedItem("以上");
+			flagComboBox.setSelectedItem(null);
+			getData();
+		} 
+		//「次へ」ボタンを押したとき
+		else if(e.getSource() == nextButton) {
+			result(); //検索結果を表示
+		}
+		//「前へ」ボタンを押したとき
+		else if(e.getSource() == previousButton) {
 			now = 10 * (int)Math.floor((now-1)/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
 			try {
-				rs.absolute(now);
+				rs.absolute(now); //nowへ行を移動する
 				result(); //検索結果を表示
-				showNumberLabel.setText(Integer.toString(now));
-				nextButton.setEnabled(true);
-				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
-					previousButton.setEnabled(false);
-				}
-			} catch (SQLException e3) {
-				e3.printStackTrace();
-			} catch(Exception e3) {
-				e3.printStackTrace();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
-		} else if(e.getSource() == choiceButton1) {
+		} 
+		//「ある期間のみ集計」を選択したとき
+		else if(e.getSource() == choiceButton1) {
 			if(choiceButton1.getText().equals("選択")) {
 				choiceButton1.setText("選択中");
 				choiceButton2.setText("選択");
 			}
-		} else if(e.getSource() == choiceButton2) {
+		}
+		//「繰り返される一定の期間を集計」を選択したとき
+		else if(e.getSource() == choiceButton2) {
 			if(choiceButton2.getText().equals("選択")) {
 				choiceButton2.setText("選択中");
 				choiceButton1.setText("選択");
 			}
-		} else if(e.getSource() == aggregateButton) {
+		}
+		//「集計」ボタンを押したとき
+		else if(e.getSource() == aggregateButton) {
 			//集計するためのSQLを作成する
 			SQL = createAggregateSQL(firstYearComboBox, lastYearComboBox, firstMonthComboBox, lastMonthComboBox, 
 					firstDateComboBox, lastDateComboBox, firstHourComboBox, lastHourComboBox, firstMinuteComboBox, 
 					lastMinuteComboBox, rangeComboBox, objectComboBox1, objectComboBox2);
 			System.out.println(SQL);
 			try {
-				conn = DriverManager.getConnection(URL, USER, PASS);
-				stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-				rs = stmt.executeQuery(SQL);
-				if(rs.next()) {
-					System.out.println("rs.getString(\"集計結果\")" + rs.getString("集計結果"));
-					if(rs.getString("集計結果") == null) {
+				otherStmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				otherRs = otherStmt.executeQuery(SQL);
+				if(otherRs.next()) {
+					if(otherRs.getString("集計結果") == null) {
 						aggregateResultLabel.setText("0");
 					} else {
-						aggregateResultLabel.setText(rs.getString("集計結果"));
+						aggregateResultLabel.setText(otherRs.getString("集計結果"));
 					}
 				}
 			}catch(SQLException e2) {
@@ -1106,9 +1046,11 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 			}catch(Exception e2) {
 				e2.printStackTrace();
 			}
-		} else if(e.getSource() == objectComboBox1) {
-			//選んだ項目によってobjectComboBox2とrangeComboBoxの項目を変更
+		} 
+		//objectComboBox1の選んだ項目によってobjectComboBox2とrangeComboBoxの項目を変更
+		else if(e.getSource() == objectComboBox1) {
 			switch((String)objectComboBox1.getSelectedItem()) {
+			//「商品」で集計を選んだ場合
 			case "商品":
 				//objectComboBox2の項目を変更
 				String item1 = (String) objectComboBox2.getSelectedItem();
@@ -1121,17 +1063,19 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				rangeComboBox.removeAllItems();
 				rangeComboBox.addItem("すべて");
 				try {
+					//商品コードの頭文字を取得し、「〇群」として集計する際に使用
+					//例：A001～A003の商品を「A群」としてまとめて集計
 					SQL = "SELECT CONCAT(LEFT(商品コード, 1), '群') AS 先頭コード FROM 商品マスタ GROUP BY 先頭コード;";
-					Connection conn = DriverManager.getConnection(URL, USER, PASS);
-					Statement stmt = conn.createStatement();
-					ResultSet rs = stmt.executeQuery(SQL);
-					while(rs.next()){
-						rangeComboBox.addItem(rs.getString("先頭コード"));
-					} 
+					otherStmt = LoginGUI.conn.createStatement();
+					otherRs = otherStmt.executeQuery(SQL);
+					while(otherRs.next()){
+						rangeComboBox.addItem(otherRs.getString("先頭コード"));
+					}
+					//通常の商品コードをコンボボックスに追加
 					SQL = "SELECT 商品コード FROM 商品マスタ;";
-					rs = stmt.executeQuery(SQL);
-					while(rs.next()){
-						rangeComboBox.addItem(rs.getString("商品コード"));
+					otherRs = otherStmt.executeQuery(SQL);
+					while(otherRs.next()){
+						rangeComboBox.addItem(otherRs.getString("商品コード"));
 					} 
 				}catch(SQLException e2) {
 					e2.printStackTrace();
@@ -1139,6 +1083,7 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 					e2.printStackTrace();
 				}
 				break;
+			//「店員」で集計を選んだ場合
 			case "店員":
 				//objectComboBox2の項目を変更
 				String item2 = (String) objectComboBox2.getSelectedItem();
@@ -1150,13 +1095,13 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				rangeComboBox.removeAllItems();
 				rangeComboBox.addItem("すべて");
 				try {
+					//店員コードをコンボボックスに追加
 					SQL = "SELECT 店員コード FROM 店員マスタ;";
-					Connection conn = DriverManager.getConnection(URL, USER, PASS);
-					Statement stmt = conn.createStatement();
-					ResultSet rs = stmt.executeQuery(SQL);
-					rs = stmt.executeQuery(SQL);
-					while(rs.next()){
-						rangeComboBox.addItem(rs.getString("店員コード"));
+					otherStmt = LoginGUI.conn.createStatement();
+					otherRs = otherStmt.executeQuery(SQL);
+					otherRs = otherStmt.executeQuery(SQL);
+					while(otherRs.next()){
+						rangeComboBox.addItem(otherRs.getString("店員コード"));
 					} 
 				}catch(SQLException e2) {
 					e2.printStackTrace();
@@ -1175,13 +1120,13 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				rangeComboBox.removeAllItems();
 				rangeComboBox.addItem("すべて");
 				try {
+					//伝票番号をコンボボックスに追加
 					SQL = "SELECT DISTINCT(伝票番号) AS 伝票番号 FROM 売上マスタ;";
-					Connection conn = DriverManager.getConnection(URL, USER, PASS);
-					Statement stmt = conn.createStatement();
-					ResultSet rs = stmt.executeQuery(SQL);
-					rs = stmt.executeQuery(SQL);
-					while(rs.next()){
-						rangeComboBox.addItem(rs.getString("伝票番号"));
+					otherStmt = LoginGUI.conn.createStatement();
+					otherRs = otherStmt.executeQuery(SQL);
+					otherRs = otherStmt.executeQuery(SQL);
+					while(otherRs.next()){
+						rangeComboBox.addItem(otherRs.getString("伝票番号"));
 					} 
 				}catch(SQLException e2) {
 					e2.printStackTrace();
@@ -1202,6 +1147,26 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 		label.setBackground(new Color(196,206,222));
 	}
 	
+	//検索条件からデータを取得するメソッド
+	public void getData(){
+		SQL = createSQL();
+		System.out.println(SQL + " で検索します");
+		try {
+			stmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			rs = stmt.executeQuery(SQL);
+			rs.last(); //最後の行に移動し、行番号を取得
+			last = rs.getRow();
+			rs.beforeFirst(); //初めの行に戻る
+			result(); //検索結果を表示
+			totalNumberLabel.setText(Integer.toString(last)); //総件数を表示
+			this.pack(); //フレームのサイズ調整
+		}catch(SQLException e2) {
+			e2.printStackTrace();
+		}catch(Exception e2) {
+			e2.printStackTrace();
+		}
+	}
+
 	//検索条件を指定するSQLを作成するメソッド
 	public String createSQL(){
 		if(!numberTextField.getText().equals("")) {
@@ -1335,10 +1300,25 @@ public class SalesSearchGUI extends JFrame implements ActionListener{
 				show(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
 						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10, flagLabel10);
 				now = rs.getRow(); //現在の行番号を取得
+				nextButton.setEnabled(true); //一番下の行にデータがあれば「次へ」ボタンをtrueにする
 			}else {
 				reset(numberLabel10, dateLabel10, clerkCodeLabel10, clerkNameLabel10, 
 						goodsCodeLabel10, goodsNameLabel10, countLabel10, subTotalLabel10, flagLabel10);
+				nextButton.setEnabled(false); //一番下の行が白紙なら「次へ」ボタンをfalseにする
 			}
+			//現在行が最後の行のとき、「次へ」ボタンをfalseにする
+			if(now == last) {
+				nextButton.setEnabled(false);
+			}
+			//11件目以降を表示している場合は「前へ」ボタンをtrueにする
+			if(now > 10) {
+				previousButton.setEnabled(true);
+			}
+			//初めの10件目までを表示している場合は「前へ」ボタンをfalseにする
+			else { 
+				previousButton.setEnabled(false);
+			}
+			showNumberLabel.setText(Integer.toString(now));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {

@@ -3,8 +3,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -95,15 +93,13 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 	
 	int now, last; //ページをめくる際に使用
 	
-	String URL = "jdbc:mysql://127.0.0.1:3306/販売管理"; //SQLで使用
-	String USER = "店員1";
-	String PASS = "password";
+	//データベースからデータを取得する際に使用
 	String SQL;
 	String filterSQL = "";
 	String selectSQL = "SELECT *"; 
-	Connection conn;
-	Statement stmt;
-	ResultSet rs;
+	Statement stmt; 
+	ResultSet rs; 
+	Statement otherStmt; 
 	ResultSet otherRs;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
@@ -128,15 +124,12 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 		codeComboBox.addItem(null);
 		try {
 			SQL = "SELECT CONCAT(LEFT(商品コード, 1), '群') AS 先頭コード FROM 商品マスタ GROUP BY 先頭コード;";
-			Connection conn = DriverManager.getConnection(URL, USER, PASS);
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL);
+			stmt = LoginGUI.conn.createStatement();
+			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				codeComboBox.addItem(rs.getString("先頭コード"));
 			} 
 			SQL = "SELECT 商品コード FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
 			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				codeComboBox.addItem(rs.getString("商品コード"));
@@ -153,8 +146,7 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 		nameComboBox.addItem(null);
 		try {
 			SQL = "SELECT 商品名 FROM 商品マスタ;";
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement();
+			stmt = LoginGUI.conn.createStatement();
 			rs = stmt.executeQuery(SQL);
 			while(rs.next()){
 				nameComboBox.addItem(rs.getString("商品名"));
@@ -282,57 +274,56 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		//「絞り込み」ボタンを押したとき
 		if(e.getSource() == searchButton) {
 			getData();
-		} else if(e.getSource() == releaseButton) {
+		}
+		//「絞り込み解除」ボタンを押したとき
+		else if(e.getSource() == releaseButton) {
 			codeComboBox.setSelectedItem(null);
 			nameComboBox.setSelectedItem(null);
 			flagComboBox.setSelectedItem(null);
 			getData();
-		} else if(e.getSource() == nextButton) {
+		}
+		//「次へ」ボタンを押したとき
+		else if(e.getSource() == nextButton) {
 			result(); //検索結果を表示
-			showNumberLabel.setText(Integer.toString(now));
-			previousButton.setEnabled(true);
-			if(now == last) { //最後の行を表示している場合は「次へ」ボタンをfalseにする
-				nextButton.setEnabled(false);
-				}
-		} else if(e.getSource() == previousButton) {
+		}
+		//「前へ」ボタンを押したとき
+		else if(e.getSource() == previousButton) {
 			now = 10 * (int)Math.floor((now-1)/10) - 10; // 現在行を前ページの先頭のひとつ前に戻す
 			try {
 				rs.absolute(now);
 				result(); //検索結果を表示
-				showNumberLabel.setText(Integer.toString(now));
-				nextButton.setEnabled(true);
-				if(now == 10) { //初めの10件を表示している場合は「前へ」ボタンをfalseにする
-					previousButton.setEnabled(false);
-				}
 			} catch (SQLException e3) {
 				e3.printStackTrace();
 			} catch(Exception e3) {
 				e3.printStackTrace();
 			}
-		} else if(e.getSource() == codeComboBox) {
+		}
+		//商品コードを選択したとき、商品マスタから商品名を取得する
+		else if(e.getSource() == codeComboBox) {
 			try {
 				SQL = "SELECT 商品名 FROM 商品マスタ WHERE 商品コード = '" + codeComboBox.getSelectedItem() + "';";
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
-				ResultSet goodsRs = stmt.executeQuery(SQL);
-				while(goodsRs.next()){
-					nameComboBox.setSelectedItem(goodsRs.getString("商品名"));
+				otherStmt = LoginGUI.conn.createStatement();
+				otherRs = otherStmt.executeQuery(SQL);
+				while(otherRs.next()){
+					nameComboBox.setSelectedItem(otherRs.getString("商品名"));
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
 			}catch(Exception e2) {
 				e2.printStackTrace();
 			}
-		} else if(e.getSource() == nameComboBox) {
+		}
+		//商品名を選択したとき、商品マスタから商品コードを取得する
+		else if(e.getSource() == nameComboBox) {
 			try {
 				SQL = "SELECT 商品コード FROM 商品マスタ WHERE 商品名 = '" + nameComboBox.getSelectedItem() + "';";
-				Connection conn = DriverManager.getConnection(URL, USER, PASS);
-				Statement stmt = conn.createStatement();
-				ResultSet goodsRs = stmt.executeQuery(SQL);
-				while(goodsRs.next()){
-					codeComboBox.setSelectedItem(goodsRs.getString("商品コード"));
+				otherStmt = LoginGUI.conn.createStatement();
+				otherRs = otherStmt.executeQuery(SQL);
+				while(otherRs.next()){
+					codeComboBox.setSelectedItem(otherRs.getString("商品コード"));
 				}
 			}catch(SQLException e2) {
 				e2.printStackTrace();
@@ -357,14 +348,13 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 		SQL = createSQL();
 		System.out.println(SQL + " で検索します");
 		try {
-			conn = DriverManager.getConnection(URL, USER, PASS);
-			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			stmt = LoginGUI.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			rs = stmt.executeQuery(SQL);
-			result(); //検索結果を表示
-			this.pack(); //フレームのサイズ調整
 			rs.last(); //最後の行に移動し、行番号を取得
 			last = rs.getRow();
-			rs.absolute(now); //元の行に戻る
+			rs.beforeFirst(); //初めの行に戻る
+			result(); //検索結果を表示
+			this.pack(); //フレームのサイズ調整
 			totalNumberLabel.setText(Integer.toString(last));
 			showNumberLabel.setText(Integer.toString(now));
 			if(last > 10) { //取得件数が11件以上ならページをめくるボタンをture、そうでないならfalseにする
@@ -467,9 +457,24 @@ public class GoodsSearchGUI extends JFrame implements ActionListener{
 			if(rs.next()){
 				show(codeLabel10, nameLabel10, priceLabel10, flagLabel10);
 				now = rs.getRow(); //現在の行番号を取得
+				nextButton.setEnabled(true); //一番下の行にデータがあれば「次へ」ボタンをtrueにする
 			}else {
 				reset(codeLabel10, nameLabel10, priceLabel10, flagLabel10);
+				nextButton.setEnabled(false); //一番下の行が白紙なら「次へ」ボタンをfalseにする
 			}
+			//現在行が最後の行のとき、「次へ」ボタンをfalseにする
+			if(now == last) {
+				nextButton.setEnabled(false);
+			}
+			//11件目以降を表示している場合は「前へ」ボタンをtrueにする
+			if(now > 10) {
+				previousButton.setEnabled(true);
+			}
+			//初めの10件目までを表示している場合は「前へ」ボタンをfalseにする
+			else { 
+				previousButton.setEnabled(false);
+			}
+			showNumberLabel.setText(Integer.toString(now));
 		}catch(SQLException e2) {
 			e2.printStackTrace();
 		}catch(Exception e2) {
