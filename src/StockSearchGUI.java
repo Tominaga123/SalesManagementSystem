@@ -968,8 +968,9 @@ public class StockSearchGUI extends JFrame implements ActionListener{
 						
 						if(SUM > inQuantity.get(index2)) {
 							//(index2 + 1)回目の仕入の値段で計算
+							
 							int price1 = (Integer.parseInt(rs.getString("個数").replace("払", "")) - 
-									(SUM - inQuantity.get(index2)) * inPrice.get(index2));
+									(SUM - inQuantity.get(index2))) * inPrice.get(index2);
 							SUM -= inQuantity.get(index2);
 							index2++;//次の仕入に移す
 							//(index2 + 2)回目の仕入の値段で計算
