@@ -51,7 +51,6 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 	JButton searchButton = new JButton("絞り込み"); //検索ボタン
 	JButton releaseButton = new JButton("絞り込み解除"); //絞り込み解除ボタン
 	
-	
 	JLabel cLabel = new JLabel("店員コード", JLabel.CENTER); //店員コードであることを示すラベル
 	JTextField codeTextField1 = new JTextField(); //店員コードを編集するテキストフィールド
 	JTextField codeTextField2 = new JTextField();
@@ -154,6 +153,9 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 	String filterSQL = "";
 	Statement stmt;
 	ResultSet rs;
+	
+	//データベースを編集する際に確認をはさむために使用
+	public static int comfirmFlag = 0;
 	
 	JPanel panel1 = new JPanel(); //コンポーネントを置くパネル
 	JPanel panel2 = new JPanel();
@@ -733,7 +735,7 @@ public class ClerkEditGUI extends JFrame implements ActionListener{
 			e2.printStackTrace();
 		}
 	}
-	
+
 	//Resultsetオブジェクトがnullならばラベルを白紙にするメソッド
 	public void reset(JTextField codeText, JTextField nameText, JComboBox sexBox, JTextField birthdayText, 
 			JComboBox flagBox, JButton updateButton, JButton editButton) {
